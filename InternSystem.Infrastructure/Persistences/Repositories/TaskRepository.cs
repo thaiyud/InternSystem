@@ -28,6 +28,11 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
                 .Where(t => t.MoTa.ToLower().Trim().Contains(searchTerm))
                 .ToListAsync();
         }
-
+        public async Task<IEnumerable<Tasks>> GetTaskByDuanIdAsync(int id)
+        {
+            return await _applicationDbContext.Tasks
+                .Where(t => t.DuAnId == id).ToListAsync();
         }
+
+    }
     }

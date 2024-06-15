@@ -24,7 +24,7 @@ namespace InternSystem.Application.Features.User.Handlers
 
         public async Task<IEnumerable<GetUserNhomZaloResponse>> Handle(GetAllUserNhomZaloQuery request, CancellationToken cancellationToken)
         {
-            var userNhomZaloEntities = await _unitOfWork.UserNhomZaloRepository.GetAllASync();
+            var userNhomZaloEntities = await _unitOfWork.UserNhomZaloRepository.GetAllAsync();
             var userNhomZaloResponses = _mapper.Map<IEnumerable<GetUserNhomZaloResponse>>(userNhomZaloEntities);
             return userNhomZaloResponses;
         }

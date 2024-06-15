@@ -25,7 +25,7 @@ namespace InternSystem.Application.Features.TaskManage.Handlers.TaskUserCRUD
 
         public async Task<UserTaskReponse> Handle(GetUserTaskByIdQuery request, CancellationToken cancellationToken)
         {
-            Tasks? exist = await _unitOfWork.TaskRepository.GetByIdAsync(request.Id);
+            UserTask? exist = await _unitOfWork.UserTaskRepository.GetByIdAsync(request.Id);
             if (exist == null || exist.IsDelete == true)
                 throw new ArgumentNullException(
                     nameof(request.Id),

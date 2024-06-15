@@ -12,7 +12,7 @@ namespace InternSystem.Application.Features.TaskManage.Models
     public class TaskResponse
     {
         public int Id { get; set; }
-        public string DuAn { get; set; }
+        public int DuAnId { get; set; }
         public string MoTa { get; set; }
         public string NoiDung { get; set; }
         public DateTime NgayGiao { get; set; }

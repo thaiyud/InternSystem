@@ -16,7 +16,7 @@ namespace InternSystem.Application.Features.Interview.Handlers
 
         public async Task<IEnumerable<EmailWithIndexResponse>> Handle(GetEmailsWithIndicesQuery request, CancellationToken cancellationToken)
         {
-            var users = await _unitOfWork.InternInfoRepository.GetAllASync();
+            var users = await _unitOfWork.InternInfoRepository.GetAllAsync();
             var emailsWithIndices = users.Select((user, index) => new EmailWithIndexResponse { Index = index, Email = user.EmailCaNhan });
             return emailsWithIndices;
         }

@@ -13,6 +13,7 @@ using InternSystem.Application.Features.Interview.Models;
 using InternSystem.Application.Features.Interview.Queries;
 using Microsoft.AspNetCore.Authorization;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Azure;
 
 namespace InternSystem.API.Controllers.InternManagement
 {
@@ -137,6 +138,19 @@ namespace InternSystem.API.Controllers.InternManagement
             catch (Exception ex)
             {
                 return BadRequest($"Error processing file: {ex.Message}");
+            }
+        }
+        [HttpPost("xlsx/upload")]
+        public async Task<IActionResult> UploadXlsx([FromForm] ImportXlsxCommand command)
+        {
+            var response = await Mediator.Send(command);
+            if (response.IsSuccess == true)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(response);
             }
         }
 

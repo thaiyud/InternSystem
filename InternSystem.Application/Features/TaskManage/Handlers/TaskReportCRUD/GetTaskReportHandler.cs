@@ -22,7 +22,7 @@ namespace InternSystem.Application.Features.TaskManage.Handlers.TaskReportCRUD
         }
         public async Task<IEnumerable<TaskReportResponse>> Handle(GetTaskReportQuery request, CancellationToken cancellationToken)
         {
-            var exist = await _unitOfWork.ReportTaskRepository.GetAllASync();
+            var exist = await _unitOfWork.ReportTaskRepository.GetAllAsync();
             Console.WriteLine(exist);
             return _mapper.Map<IEnumerable<TaskReportResponse>>(exist);
         }

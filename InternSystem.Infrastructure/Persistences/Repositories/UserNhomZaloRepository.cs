@@ -24,7 +24,7 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
 
         public async Task<UserNhomZalo> GetByUserIdAndNhomZaloIdAsync(string userId, int nhomZaloId)
         {
-            return await _dbContext.Set<UserNhomZalo>()
+            return await _dbContext.UserNhomZalos
                 .FirstOrDefaultAsync(u => u.UserId == userId &&
                                           (u.IdNhomZaloChung == nhomZaloId || u.IdNhomZaloRieng == nhomZaloId));
         }

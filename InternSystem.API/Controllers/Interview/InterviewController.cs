@@ -94,9 +94,9 @@ namespace InternSystem.API.Controllers
             return Ok(lichPhongVanList);
         }
         [HttpGet("view-all-lichphongvan")]
-        public async Task<ActionResult<LichPhongVan>> GetLichPhongVanById([FromQuery] GetAllLichPhongVanQuery query)
+        public async Task<ActionResult<LichPhongVan>> GetLichPhongVanById()
         {
-            var lichPhongVan = await Mediator.Send(query);
+            var lichPhongVan = await Mediator.Send(new GetAllLichPhongVanQuery());
             return Ok(lichPhongVan);
         }
         [HttpGet("view-lichphongvan-by-id")]
@@ -174,9 +174,9 @@ namespace InternSystem.API.Controllers
             }
         }
         [HttpGet("view-all-phongvan")]
-        public async Task<ActionResult<PhongVan>> GetPhongVanById([FromQuery] GetAllPhongVanQuery query)
+        public async Task<ActionResult<PhongVan>> GetPhongVanById()
         {
-            var PhongVan = await Mediator.Send(query);
+            var PhongVan = await Mediator.Send(new GetAllPhongVanQuery());
             return Ok(PhongVan);
         }
         [HttpGet("view-phongvan-by-id")]

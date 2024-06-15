@@ -21,14 +21,14 @@ namespace InternSystem.Application.Features.DashboardManage.Handlers
 
         public async Task<GetAllDashboardResponse> Handle(GetAllDashboardQuery request, CancellationToken cancellationToken)
         {
-            var dashboardList = await _unitOfWork.DashboardRepository.GetAllASync();
+            var dashboardList = await _unitOfWork.DashboardRepository.GetAllAsync();
             while (!dashboardList.Any())
             {
                 var newDashboard = new Dashboard();
                 await _unitOfWork.DashboardRepository.AddAsync(newDashboard);
                 await _unitOfWork.SaveChangeAsync();
 
-                dashboardList = await _unitOfWork.DashboardRepository.GetAllASync();
+                dashboardList = await _unitOfWork.DashboardRepository.GetAllAsync();
             }
             var firstDashboard = dashboardList.First();
 

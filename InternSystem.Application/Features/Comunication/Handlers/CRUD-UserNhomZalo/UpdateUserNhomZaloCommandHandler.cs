@@ -35,7 +35,7 @@ namespace InternSystem.Application.Features.User.Handlers
             {
                 return new UpdateUserNhomZaloResponse { IsSuccessful = false, ErrorMessage = "UserNhomZalo not found." };
             }
-
+            userNhomZalo.IsLeader = request.Command.IsLeader;
             userNhomZalo.IsMentor = request.Command.isMentor;
             userNhomZalo.LastUpdatedBy = currentUserId;
             userNhomZalo.LastUpdatedTime = DateTimeOffset.Now;

@@ -27,9 +27,9 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
         }
         public async Task<NhomZalo> GetNhomZalosByNameAsync(string name)
         {
-            string searchTerm = name.Trim().ToLower();
+            string searchTerm = name.ToLower().Trim().ToLower();
 
-            return await _applicationDbContext.NhomZalos.FirstOrDefaultAsync<NhomZalo>(t => t.TenNhom.ToLower().Trim().Contains(searchTerm));
+            return await _applicationDbContext.NhomZalos.FirstOrDefaultAsync(t => t.TenNhom.ToLower().Trim().Contains(searchTerm));
         }
     }
 }

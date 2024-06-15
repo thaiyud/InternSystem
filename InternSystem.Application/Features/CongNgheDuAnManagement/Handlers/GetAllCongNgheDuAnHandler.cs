@@ -17,7 +17,7 @@ namespace InternSystem.Application.Features.CongNgheDuAnManagement.Handlers
         }
         public async Task<IEnumerable<GetAllCongNgheDuAnResponse>> Handle(GetAllCongNgheDuAnQuery request, CancellationToken cancellationToken)
         {
-            var CongNgheDuAn = await _unitOfWork.CongNgheDuAnRepository.GetAllASync();
+            var CongNgheDuAn = await _unitOfWork.CongNgheDuAnRepository.GetAllAsync();
             Console.WriteLine(CongNgheDuAn);
             return _mapper.Map<IEnumerable<GetAllCongNgheDuAnResponse>>(CongNgheDuAn);
         }

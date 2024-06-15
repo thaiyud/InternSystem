@@ -20,7 +20,7 @@ namespace InternSystem.Application.Features.TaskManage.Commands
         }
     }
 
-    public class PromoteMemberToLeaderCommand : IRequest<LeaderResponse>
+    public class PromoteMemberToLeaderCommand : IRequest<ExampleResponse>
     {
         public string MemberId { get; set; }
         public int NhomZaloId { get; set; }

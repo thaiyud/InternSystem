@@ -37,7 +37,7 @@ namespace InternSystem.Application.Features.User.Handlers
                 throw new UnauthorizedAccessException("User is not authenticated");
             }
 
-            var currentUserId = userCurrent.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentUserId = userCurrent.Claims.FirstOrDefault(x => x.Type == "Id")?.Value;
 
             if (string.IsNullOrEmpty(currentUserId))
             {
@@ -66,6 +66,7 @@ namespace InternSystem.Application.Features.User.Handlers
             {
                 UserId = request.UserId,
                 IsMentor = request.IsMentor,
+                IsLeader = request.IsLeader,
                 IdNhomZaloChung = (int?)(nhomZalo.IsNhomChung ? request.NhomZaloId : (int?)null),
                 IdNhomZaloRieng = (int?)(nhomZalo.IsNhomChung ? (int?)null : request.NhomZaloId),
                 CreatedBy = currentUserId,

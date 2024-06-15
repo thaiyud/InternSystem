@@ -630,8 +630,9 @@ namespace InternSystem.Infrastructure.Migrations
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("TrangThai")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TrinhDoTiengAnh")
                         .IsRequired()
@@ -1802,301 +1803,302 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.Navigation("Sender");
 
-            modelBuilder.Entity("InternSystem.Domain.Entities.NhomZaloTask", b =>
-                {
-                    b.HasOne("InternSystem.Domain.Entities.NhomZalo", "nhomZalos")
-                        .WithMany("NhomZaloTasks")
-                        .HasForeignKey("NhomZaloId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                    modelBuilder.Entity("InternSystem.Domain.Entities.NhomZaloTask", b =>
+                        {
+                            b.HasOne("InternSystem.Domain.Entities.NhomZalo", "nhomZalos")
+                                .WithMany("NhomZaloTasks")
+                                .HasForeignKey("NhomZaloId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
 
-                    b.HasOne("InternSystem.Domain.Entities.Tasks", "Tasks")
-                        .WithMany("NhomZaloTasks")
-                        .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                            b.HasOne("InternSystem.Domain.Entities.Tasks", "Tasks")
+                                .WithMany("NhomZaloTasks")
+                                .HasForeignKey("TaskId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
 
-                    b.Navigation("Tasks");
+                            b.Navigation("Tasks");
 
-                    b.Navigation("nhomZalos");
+                            b.Navigation("nhomZalos");
+
+                        });
+
+                    modelBuilder.Entity("InternSystem.Domain.Entities.PhongVan", b =>
+                        {
+                            b.HasOne("InternSystem.Domain.Entities.CauHoiCongNghe", "CauHoiCongNghe")
+                                .WithMany()
+                                .HasForeignKey("IdCauHoiCongNghe")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+
+                            b.HasOne("InternSystem.Domain.Entities.LichPhongVan", "LichPhongVan")
+                                .WithMany()
+                                .HasForeignKey("IdLichPhongVan")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+
+                            b.Navigation("CauHoiCongNghe");
+
+                            b.Navigation("LichPhongVan");
+                        });
+
+                    modelBuilder.Entity("InternSystem.Domain.Entities.ReportTask", b =>
+                        {
+                            b.HasOne("InternSystem.Domain.Entities.Tasks", "Task")
+                                .WithMany("ReportTasks")
+                                .HasForeignKey("TaskId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
+
+                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", "User")
+                                .WithMany("reportTasks")
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
+
+                            b.Navigation("Task");
+
+                            b.Navigation("User");
+                        });
+
+                    modelBuilder.Entity("InternSystem.Domain.Entities.Tasks", b =>
+                        {
+                            b.HasOne("InternSystem.Domain.Entities.DuAn", "DuAn")
+                                .WithMany("Tasks")
+                                .HasForeignKey("DuAnId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
+
+                            b.Navigation("DuAn");
+                        });
+
+                    modelBuilder.Entity("InternSystem.Domain.Entities.ThongBao", b =>
+                        {
+                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", "NguoiGui")
+                                .WithMany()
+                                .HasForeignKey("IdNguoiGui")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
+
+                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", "NguoiNhan")
+                                .WithMany()
+                                .HasForeignKey("IdNguoiNhan")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
+
+                            b.Navigation("NguoiGui");
+
+                            b.Navigation("NguoiNhan");
+                        });
+
+                    modelBuilder.Entity("InternSystem.Domain.Entities.UserDuAn", b =>
+                        {
+                            b.HasOne("InternSystem.Domain.Entities.DuAn", "DuAn")
+                                .WithMany("UserDuAns")
+                                .HasForeignKey("DuAnId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
+
+                            b.HasOne("InternSystem.Domain.Entities.ViTri", "ViTri")
+                                .WithMany()
+                                .HasForeignKey("IdViTri")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+
+                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", "User")
+                                .WithMany("UserDuAns")
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
+
+                            b.Navigation("DuAn");
+
+                            b.Navigation("User");
+
+                            b.Navigation("ViTri");
+                        });
+
+                    modelBuilder.Entity("InternSystem.Domain.Entities.UserNhomZalo", b =>
+                        {
+                            b.HasOne("InternSystem.Domain.Entities.NhomZalo", "NhomZaloChung")
+                                .WithMany("UserNhomZaloChungs")
+                                .HasForeignKey("IdNhomZaloChung")
+                                .OnDelete(DeleteBehavior.NoAction);
+
+                            b.HasOne("InternSystem.Domain.Entities.NhomZalo", "NhomZaloRieng")
+                                .WithMany("UserNhomZaloRiengs")
+                                .HasForeignKey("IdNhomZaloRieng")
+                                .OnDelete(DeleteBehavior.NoAction);
+
+                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", "User")
+                                .WithMany("UserNhomZalos")
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
+
+                            b.Navigation("NhomZaloChung");
+
+                            b.Navigation("NhomZaloRieng");
+
+                            b.Navigation("User");
+                        });
+
+                    modelBuilder.Entity("InternSystem.Domain.Entities.UserTask", b =>
+                        {
+                            b.HasOne("InternSystem.Domain.Entities.Tasks", "Task")
+                                .WithMany("UserTasks")
+                                .HasForeignKey("TaskId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
+
+                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", "User")
+                                .WithMany("UserTasks")
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
+
+                            b.Navigation("Task");
+
+                            b.Navigation("User");
+                        });
+
+                    modelBuilder.Entity("InternSystem.Domain.Entities.UserViTri", b =>
+                        {
+                            b.HasOne("InternSystem.Domain.Entities.ViTri", "ViTri")
+                                .WithMany("UserViTris")
+                                .HasForeignKey("IdViTri")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
+
+                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", "AspNetUser")
+                                .WithMany("UserViTris")
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
+
+                            b.Navigation("AspNetUser");
+
+                            b.Navigation("ViTri");
+                        });
+
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                        {
+                            b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                                .WithMany()
+                                .HasForeignKey("RoleId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
+
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                        {
+                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
+
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                        {
+                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
+
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                        {
+                            b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                                .WithMany()
+                                .HasForeignKey("RoleId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+
+                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
+
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                        {
+                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
+
+                    modelBuilder.Entity("InternSystem.Domain.Entities.AspNetUser", b =>
+                        {
+                            b.Navigation("EmailUserStatuses");
+
+                            b.Navigation("UserDuAns");
+
+                            b.Navigation("UserNhomZalos");
+
+                            b.Navigation("UserTasks");
+
+                            b.Navigation("UserViTris");
+
+                            b.Navigation("reportTasks");
+                        });
+
+                    modelBuilder.Entity("InternSystem.Domain.Entities.CauHoi", b =>
+                        {
+                            b.Navigation("CauHoiCongNghes");
+                        });
+
+                    modelBuilder.Entity("InternSystem.Domain.Entities.CongNghe", b =>
+                        {
+                            b.Navigation("CauHoiCongNghes");
+
+                            b.Navigation("CongNgheDuAns");
+                        });
+
+                    modelBuilder.Entity("InternSystem.Domain.Entities.DuAn", b =>
+                        {
+                            b.Navigation("CongNgheDuAns");
+
+                            b.Navigation("Tasks");
+
+                            b.Navigation("UserDuAns");
+                        });
+
+                    modelBuilder.Entity("InternSystem.Domain.Entities.InternInfo", b =>
+                        {
+                            b.Navigation("AspNetUsers");
+
+                            b.Navigation("EmailUserStatuses");
+                        });
+
+                    modelBuilder.Entity("InternSystem.Domain.Entities.NhomZalo", b =>
+                        {
+                            b.Navigation("NhomZaloTasks");
+
+                            b.Navigation("UserNhomZaloChungs");
+
+                            b.Navigation("UserNhomZaloRiengs");
+                        });
+
+                    modelBuilder.Entity("InternSystem.Domain.Entities.Tasks", b =>
+                        {
+                            b.Navigation("NhomZaloTasks");
+
+                            b.Navigation("ReportTasks");
+
+                            b.Navigation("UserTasks");
+                        });
+
+                    modelBuilder.Entity("InternSystem.Domain.Entities.ViTri", b =>
+                        {
+                            b.Navigation("UserViTris");
+                        });
 
                 });
-
-            modelBuilder.Entity("InternSystem.Domain.Entities.PhongVan", b =>
-                {
-                    b.HasOne("InternSystem.Domain.Entities.CauHoiCongNghe", "CauHoiCongNghe")
-                        .WithMany()
-                        .HasForeignKey("IdCauHoiCongNghe")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("InternSystem.Domain.Entities.LichPhongVan", "LichPhongVan")
-                        .WithMany()
-                        .HasForeignKey("IdLichPhongVan")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CauHoiCongNghe");
-
-                    b.Navigation("LichPhongVan");
-                });
-
-            modelBuilder.Entity("InternSystem.Domain.Entities.ReportTask", b =>
-                {
-                    b.HasOne("InternSystem.Domain.Entities.Tasks", "Task")
-                        .WithMany("ReportTasks")
-                        .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", "User")
-                        .WithMany("reportTasks")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Task");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("InternSystem.Domain.Entities.Tasks", b =>
-                {
-                    b.HasOne("InternSystem.Domain.Entities.DuAn", "DuAn")
-                        .WithMany("Tasks")
-                        .HasForeignKey("DuAnId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("DuAn");
-                });
-
-            modelBuilder.Entity("InternSystem.Domain.Entities.ThongBao", b =>
-                {
-                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", "NguoiGui")
-                        .WithMany()
-                        .HasForeignKey("IdNguoiGui")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", "NguoiNhan")
-                        .WithMany()
-                        .HasForeignKey("IdNguoiNhan")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("NguoiGui");
-
-                    b.Navigation("NguoiNhan");
-                });
-
-            modelBuilder.Entity("InternSystem.Domain.Entities.UserDuAn", b =>
-                {
-                    b.HasOne("InternSystem.Domain.Entities.DuAn", "DuAn")
-                        .WithMany("UserDuAns")
-                        .HasForeignKey("DuAnId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("InternSystem.Domain.Entities.ViTri", "ViTri")
-                        .WithMany()
-                        .HasForeignKey("IdViTri")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", "User")
-                        .WithMany("UserDuAns")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("DuAn");
-
-                    b.Navigation("User");
-
-                    b.Navigation("ViTri");
-                });
-
-            modelBuilder.Entity("InternSystem.Domain.Entities.UserNhomZalo", b =>
-                {
-                    b.HasOne("InternSystem.Domain.Entities.NhomZalo", "NhomZaloChung")
-                        .WithMany("UserNhomZaloChungs")
-                        .HasForeignKey("IdNhomZaloChung")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("InternSystem.Domain.Entities.NhomZalo", "NhomZaloRieng")
-                        .WithMany("UserNhomZaloRiengs")
-                        .HasForeignKey("IdNhomZaloRieng")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", "User")
-                        .WithMany("UserNhomZalos")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("NhomZaloChung");
-
-                    b.Navigation("NhomZaloRieng");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("InternSystem.Domain.Entities.UserTask", b =>
-                {
-                    b.HasOne("InternSystem.Domain.Entities.Tasks", "Task")
-                        .WithMany("UserTasks")
-                        .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", "User")
-                        .WithMany("UserTasks")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Task");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("InternSystem.Domain.Entities.UserViTri", b =>
-                {
-                    b.HasOne("InternSystem.Domain.Entities.ViTri", "ViTri")
-                        .WithMany("UserViTris")
-                        .HasForeignKey("IdViTri")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", "AspNetUser")
-                        .WithMany("UserViTris")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("AspNetUser");
-
-                    b.Navigation("ViTri");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("InternSystem.Domain.Entities.AspNetUser", b =>
-                {
-                    b.Navigation("EmailUserStatuses");
-
-                    b.Navigation("UserDuAns");
-
-                    b.Navigation("UserNhomZalos");
-
-                    b.Navigation("UserTasks");
-
-                    b.Navigation("UserViTris");
-
-                    b.Navigation("reportTasks");
-                });
-
-            modelBuilder.Entity("InternSystem.Domain.Entities.CauHoi", b =>
-                {
-                    b.Navigation("CauHoiCongNghes");
-                });
-
-            modelBuilder.Entity("InternSystem.Domain.Entities.CongNghe", b =>
-                {
-                    b.Navigation("CauHoiCongNghes");
-
-                    b.Navigation("CongNgheDuAns");
-                });
-
-            modelBuilder.Entity("InternSystem.Domain.Entities.DuAn", b =>
-                {
-                    b.Navigation("CongNgheDuAns");
-
-                    b.Navigation("Tasks");
-
-                    b.Navigation("UserDuAns");
-                });
-
-            modelBuilder.Entity("InternSystem.Domain.Entities.InternInfo", b =>
-                {
-                    b.Navigation("AspNetUsers");
-
-                    b.Navigation("EmailUserStatuses");
-                });
-
-            modelBuilder.Entity("InternSystem.Domain.Entities.NhomZalo", b =>
-                {
-                    b.Navigation("NhomZaloTasks");
-
-                    b.Navigation("UserNhomZaloChungs");
-
-                    b.Navigation("UserNhomZaloRiengs");
-                });
-
-            modelBuilder.Entity("InternSystem.Domain.Entities.Tasks", b =>
-                {
-                    b.Navigation("NhomZaloTasks");
-
-                    b.Navigation("ReportTasks");
-
-                    b.Navigation("UserTasks");
-                });
-
-            modelBuilder.Entity("InternSystem.Domain.Entities.ViTri", b =>
-                {
-                    b.Navigation("UserViTris");
-                });
-#pragma warning restore 612, 618
         }
     }
 }

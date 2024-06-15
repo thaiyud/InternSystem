@@ -31,7 +31,7 @@ namespace InternSystem.Application.Features.CongNgheManagement.Handlers
 
         public async Task<CreateCongNgheResponse> Handle(CreateCongNgheCommand request, CancellationToken cancellationToken)
         {
-            CongNghe? existingCN = _unitOfWork.CongNgheRepository.GetAllASync().Result.AsQueryable()
+            CongNghe? existingCN = _unitOfWork.CongNgheRepository.GetAllAsync().Result.AsQueryable()
                 .FirstOrDefault(d => d.Ten.Equals(request.Ten));
 
             if (existingCN != null && existingCN.IsDelete == false) return new CreateCongNgheResponse() { Errors = "Duplicate CongNghe name" };

@@ -32,8 +32,9 @@ namespace InternSystem.API.Controllers.Interview
         }
         [HttpGet("cau-hoi/get-all")]
         //[Authorize(Roles = "Staff")]
-        public async Task<IActionResult> GetAllCauHoi([FromQuery] GetAllCauHoiQuery query)
+        public async Task<IActionResult> GetAllCauHoi()
         {
+            var query = new GetAllCauHoiQuery();
             var response = await _mediator.Send(query);
             return Ok(response);
         }
@@ -96,8 +97,9 @@ namespace InternSystem.API.Controllers.Interview
         
         [HttpGet("cau-hoi-cong-nghe/get-all")]
         //[Authorize(Roles = "Staff")]
-        public async Task<IActionResult> GetAllCauHoiCongNghe([FromQuery] GetAllCauHoiCongNgheQuery query)
+        public async Task<IActionResult> GetAllCauHoiCongNghe()
         {
+            var query = new GetAllCauHoiCongNgheQuery();
             var response = await _mediator.Send(query);
             return Ok(response);
         }

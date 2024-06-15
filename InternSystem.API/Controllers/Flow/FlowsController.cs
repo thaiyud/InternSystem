@@ -2,6 +2,9 @@
 using InternSystem.Application.Features.CongNgheManagement.Models;
 using InternSystem.Application.Features.TaskManage.Commands;
 using InternSystem.Application.Features.TaskManage.Commands.Create;
+using InternSystem.Application.Features.TaskManage.Commands.Update;
+using InternSystem.Application.Features.TaskManage.Models;
+using InternSystem.Application.Features.TaskManage.Queries;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
@@ -61,6 +64,39 @@ namespace InternSystem.API.Controllers.Flow
             try
             {
                 var result = await Mediator.Send(command);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpPut("nhomZaloTask/update")]
+        public async Task<IActionResult> UpdateTask([FromBody] UpdateNhomZaloTaskCommand command)
+        {
+            try
+            {
+                command.LastUpdatedBy = User.Claims.FirstOrDefault(x => x.Type == "Id")?.Value;
+                if (command.LastUpdatedBy == null)
+                {
+                    return StatusCode(500, "Cannot get Id from JWT token");
+                }
+
+                var response = await Mediator.Send(command);
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpGet("nhomZaloTask/get-all")]
+        public async Task<IActionResult> GetAllTask([FromQuery] GetNhomZaloTaskByQuery query)
+        {
+            try
+            {
+                var result = await Mediator.Send(query);
                 return Ok(result);
             }
             catch (Exception ex)

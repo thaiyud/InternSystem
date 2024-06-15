@@ -13,6 +13,7 @@ namespace InternSystem.Application.Common.Persistences.IRepositories
     public interface ITaskRepository : IBaseRepository<Tasks>
     {
         Task<IEnumerable<Tasks>> GetTasksByNameAsync(string name);
+        public Task<IEnumerable<Tasks>> GetTaskByDuanIdAsync(int id);
     }
 
 }

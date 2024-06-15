@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InternSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-
-    partial class Init
+    [Migration("20240614055751_changeStatustoTrangThai")]
+    partial class changeStatustoTrangThai
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -633,8 +633,9 @@ namespace InternSystem.Infrastructure.Migrations
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("TrangThai")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TrinhDoTiengAnh")
                         .IsRequired()

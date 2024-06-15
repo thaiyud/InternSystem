@@ -4,6 +4,7 @@ using InternSystem.Application.Features.TaskManage.Commands.Create;
 using InternSystem.Application.Features.TaskManage.Models;
 using InternSystem.Domain.Entities;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +17,13 @@ namespace InternSystem.Application.Features.TaskManage.Handlers.TaskReportCRUD
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private IConfiguration _config;
 
-        public CreateTaskReportHandler(IUnitOfWork unitOfWork, IMapper mapper)
+        public CreateTaskReportHandler(IUnitOfWork unitOfWork, IMapper mapper,IConfiguration config)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _config = config;
         }
 
         public async Task<TaskReportResponse> Handle(CreateTaskReportCommand request, CancellationToken cancellationToken)
@@ -38,10 +41,12 @@ namespace InternSystem.Application.Features.TaskManage.Handlers.TaskReportCRUD
                 throw new ArgumentNullException(
                     nameof(request), "Task not found");
             ReportTask newTask = _mapper.Map<ReportTask>(request);
+           
+            newTask.TrangThai = _config["TrangThai:Pending"]!;
             newTask.CreatedTime = DateTimeOffset.Now;
             newTask.LastUpdatedTime = DateTimeOffset.Now;
             newTask.LastUpdatedBy = request.CreatedBy;
-            newTask = await _unitOfWork.ReportTaskRepository.AddAsync(newTask);
+            await _unitOfWork.ReportTaskRepository.AddAsync(newTask);
             await _unitOfWork.SaveChangeAsync();
             return _mapper.Map<TaskReportResponse>(newTask);
         }

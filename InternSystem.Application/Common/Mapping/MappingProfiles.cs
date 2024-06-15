@@ -7,7 +7,6 @@ using InternSystem.Application.Features.DuAnManagement.Commands;
 using InternSystem.Application.Features.DuAnManagement.Models;
 using InternSystem.Application.Features.InternManagement.Commands;
 using InternSystem.Application.Features.InternManagement.Models;
-using InternSystem.Application.Features.InternManagement.Queries;
 using InternSystem.Application.Features.Interview.Commands;
 using InternSystem.Application.Features.Interview.Models;
 using InternSystem.Application.Features.KyThucTapManagement.Commands;
@@ -17,27 +16,15 @@ using InternSystem.Application.Features.ThongBaoManagement.Commands;
 using InternSystem.Application.Features.ThongBaoManagement.Models;
 using InternSystem.Application.Features.TruongHocManagement.Commands;
 using InternSystem.Application.Features.TruongHocManagement.Models;
-using InternSystem.Application.Features.TruongHocManagement.Queries;
-using InternSystem.Application.Features.DuAnManagement.Commands;
-using InternSystem.Application.Features.DuAnManagement.Models;
-using InternSystem.Application.Features.InternManagement.Commands;
-using InternSystem.Application.Features.InternManagement.Models;
-using InternSystem.Application.Features.InternManagement.Queries;
-using InternSystem.Application.Features.KyThucTapManagement.Commands;
-using InternSystem.Application.Features.KyThucTapManagement.Models;
 using InternSystem.Application.Features.LichPhongVanManagement.Commands;
 using InternSystem.Application.Features.LichPhongVanManagement.Models;
 using InternSystem.Application.Features.PhongVanManagement.Commands;
 using InternSystem.Application.Features.PhongVanManagement.Models;
-using InternSystem.Application.Features.TruongHocManagement.Commands;
-using InternSystem.Application.Features.TruongHocManagement.Models;
-using InternSystem.Application.Features.TruongHocManagement.Queries;
 using InternSystem.Application.Features.User.Commands.User;
 using InternSystem.Application.Features.User.Models;
 using InternSystem.Application.Features.User.Models.UserModels;
 using InternSystem.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
-using static InternSystem.Application.Features.User.Commands.AddRoleCommandValidation;
 using InternSystem.Application.Features.Comunication.Models;
 using InternSystem.Application.Features.Comunication.Commands;
 using InternSystem.Application.Features.CongNgheDuAnManagement.Commands;
@@ -47,6 +34,7 @@ using InternSystem.Application.Features.CongNgheManagement.Models;
 using InternSystem.Application.Features.TaskManage.Commands.Create;
 using InternSystem.Application.Features.TaskManage.Models;
 using InternSystem.Application.Features.TaskManage.Commands.Update;
+using InternSystem.Application.Features.TaskManage.Commands;
 
 namespace InternSystem.Application.Common.Mapping
 {
@@ -217,6 +205,13 @@ namespace InternSystem.Application.Common.Mapping
             CreateMap<UserTask, CreateUserTaskCommand>().ReverseMap();
             CreateMap<UserTask, UpdateUserTaskCommand>().ReverseMap()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+            // Task - NhomZalo mapping
+            CreateMap<NhomZaloTask, NhomZaloTaskReponse>().ReverseMap();
+            CreateMap<NhomZaloTask, CreateNhomZaloTaskCommand>().ReverseMap();
+            CreateMap<NhomZaloTask, UpdateNhomZaloTaskCommand>().ReverseMap()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<UserNhomZalo, LeaderResponse>().ReverseMap();
 
         }
     }

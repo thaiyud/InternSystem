@@ -18,13 +18,13 @@ namespace InternSystem.Application.Features.TaskManage.Commands.Update
         }
     }
 
-    public class UpdateNhomZaloTaskCommand : IRequest<TaskResponse>
+    public class UpdateNhomZaloTaskCommand : IRequest<NhomZaloTaskReponse>
     {
         public int Id { get; set; }
-        public int TaskId { get; set; }
-        public int NhomZaloId { get; set; }
+        public int? TaskId { get; set; }
+        public int? NhomZaloId { get; set; }
         public string? TrangThai { get; set; }
-        public string LastUpdatedBy { get; set; }
+        public string? LastUpdatedBy { get; set; }
 
     }
 }

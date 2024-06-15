@@ -15,7 +15,7 @@ namespace InternSystem.Application.Features.Interview.Handlers
 
         public async Task<IEnumerable<string>> Handle(SelectEmailsCommand request, CancellationToken cancellationToken)
         {
-            var users = await _unitOfWork.InternInfoRepository.GetAllASync();
+            var users = await _unitOfWork.InternInfoRepository.GetAllAsync();
             var availableEmails = users.Select(user => user.EmailCaNhan).ToList();
 
             var selectedEmails = new List<string>();

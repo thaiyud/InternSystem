@@ -841,7 +841,7 @@ namespace InternSystem.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     TaskId = table.Column<int>(type: "int", nullable: false),
-                    TrangThai = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TrangThai = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastUpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),

@@ -17,7 +17,7 @@ namespace InternSystem.Application.Features.User.Handlers
         }
         public async Task<IEnumerable<GetAllUserResponse>> Handle(GetAllUserQuery request, CancellationToken cancellationToken)
         {
-            var user = await _unitOfWork.UserRepository.GetAllASync();
+            var user = await _unitOfWork.UserRepository.GetAllAsync();
             Console.WriteLine(user);
             return _mapper.Map<IEnumerable<GetAllUserResponse>>(user);
         }

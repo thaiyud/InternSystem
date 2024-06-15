@@ -22,7 +22,6 @@ namespace InternSystem.Application.Features.TaskManage.Commands.Create
     {
         public int TaskId { get; set; }
         public int NhomZaloId { get; set; }
-        public string? TrangThai { get; set; }
         public string? CreatedBy { get; set; }
 
     }

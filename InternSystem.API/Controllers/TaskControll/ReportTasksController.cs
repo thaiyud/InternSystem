@@ -67,7 +67,7 @@ namespace InternSystem.API.Controllers.TaskControll
             {
                
                 var result = await Mediator.Send(command);
-                return StatusCode(204, "Success");
+                return Ok(result);
             }
             catch (Exception ex)
             {

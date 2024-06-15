@@ -20,17 +20,21 @@ namespace InternSystem.Application.Features.TaskManage.Handlers.TaskCRUD
 
         public async Task<TaskResponse> Handle(CreateTaskCommand request, CancellationToken cancellationToken)
         {
-            IEnumerable<Tasks> exist = await _unitOfWork.TaskRepository.GetTasksByNameAsync(request.MoTa);
-            if (exist.Any() 
-                && (request.DuAnId == exist.FirstOrDefault().DuAnId))
-                throw new ArgumentNullException(
-                    nameof(request.DuAnId),
-                    $"Task {request.MoTa} is already exist in project {request.DuAnId}");
+       
             DuAn? existingDA = await _unitOfWork.DuAnRepository.GetByIdAsync(request.DuAnId);
             if (existingDA == null 
                 || existingDA.IsDelete == true)
                 throw new ArgumentNullException(
                     nameof(request), "DuAn not found");
+            IEnumerable<Tasks>? exist2 = await _unitOfWork.TaskRepository.GetAllAsync();
+            List<Tasks>? list = exist2.ToList();
+            foreach (var item in list)
+            {
+                if (item.MoTa == request.MoTa && item.DuAnId == request.DuAnId)
+                    throw new ArgumentNullException(
+                     nameof(request), $"{request.MoTa} is already exist by {request.DuAnId}");
+
+            }
             Tasks newTask = _mapper.Map<Tasks>(request);
                   newTask.CreatedTime = DateTimeOffset.Now;
                   newTask.LastUpdatedTime = DateTimeOffset.Now;

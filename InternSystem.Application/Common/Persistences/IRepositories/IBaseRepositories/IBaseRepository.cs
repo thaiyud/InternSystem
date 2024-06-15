@@ -5,7 +5,7 @@
         Task<T> GetByIdAsync(object id);
         Task<T> GetTruongHocsByTenAsync(object name);
         Task<T> AddAsync(T entity);
-        Task<IEnumerable<T>> GetAllASync();
+        Task<IEnumerable<T>> GetAllAsync();
 
         void Remove(T entity);
         void Update(T entity);

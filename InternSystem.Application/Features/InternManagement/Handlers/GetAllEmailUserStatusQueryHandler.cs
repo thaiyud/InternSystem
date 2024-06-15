@@ -19,7 +19,7 @@ namespace InternSystem.Application.Features.InternManagement.Handlers
 
         public async Task<IEnumerable<GetDetailEmailUserStatusResponse>> Handle(GetAllEmailUserStatusQuery request, CancellationToken cancellationToken)
         {
-            var status = await _unitOfWork.EmailUserStatusRepository.GetAllASync();
+            var status = await _unitOfWork.EmailUserStatusRepository.GetAllAsync();
             var filteredStatus = status.Where(c => c.IsActive && !c.IsDelete);
             return _mapper.Map<IEnumerable<GetDetailEmailUserStatusResponse>>(filteredStatus);
         }

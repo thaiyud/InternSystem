@@ -24,7 +24,7 @@ namespace InternSystem.Application.Features.TaskManage.Handlers.TaskCRUD
         }
         public async Task<IEnumerable<TaskResponse>> Handle(GetTaskQuery request, CancellationToken cancellationToken)
         {
-            var exist = await _unitOfWork.TaskRepository.GetAllASync();
+            var exist = await _unitOfWork.TaskRepository.GetAllAsync();
             Console.WriteLine(exist);
             return _mapper.Map<IEnumerable<TaskResponse>>(exist);
         }

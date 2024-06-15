@@ -26,8 +26,8 @@ namespace InternSystem.Application.Features.User.Handlers
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ImportCsvHandler(IMapper mapper, IUnitOfWork unitOfWork, UserManager<AspNetUser> userManager, 
-            IEmailService emailService, RoleManager<IdentityRole> roleManager, 
+        public ImportCsvHandler(IMapper mapper, IUnitOfWork unitOfWork, UserManager<AspNetUser> userManager,
+            IEmailService emailService, RoleManager<IdentityRole> roleManager,
             IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _mapper = mapper;
@@ -54,6 +54,8 @@ namespace InternSystem.Application.Features.User.Handlers
                     var internInfo = _mapper.Map<InternInfo>(record);
                     internInfo.EmailCaNhan = record.Email;
                     internInfo.Sdt = record.PhoneNumber;
+                    internInfo.CreatedTime = DateTimeOffset.Now;
+                    internInfo.LastUpdatedTime = DateTimeOffset.Now;
                     internInfo.CreatedBy = "System"; // placeholder, replace with actual user ID from token
                     internInfo.LastUpdatedBy = "System"; // placeholder, replace with actual user ID from token
 
@@ -65,12 +67,12 @@ namespace InternSystem.Application.Features.User.Handlers
                     user.UserName = user.Email;
                     user.InternInfoId = internInfo.Id;
                     user.HoVaTen = internInfo.HoTen;
+                    user.CreatedTime = DateTimeOffset.Now;
+                    user.LastUpdatedTime = DateTimeOffset.Now;
                     //Generate random password for user
                     var randomPassword = PasswordGenerator.Generate(8);
 
                     var result = await _userManager.CreateAsync(user, randomPassword);
-
-
 
                     // Check if user add successfully
                     if (!result.Succeeded)
@@ -111,48 +113,5 @@ namespace InternSystem.Application.Features.User.Handlers
 
             return Unit.Value;
         }
-        ////Save AspNetUser first then save InternInfo with UserID
-        //public async Task<Unit> Handle(ImportCsvCommand request, CancellationToken cancellationToken)
-        //{
-        //    //Read csv file
-        //    using (var reader = new StreamReader(request.File.OpenReadStream()))
-        //    using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
-        //    {
-        //        var records = csv.GetRecords<ImportCsvDto>().ToList();
-        //        Console.WriteLine($"Number of records to process: {records.Count}");
-
-        //        foreach (var record in records)
-        //        {
-        //            //Save AspNetUser
-        //            var user = _mapper.Map<AspNetUser>(record);
-        //            user.UserName = user.Email;
-        //            var result = await _userManager.CreateAsync(user, record.PasswordHash);
-
-        //            if (!result.Succeeded)
-        //            {
-        //                var errors = result.Errors.Select(e => $"{e.Code}: {e.Description}");
-        //                var errorMessage = string.Join("; ", errors);
-        //                throw new Exception($"Failed to create user: {errorMessage}");
-        //            }
-
-        //            //Save InternInfo
-        //                var internInfo = _mapper.Map<InternInfo>(record);
-        //                internInfo.UserId = user.Id;
-        //                internInfo.EmailCaNhan = user.Email;
-        //                internInfo.Sdt = user.PhoneNumber;
-        //                internInfo.CreatedBy = user.Id; //place holder for user token
-        //                internInfo.LastUpdatedBy = user.Id; //place holder for user token
-
-        //                //var internInfo = _mapper.Map<InternInfo>(internInfoDto);
-
-        //                var internResult = await _unitOfWork.InternInfoRepository.AddAsync(internInfo);
-        //        }
-
-        //        await _unitOfWork.SaveChangeAsync();
-        //    }
-
-        //    return Unit.Value;
-        //}
-
     }
 }

@@ -18,7 +18,7 @@ namespace InternSystem.Application.Features.CauHoiManagement.Handlers.CRUD
 
         public async Task<IEnumerable<GetAllCauHoiResponse>> Handle(GetAllCauHoiQuery request, CancellationToken cancellationToken)
         {
-            var cauHoi = await _unitOfWork.CauHoiRepository.GetAllASync();
+            var cauHoi = await _unitOfWork.CauHoiRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<GetAllCauHoiResponse>>(cauHoi);
         }
     }

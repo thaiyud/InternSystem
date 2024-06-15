@@ -15,13 +15,11 @@ namespace InternSystem.Application.Features.User.Models
         public string PhoneNumber { get; set; }
         public bool PhoneNumberConfirmed { get; set; }
         //public string HoVaTen { get; set; }
-        public DateTimeOffset CreatedTime { get; set; }
-        public DateTimeOffset LastUpdatedTime { get; set; }
         public bool IsConfirmed { get; set; }
         public string TrangThaiThucTap { get; set; }
         //public string UserId { get; set; }
         public string HoTen { get; set; }
-        public DateTime NgaySinh { get; set; }
+        public DateTime? NgaySinh { get; set; }
         public bool GioiTinh { get; set; }
         public string MSSV { get; set; }
         public string EmailTruong { get; set; }
@@ -32,7 +30,7 @@ namespace InternSystem.Application.Features.User.Models
         public string LinkFacebook { get; set; }
         public string LinkCv { get; set; }
         public string NganhHoc { get; set; }
-        public string Status { get; set; }
+        public string TrangThai { get; set; }
         public int Round { get; set; }
         public string ViTriMongMuon { get; set; }
         //public DateTime? StartDate { get; set; }

@@ -25,7 +25,7 @@ namespace InternSystem.Application.Features.ThongBaoManagement.Handlers
         {
             var response = new GetAllThongBaoResponse();
 
-            response.ThongBaos = await _unitOfWork.ThongBaoRepository.GetAllASync();
+            response.ThongBaos = await _unitOfWork.ThongBaoRepository.GetAllAsync();
 
             if (request.PageNumber > 0 && request.PageSize > 0)
             {

@@ -19,7 +19,7 @@ namespace InternSystem.Application.Features.Interview.Handlers
 
         public async Task<IEnumerable<GetDetailCommentResponse>> Handle(GetAllCommentsQuery request, CancellationToken cancellationToken)
         {
-            var comments = await _unitOfWork.CommentRepository.GetAllASync();
+            var comments = await _unitOfWork.CommentRepository.GetAllAsync();
             var filteredComments = comments.Where(c => c.IsActive && !c.IsDelete);
             return _mapper.Map<IEnumerable<GetDetailCommentResponse>>(filteredComments);
         }

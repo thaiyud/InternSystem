@@ -28,19 +28,31 @@ namespace InternSystem.Application.Features.TaskManage.Handlers.TaskCRUD
         public async Task<TaskResponse> Handle(UpdateTaskCommand request, CancellationToken cancellationToken)
         {
             Tasks? exist = await _unitOfWork.TaskRepository.GetByIdAsync(request.Id);
-            if (exist == null || exist.IsDelete == true)
+            if (exist == null || exist.IsDelete == true || exist.HoanThanh==true)
                 throw new ArgumentNullException(
                    nameof(request.Id),
                    $"Task {request.Id} is not exist");
 
-            if (request.DuAnId!=exist.DuAnId)
+            if (request.DuAnId>0)
             {
                 DuAn? duAn = await _unitOfWork.DuAnRepository.GetByIdAsync(request.DuAnId);
                 if (duAn == null || duAn.IsDelete == true)
+                {
                     throw new ArgumentNullException(
                   nameof(request.DuAnId),
                   $"Du an id {request.DuAnId} is not exist");
+                }                 
                 exist.DuAnId = (int)request.DuAnId;
+
+            }
+            IEnumerable<Tasks>? exist2 = await _unitOfWork.TaskRepository.GetAllAsync();
+            List<Tasks>? list = exist2.ToList();
+            foreach (var item in list)
+            {
+                if (item.MoTa == request.MoTa && item.DuAnId == request.DuAnId)
+                    throw new ArgumentNullException(
+                     nameof(request), $"{request.MoTa} is already exist by {request.DuAnId}");
+
             }
             if (request.HanHoanThanh < request.NgayGiao
                 || exist.NgayGiao > request.HanHoanThanh

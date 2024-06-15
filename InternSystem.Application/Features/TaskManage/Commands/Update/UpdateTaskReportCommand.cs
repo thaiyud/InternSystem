@@ -17,12 +17,12 @@ namespace InternSystem.Application.Features.TaskManage.Commands.Update
     public class UpdateTaskReportCommand : IRequest<TaskReportResponse>
     {
         public int Id { get; set; }
-        public string UserId { get; set; }
-        public int TaskId { get; set; }
-        public string MoTa { get; set; }
-        public string NoiDungBaoCao { get; set; }
-        public string TrangThai { get; set; }
-        public DateTime NgayBaoCao { get; set; } = DateTime.Now;
+        public string? UserId { get; set; }
+        public int? TaskId { get; set; }
+        public string? MoTa { get; set; }
+        public string? NoiDungBaoCao { get; set; }
+        public string? TrangThai { get; set; }
+        public DateTime? NgayBaoCao { get; set; } = DateTime.Now;
         public string? LastUpdatedBy { get; set; }
 
     }

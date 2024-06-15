@@ -19,6 +19,7 @@ namespace InternSystem.Application.Features.TaskManage.Commands.Update
         public int Id { get; set; }
         public string? UserId { get; set; }
         public int? TaskId { get; set; }
+        public string? TrangThai { get; set; }
         public string?   LastUpdatedBy { get; set; }
 
 

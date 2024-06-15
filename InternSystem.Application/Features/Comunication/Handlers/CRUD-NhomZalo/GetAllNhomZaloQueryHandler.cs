@@ -25,7 +25,7 @@ namespace InternSystem.Application.Features.User.Handlers
 
         public async Task<IEnumerable<GetNhomZaloResponse>> Handle(GetAllNhomZaloQuery request, CancellationToken cancellationToken)
         {
-            var nhomZalos = await _unitOfWork.NhomZaloRepository.GetAllASync();
+            var nhomZalos = await _unitOfWork.NhomZaloRepository.GetAllAsync();
 
             if (nhomZalos == null || !nhomZalos.Any())
             {

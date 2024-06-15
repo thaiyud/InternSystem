@@ -11,8 +11,6 @@ namespace InternSystem.Application.Features.User.Models
         public string PhoneNumber { get; set; } = "1234567890";
         public bool PhoneNumberConfirmed { get; set; } = true;
         //public string HoVaTen { get; set; } = "Example User";
-        public DateTimeOffset CreatedTime { get; set; } = DateTimeOffset.Now;
-        public DateTimeOffset LastUpdatedTime { get; set; } = DateTimeOffset.Now;
         public bool IsConfirmed { get; set; } = true;
         public string TrangThaiThucTap { get; set; } = "Active";
 
@@ -30,7 +28,7 @@ namespace InternSystem.Application.Features.User.Models
         public string LinkFacebook { get; set; } = "facebook.com/123";
         public string LinkCv { get; set; } = "google.docs.123";
         public string NganhHoc { get; set; } = "Category 1";
-        public string Status { get; set; } = "Application Submitted";
+        public string TrangThai { get; set; } = "Application Submitted";
         public int Round { get; set; } = 1;
         public string ViTriMongMuon { get; set; } = "Position 1";
         //public DateTime? StartDate { get; set; } = DateTime.Now;

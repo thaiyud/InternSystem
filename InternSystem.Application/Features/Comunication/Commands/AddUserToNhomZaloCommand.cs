@@ -14,5 +14,6 @@ namespace InternSystem.Application.Features.Comunication.Commands
         public string UserId { get; set; }
         public int NhomZaloId { get; set; }
         public bool IsMentor { get; set; }
+        public bool IsLeader { get; set; }
     }
 }

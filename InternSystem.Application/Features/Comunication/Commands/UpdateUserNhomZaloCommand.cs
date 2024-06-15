@@ -11,5 +11,6 @@ namespace InternSystem.Application.Features.Comunication.Commands
     public class UpdateUserNhomZaloCommand : IRequest<UpdateUserNhomZaloResponse>
     {
         public bool isMentor { get; set; }
+        public bool IsLeader { get; set; }
     }
 }

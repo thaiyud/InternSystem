@@ -15,7 +15,7 @@ namespace InternSystem.Application.Features.InternManagement.Commands
             RuleFor(m => m.EmailCaNhan).MaximumLength(255);
             RuleFor(m => m.Sdt).MaximumLength(10);
             RuleFor(m => m.SdtNguoiThan).MaximumLength(10);
-            RuleFor(m => m.Status).NotEmpty();
+            RuleFor(m => m.TrangThai).NotEmpty();
             RuleFor(m => m.ViTriMongMuon).MaximumLength(255);
             RuleFor(m => m.StartDate).LessThan(m => m.EndDate);
             RuleFor(m => m.EndDate).GreaterThan(m => m.StartDate);

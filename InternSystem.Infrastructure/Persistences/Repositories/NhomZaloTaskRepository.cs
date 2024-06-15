@@ -27,5 +27,10 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
 
 
         }
+        public async Task<NhomZaloTask> GetByNhomZaloIdAndTaskIdAsync(int nhomZaloid, int taskId)
+        {
+            return await _applicationDbContext.NhomZaloTasks 
+                .FirstOrDefaultAsync(u => u.NhomZaloId == nhomZaloid && u.TaskId == taskId );
+        }
     }
 }

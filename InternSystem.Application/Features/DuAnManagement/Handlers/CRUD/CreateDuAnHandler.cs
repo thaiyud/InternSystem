@@ -28,7 +28,7 @@ namespace InternSystem.Application.Features.DuAnManagement.Handlers.CRUD
 
         public async Task<CreateDuAnResponse> Handle(CreateDuAnCommand request, CancellationToken cancellationToken)
         {
-            DuAn? existingDA = _unitOfWork.DuAnRepository.GetAllASync().Result.AsQueryable()
+            DuAn? existingDA = _unitOfWork.DuAnRepository.GetAllAsync().Result.AsQueryable()
                 .FirstOrDefault(d => d.Ten.Equals(request.Ten));
 
             if (existingDA != null) return new CreateDuAnResponse() { Errors = "Duplicate DuAn name" };

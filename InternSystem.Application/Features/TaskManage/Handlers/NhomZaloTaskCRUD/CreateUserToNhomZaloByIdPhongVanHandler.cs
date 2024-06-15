@@ -40,10 +40,10 @@ namespace InternSystem.Application.Features.TaskManage.Handlers.NhomZaloTaskCRUD
             }
             var groupName = await _unitOfWork.NhomZaloRepository.GetNhomZalosByNameAsync(exist.KetQua);
             if (groupName == null || groupName.IsDelete ==true)
-                throw new ArgumentException(nameof(groupName), "Nhom zalo khong ton tai");
-            InternInfo? internInfo = await _unitOfWork.InternInfoRepository.GetByIdAsync(exist.NguoiDuocPhongVan);
+                throw new ArgumentException(nameof(groupName), $"Ket qua cua intern {exist.KetQua}  ");
+            InternInfo? internInfo = await _unitOfWork.InternInfoRepository.GetByIdAsync(exist.IdNguoiDuocPhongVan);
             if (internInfo == null || internInfo.IsDelete == true)
-                throw new ArgumentNullException(nameof(internInfo), "Intern id khong ton tai");
+                throw new ArgumentNullException(nameof(internInfo), "Intern id khong ton tai trong lich phong van");
             var userNhomZalo = new UserNhomZalo
             {
                 UserId = internInfo.UserId,
@@ -67,7 +67,7 @@ namespace InternSystem.Application.Features.TaskManage.Handlers.NhomZaloTaskCRUD
                 };
 
                 var newUserTask = _mapper.Map<UserTask>(userTaskRequest);
-                newUserTask.TrangThai = "pending";
+                newUserTask.TrangThai = "Pending";
                 newUserTask.LastUpdatedBy = request.CreateBy;
                 newUserTask.CreatedTime = DateTimeOffset.Now;
                 newUserTask.LastUpdatedTime = DateTimeOffset.Now;
@@ -85,6 +85,7 @@ namespace InternSystem.Application.Features.TaskManage.Handlers.NhomZaloTaskCRUD
                 KetQua = exist.KetQua,
                 GroupName = groupName.TenNhom,
                 GroupLink = groupName.LinkNhom,
+                CreateBy = request.CreateBy,
                 Tasks = taskDtos
             };
             await _unitOfWork.SaveChangeAsync();

@@ -13,9 +13,9 @@ namespace InternSystem.API.Controllers.Report
     public class DashboardController : ApiControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<GetAllDashboardResponse>> GetDashboard([FromQuery] GetAllDashboardQuery query)
+        public async Task<ActionResult<GetAllDashboardResponse>> GetDashboard()
         {
-            var totalInternStudents = await Mediator.Send(query);
+            var totalInternStudents = await Mediator.Send(new GetAllDashboardQuery());
 
             return Ok(totalInternStudents);
         }

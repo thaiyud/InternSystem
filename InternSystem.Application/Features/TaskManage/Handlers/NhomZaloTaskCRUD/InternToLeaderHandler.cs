@@ -16,20 +16,21 @@ using System.Threading.Tasks;
 
 namespace InternSystem.Application.Features.TaskManage.Handlers.NhomZaloTaskCRUD
 {
-    public class InternToLeaderHandler : IRequestHandler<PromoteMemberToLeaderCommand,LeaderResponse>
+    public class InternToLeaderHandler : IRequestHandler<PromoteMemberToLeaderCommand,ExampleResponse>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public InternToLeaderHandler(IUnitOfWork unitOfWork, IMapper mapper)
+        public InternToLeaderHandler(IUnitOfWork unitOfWork, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
         }
 
        
-       public async Task<LeaderResponse> Handle(PromoteMemberToLeaderCommand request, CancellationToken cancellationToken)
+       public async Task<ExampleResponse> Handle(PromoteMemberToLeaderCommand request, CancellationToken cancellationToken)
         {
             var httpContext = _httpContextAccessor.HttpContext;
             if (httpContext == null)
@@ -43,43 +44,68 @@ namespace InternSystem.Application.Features.TaskManage.Handlers.NhomZaloTaskCRUD
                 throw new UnauthorizedAccessException("User is not authenticated");
             }
 
-            var currentUserId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentUserId = user.Claims.FirstOrDefault(x => x.Type == "Id")?.Value;
             if (string.IsNullOrEmpty(currentUserId))
             {
                 throw new Exception("User ID claim is not found");
             }
-            var mentor = await _unitOfWork.UserNhomZaloRepository.GetByIdAsync(currentUserId);
-            if (mentor == null || !mentor.IsMentor || mentor.IsDelete == true)
-            {
-                throw new ArgumentException("Mentor is not valid.");
-            }
+
             var group = await _unitOfWork.NhomZaloRepository.GetByIdAsync(request.NhomZaloId);
             if (group == null)
             {
                 throw new ArgumentException("Nhom zalo is not valid.");
             }
+
+            var mentor = await _unitOfWork.UserNhomZaloRepository.GetByUserIdAndNhomZaloIdAsync(currentUserId, group.Id);
+            if (mentor == null || !mentor.IsMentor || mentor.IsDelete == true)
+            {
+                throw new ArgumentException("User ID is not mentor.");
+            }
+
             var member = await _unitOfWork.UserNhomZaloRepository.GetByUserIdAndNhomZaloIdAsync(request.MemberId, group.Id);
             if (member == null || member.IsDelete == true)
             {
                 throw new ArgumentException("Member is not valid.");
             }
-            var project = await _unitOfWork.DuAnRepository.GetByIdAsync(request.DuanId);
-            if (project == null || project.IsDelete == true)
+
+            var nhomzalotask = await _unitOfWork.NhomZaloTaskRepository.GetTaskByNhomZaloIdAsync(group.Id);
+            foreach (var item in nhomzalotask)
             {
-                throw new ArgumentException("Du an is not valid.");
+                var tasks = await _unitOfWork.TaskRepository.GetByIdAsync(item.TaskId);
+                if (tasks == null || tasks.IsDelete == true || tasks.DuAnId != request.DuanId)
+                {
+                    throw new ArgumentException("Du an is not valid for nhom zalo.");
+                }
             }
+
             member.IsLeader = true;
             member.LastUpdatedBy = currentUserId;
             member.LastUpdatedTime = DateTimeOffset.Now;
             await _unitOfWork.UserNhomZaloRepository.UpdateUserNhomZaloAsync(member);
 
-            project.LeaderId = request.MemberId;
-            project.LastUpdatedBy = currentUserId;
-            project.LastUpdatedTime = DateTimeOffset.Now;
-            await _unitOfWork.DuAnRepository.UpdateDuAnAsync(project);
-            // Save changes
+            var projectToUpdate = await _unitOfWork.DuAnRepository.GetByIdAsync(request.DuanId);
+            if (projectToUpdate == null)
+            {
+                throw new ArgumentException("Project not found");
+            }
+            projectToUpdate.LeaderId = request.MemberId;
+            projectToUpdate.LastUpdatedBy = currentUserId;
+            projectToUpdate.LastUpdatedTime = DateTimeOffset.Now;
+            await _unitOfWork.DuAnRepository.UpdateDuAnAsync(projectToUpdate);
+
             await _unitOfWork.SaveChangeAsync();
-            return _mapper.Map<LeaderResponse>(request);
+            var response = new ExampleResponse
+            {
+                NhomZaloId = group.Id,
+                Leader = member.UserId,
+                Mentor = mentor.UserId, 
+                Task = new TaskDetails
+                {
+                    DuanId = projectToUpdate.Id,
+                    Leader = request.MemberId 
+                }
+            };
+            return response;
         }
     }
 }

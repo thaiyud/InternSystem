@@ -25,7 +25,7 @@ namespace InternSystem.Application.Common.Persistences.IRepositories
         IUserViTriRepository UserViTriRepository { get; }
         IDashboardRepository DashboardRepository { get; }
         IMessageRepository MessageRepository { get; }
-        Task CommitAsync();0
+        Task CommitAsync();
         ITaskRepository TaskRepository { get; }
         IReportTaskRepository ReportTaskRepository { get; }
         IUserTaskRepository UserTaskRepository { get; }

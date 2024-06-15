@@ -17,6 +17,7 @@ namespace InternSystem.Application.Features.TaskManage.Models
         public string MoTa { get; set; }
         public string NoiDungBaoCao { get; set; }
         public DateTime NgayBaoCao { get; set; }
+        public string TrangThai { get; set; }
         public string CreatedBy { get; set; }
         public string LastUpdatedBy { get; set; }
         public string? DeletedBy { get; set; }

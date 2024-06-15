@@ -28,7 +28,7 @@ namespace InternSystem.Application.Features.InternManagement.Handlers.CRUD
         {
             if (!request.UserId.IsNullOrEmpty())
             {
-                InternInfo? existingIntern = _unitOfWork.InternInfoRepository.GetAllASync().Result.AsQueryable()
+                InternInfo? existingIntern = _unitOfWork.InternInfoRepository.GetAllAsync().Result.AsQueryable()
                .Where(b => b.UserId.Equals(request.UserId)).FirstOrDefault();
 
                 if (existingIntern != null)

@@ -43,13 +43,14 @@ namespace InternSystem.API.Controllers.TaskControll
         [HttpPut("task/update")]
         public async Task<IActionResult> UpdateTask([FromBody] UpdateTaskCommand command)
         {
+            command.LastUpdatedBy = User.Claims.FirstOrDefault(x => x.Type == "Id")?.Value;
+            if (command.LastUpdatedBy == null)
+            {
+                return StatusCode(500, "Cannot get Id from JWT token");
+            }
             try
             {
-                command.LastUpdatedBy = User.Claims.FirstOrDefault(x => x.Type == "Id")?.Value;
-                if (command.LastUpdatedBy == null)
-                {
-                    return StatusCode(500, "Cannot get Id from JWT token");
-                }
+               
 
                 TaskResponse response = await Mediator.Send(command);
 
@@ -64,13 +65,14 @@ namespace InternSystem.API.Controllers.TaskControll
         [HttpDelete("task/delete")]
         public async Task<IActionResult> DeleteTask([FromBody] DeleteTaskCommand command)
         {
+            command.DeletedBy = User.Claims.FirstOrDefault(x => x.Type == "Id")?.Value;
+            if (command.DeletedBy == null)
+            {
+                return StatusCode(500, "Cannot get Id from JWT token");
+            }
             try
             {
-                command.DeletedBy = User.Claims.FirstOrDefault(x => x.Type == "Id")?.Value;
-                if (command.DeletedBy == null)
-                {
-                    return StatusCode(500, "Cannot get Id from JWT token");
-                }
+                
                 var result = await Mediator.Send(command);
                 return Ok(result);
             }
@@ -111,14 +113,13 @@ namespace InternSystem.API.Controllers.TaskControll
         public async Task<IActionResult> AddUserToTask([FromBody] CreateUserTaskCommand command)
         {
 
-
+            command.CreatedBy = User.Claims.FirstOrDefault(x => x.Type == "Id")?.Value;
+            if (command.CreatedBy == null)
+            {
+                return StatusCode(500, "Cannot get Id from JWT token");
+            }
             try
             {
-                command.CreatedBy = User.Claims.FirstOrDefault(x => x.Type == "Id")?.Value;
-                if (command.CreatedBy == null)
-                {
-                    return StatusCode(500, "Cannot get Id from JWT token");
-                }
                 var result = await Mediator.Send(command);
                 return Ok(result);
             }
@@ -131,13 +132,14 @@ namespace InternSystem.API.Controllers.TaskControll
         [HttpPut("user-task/update")]
         public async Task<IActionResult> UpdateUserTask([FromBody] UpdateUserTaskCommand command)
         {
+            command.LastUpdatedBy = User.Claims.FirstOrDefault(x => x.Type == "Id")?.Value;
+            if (command.LastUpdatedBy == null)
+            {
+                return StatusCode(500, "Cannot get Id from JWT token");
+            }
             try
             {
-                command.LastUpdatedBy = User.Claims.FirstOrDefault(x => x.Type == "Id")?.Value;
-                if (command.LastUpdatedBy == null)
-                {
-                    return StatusCode(500, "Cannot get Id from JWT token");
-                }
+                
 
                 var response = await Mediator.Send(command);
 
@@ -152,13 +154,14 @@ namespace InternSystem.API.Controllers.TaskControll
         [HttpDelete("user-task/delete")]
         public async Task<IActionResult> DeleteUserTask([FromBody] DeleteTaskCommand command)
         {
+            command.DeletedBy = User.Claims.FirstOrDefault(x => x.Type == "Id")?.Value;
+            if (command.DeletedBy == null)
+            {
+                return StatusCode(500, "Cannot get Id from JWT token");
+            }
             try
             {
-                command.DeletedBy = User.Claims.FirstOrDefault(x => x.Type == "Id")?.Value;
-                if (command.DeletedBy == null)
-                {
-                    return StatusCode(500, "Cannot get Id from JWT token");
-                }
+                
                 var result = await Mediator.Send(command);
                 return Ok(result);
             }
@@ -169,7 +172,7 @@ namespace InternSystem.API.Controllers.TaskControll
         }
 
         [HttpGet("user-task/get-by-id")]
-        public async Task<IActionResult> GetUserTaskById(GetUserTaskByIdQuery query)
+        public async Task<IActionResult> GetUserTaskById([FromQuery]GetUserTaskByIdQuery query)
         {
             try
             {

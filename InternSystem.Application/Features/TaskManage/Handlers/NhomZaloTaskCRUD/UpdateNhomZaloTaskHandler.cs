@@ -1,15 +1,21 @@
 ﻿using AutoMapper;
 using InternSystem.Application.Common.Persistences.IRepositories;
-using InternSystem.Application.Features.TaskManage.Commands.Update;
-using InternSystem.Application.Features.TaskManage.Models;
+using InternSystem.Application.Common.Services.Interfaces;
 using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using InternSystem.Application.Common.Constants;
+using InternSystem.Domain.BaseException;
+using Microsoft.AspNetCore.Http;
+using InternSystem.Application.Features.TasksAndReports.NhomZaloTaskManagement.Models;
+using InternSystem.Application.Features.TasksAndReports.NhomZaloTaskManagement.Commands;
 
 namespace InternSystem.Application.Features.TaskManage.Handlers.NhomZaloTaskCRUD
 {
@@ -18,35 +24,57 @@ namespace InternSystem.Application.Features.TaskManage.Handlers.NhomZaloTaskCRUD
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IConfiguration _config;
+        private readonly IUserContextService _userContextService;
 
-        public UpdateNhomZaloTaskHandler(IUnitOfWork unitOfWork, IMapper mapper, IConfiguration config)
+        public UpdateNhomZaloTaskHandler(IUnitOfWork unitOfWork, IMapper mapper, IConfiguration config, IUserContextService userContextService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _config = config;
+            _userContextService = userContextService;
         }
 
         public async Task<NhomZaloTaskReponse> Handle(UpdateNhomZaloTaskCommand request, CancellationToken cancellationToken)
         {
-            var exist = await ValidateNhomZaloTaskAsync(request.Id);
-            await ValidateAndAssignTaskIdAsync(request, exist);
-            await ValidateAndAssignNhomZaloIdAsync(request, exist);
-
-            if (exist.TaskId == request.TaskId && exist.NhomZaloId == request.NhomZaloId)
+            try
             {
-                throw new ArgumentNullException(nameof(request), $"{request.TaskId} is already exist by {request.NhomZaloId}");
-            }
+                var exist = await ValidateNhomZaloTaskAsync(request.Id);
+                await ValidateAndAssignTaskIdAsync(request, exist);
+                await ValidateAndAssignNhomZaloIdAsync(request, exist);
 
-            UpdateTrangThai(exist, request.TrangThai);
-            if (IsDoneStatus(request.TrangThai))
+                IEnumerable<NhomZaloTask> existingNhomZaloTasks = await _unitOfWork.NhomZaloTaskRepository.GetAllAsync();
+                bool isDuplicateTaskAndGroup = existingNhomZaloTasks.Any(nzt => nzt.TaskId == request.TaskId && nzt.NhomZaloId == request.NhomZaloId && nzt.Id != exist.Id);
+                if (isDuplicateTaskAndGroup)
+                {
+                    throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstants.EXISTED, $"{request.TaskId} đã tồn tại trong nhóm Zalo {request.NhomZaloId}");
+                }
+
+                UpdateTrangThai(exist, request.TrangThai);
+                if (IsDoneStatus(request.TrangThai))
+                {
+                    await MarkTaskAsCompletedAsync(request.TaskId);
+                }
+
+                var lastUpdatedBy = _userContextService.GetCurrentUserId();
+                if (string.IsNullOrEmpty(lastUpdatedBy))
+                {
+                    throw new ErrorException(StatusCodes.Status401Unauthorized, ResponseCodeConstants.UNAUTHORIZED, "CurrentUserId không tìm thấy");
+                }
+
+                exist.LastUpdatedBy = lastUpdatedBy;
+                exist.LastUpdatedTime = DateTimeOffset.Now;
+                await _unitOfWork.SaveChangeAsync();
+
+                return _mapper.Map<NhomZaloTaskReponse>(exist);
+            }
+            catch (ErrorException ex)
             {
-                await MarkTaskAsCompletedAsync(request.TaskId);
+                throw;
             }
-
-            exist.LastUpdatedTime = DateTimeOffset.Now;
-            await _unitOfWork.SaveChangeAsync();
-
-            return _mapper.Map<NhomZaloTaskReponse>(exist);
+            catch (Exception ex)
+            {
+                throw new ErrorException(StatusCodes.Status500InternalServerError, ResponseCodeConstants.INTERNAL_SERVER_ERROR, "Lỗi cập nhật task trong nhóm Zalo");
+            }
         }
 
         private async Task<NhomZaloTask> ValidateNhomZaloTaskAsync(int id)
@@ -54,7 +82,7 @@ namespace InternSystem.Application.Features.TaskManage.Handlers.NhomZaloTaskCRUD
             var exist = await _unitOfWork.NhomZaloTaskRepository.GetByIdAsync(id);
             if (exist == null || exist.IsDelete)
             {
-                throw new ArgumentNullException(nameof(id), $"Task {id} does not exist");
+                throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, $"Task {id} không tồn tại");
             }
 
             return exist;
@@ -67,7 +95,7 @@ namespace InternSystem.Application.Features.TaskManage.Handlers.NhomZaloTaskCRUD
                 var task = await _unitOfWork.TaskRepository.GetByIdAsync(request.TaskId.Value);
                 if (task == null || task.IsDelete)
                 {
-                    throw new ArgumentNullException(nameof(request.TaskId), $"Task id {request.TaskId} does not exist");
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, $"Task id {request.TaskId} không tồn tại");
                 }
 
                 exist.TaskId = request.TaskId.Value;
@@ -81,7 +109,7 @@ namespace InternSystem.Application.Features.TaskManage.Handlers.NhomZaloTaskCRUD
                 var nhomZalo = await _unitOfWork.NhomZaloRepository.GetByIdAsync(request.NhomZaloId.Value);
                 if (nhomZalo == null || nhomZalo.IsDelete)
                 {
-                    throw new ArgumentNullException(nameof(request.NhomZaloId), $"Nhom zalo id {request.NhomZaloId} does not exist");
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, $"Nhóm zalo id {request.NhomZaloId} không tồn tại");
                 }
 
                 exist.NhomZaloId = request.NhomZaloId.Value;
@@ -123,6 +151,4 @@ namespace InternSystem.Application.Features.TaskManage.Handlers.NhomZaloTaskCRUD
             }
         }
     }
-
-    
 }

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace InternSystem.Infrastructure.Persistences.DBContext;
 
@@ -40,7 +39,9 @@ public class ApplicationDbContext : IdentityDbContext<AspNetUser, IdentityRole, 
     public DbSet<ReportTask> ReportTasks { get; set; }
     public DbSet<UserTask> UserTasks { get; set; }
     public DbSet<NhomZaloTask> NhomZaloTasks { get; set; }
-
+    public DbSet<ApplicationClaim> ApplicationClaim { get; set; }
+    public DbSet<CauHoi> CauHois { get; set; }
+    public DbSet<CauHoiCongNghe> CauHoiCongNghes { get; set; }
 
 
 
@@ -162,11 +163,11 @@ public class ApplicationDbContext : IdentityDbContext<AspNetUser, IdentityRole, 
             .WithMany(i => i.AspNetUsers)
             .HasForeignKey(a => a.InternInfoId)
             .OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<Tasks>()
-              .HasOne(t => t.DuAn)
-              .WithMany(d => d.Tasks)
-              .HasForeignKey(t => t.DuAnId)
-              .OnDelete(DeleteBehavior.NoAction);
+        modelBuilder.Entity<Tasks>()
+          .HasOne(t => t.DuAn)
+          .WithMany(d => d.Tasks)
+          .HasForeignKey(t => t.DuAnId)
+          .OnDelete(DeleteBehavior.NoAction);
 
         // Cấu hình cho bảng ReportTask
         modelBuilder.Entity<ReportTask>()

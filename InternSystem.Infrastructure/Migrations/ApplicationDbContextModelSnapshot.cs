@@ -22,6 +22,57 @@ namespace InternSystem.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("InternSystem.Domain.Entities.ApplicationClaim", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("DeletedTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastUpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastUpdatedTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApplicationClaim", (string)null);
+                });
+
             modelBuilder.Entity("InternSystem.Domain.Entities.AspNetUser", b =>
                 {
                     b.Property<string>("Id")
@@ -34,8 +85,15 @@ namespace InternSystem.Infrastructure.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTimeOffset>("CreatedTime")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset?>("DeletedTime")
                         .HasColumnType("datetimeoffset");
@@ -68,6 +126,10 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
+
+                    b.Property<string>("LastUpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("LastUpdatedTime")
                         .HasColumnType("datetimeoffset");
@@ -175,7 +237,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CauHoi");
+                    b.ToTable("CauHoi", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.CauHoiCongNghe", b =>
@@ -224,7 +286,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasIndex("IdCongNghe");
 
-                    b.ToTable("CauHoiCongNghe");
+                    b.ToTable("CauHoiCongNghe", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.Comment", b =>
@@ -278,7 +340,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasIndex("IdNguoiDuocComment");
 
-                    b.ToTable("Comment");
+                    b.ToTable("Comment", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.CongNghe", b =>
@@ -329,7 +391,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasIndex("IdViTri");
 
-                    b.ToTable("CongNghe");
+                    b.ToTable("CongNghe", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.CongNgheDuAn", b =>
@@ -378,7 +440,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasIndex("IdDuAn");
 
-                    b.ToTable("CongNgheDuAn");
+                    b.ToTable("CongNgheDuAn", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.Dashboard", b =>
@@ -389,6 +451,19 @@ namespace InternSystem.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("DeletedTime")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<int>("Interned")
                         .HasColumnType("int");
 
@@ -398,6 +473,19 @@ namespace InternSystem.Infrastructure.Migrations
                     b.Property<int>("Interviewed")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastUpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastUpdatedTime")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<int>("Passed")
                         .HasColumnType("int");
 
@@ -406,7 +494,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Dashboards");
+                    b.ToTable("Dashboards", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.DuAn", b =>
@@ -460,7 +548,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasIndex("LeaderId");
 
-                    b.ToTable("DuAn");
+                    b.ToTable("DuAn", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.EmailUserStatus", b =>
@@ -522,7 +610,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasIndex("IdNguoiNhan");
 
-                    b.ToTable("EmailUserStatus");
+                    b.ToTable("EmailUserStatus", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.InternInfo", b =>
@@ -656,7 +744,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("InternInfo");
+                    b.ToTable("InternInfo", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.KyThucTap", b =>
@@ -710,7 +798,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasIndex("IdTruong");
 
-                    b.ToTable("KyThucTap");
+                    b.ToTable("KyThucTap", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.LichPhongVan", b =>
@@ -788,7 +876,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasIndex("IdNguoiPhongVan");
 
-                    b.ToTable("LichPhongVan");
+                    b.ToTable("LichPhongVan", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.Message", b =>
@@ -797,6 +885,19 @@ namespace InternSystem.Infrastructure.Migrations
                         .HasMaxLength(36)
                         .HasColumnType("nvarchar(36)");
 
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("DeletedTime")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("IdReceiver")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -804,6 +905,19 @@ namespace InternSystem.Infrastructure.Migrations
                     b.Property<string>("IdSender")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastUpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastUpdatedTime")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("MessageText")
                         .IsRequired()
@@ -818,7 +932,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasIndex("IdSender");
 
-                    b.ToTable("Message");
+                    b.ToTable("Message", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.NhomZalo", b =>
@@ -868,7 +982,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("NhomZalo");
+                    b.ToTable("NhomZalo", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.NhomZaloTask", b =>
@@ -920,7 +1034,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasIndex("TaskId");
 
-                    b.ToTable("GroupZaloTask");
+                    b.ToTable("GroupZaloTask", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.PhongVan", b =>
@@ -943,7 +1057,6 @@ namespace InternSystem.Infrastructure.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("DeletedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset?>("DeletedTime")
@@ -984,7 +1097,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasIndex("IdLichPhongVan");
 
-                    b.ToTable("PhongVan");
+                    b.ToTable("PhongVan", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.ReportTask", b =>
@@ -1049,7 +1162,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ReportTask");
+                    b.ToTable("ReportTask", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.Tasks", b =>
@@ -1110,7 +1223,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasIndex("DuAnId");
 
-                    b.ToTable("Task");
+                    b.ToTable("Task", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.ThongBao", b =>
@@ -1121,12 +1234,15 @@ namespace InternSystem.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CreateBy")
+                    b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("CreatedTime")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset?>("DeletedTime")
                         .HasColumnType("datetimeoffset");
@@ -1146,6 +1262,7 @@ namespace InternSystem.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("LastUpdatedBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("LastUpdatedTime")
@@ -1169,7 +1286,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasIndex("IdNguoiNhan");
 
-                    b.ToTable("ThongBao");
+                    b.ToTable("ThongBao", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.TruongHoc", b =>
@@ -1215,7 +1332,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TruongHoc");
+                    b.ToTable("TruongHoc", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.UserDuAn", b =>
@@ -1270,7 +1387,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserDuAn");
+                    b.ToTable("UserDuAn", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.UserNhomZalo", b =>
@@ -1331,7 +1448,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserNhomZalo");
+                    b.ToTable("UserNhomZalo", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.UserTask", b =>
@@ -1384,7 +1501,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserTask");
+                    b.ToTable("UserTask", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.UserViTri", b =>
@@ -1434,7 +1551,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserViTri");
+                    b.ToTable("UserViTri", (string)null);
                 });
 
             modelBuilder.Entity("InternSystem.Domain.Entities.ViTri", b =>
@@ -1483,7 +1600,7 @@ namespace InternSystem.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ViTri");
+                    b.ToTable("ViTri", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -1521,6 +1638,9 @@ namespace InternSystem.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("ApplicationClaimId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
 
@@ -1532,6 +1652,8 @@ namespace InternSystem.Infrastructure.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationClaimId");
 
                     b.HasIndex("RoleId");
 
@@ -1784,7 +1906,6 @@ namespace InternSystem.Infrastructure.Migrations
                     b.Navigation("NguoiPhongVan");
                 });
 
-
             modelBuilder.Entity("InternSystem.Domain.Entities.Message", b =>
                 {
                     b.HasOne("InternSystem.Domain.Entities.AspNetUser", "Receiver")
@@ -1802,303 +1923,311 @@ namespace InternSystem.Infrastructure.Migrations
                     b.Navigation("Receiver");
 
                     b.Navigation("Sender");
-
-                    modelBuilder.Entity("InternSystem.Domain.Entities.NhomZaloTask", b =>
-                        {
-                            b.HasOne("InternSystem.Domain.Entities.NhomZalo", "nhomZalos")
-                                .WithMany("NhomZaloTasks")
-                                .HasForeignKey("NhomZaloId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("InternSystem.Domain.Entities.Tasks", "Tasks")
-                                .WithMany("NhomZaloTasks")
-                                .HasForeignKey("TaskId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("Tasks");
-
-                            b.Navigation("nhomZalos");
-
-                        });
-
-                    modelBuilder.Entity("InternSystem.Domain.Entities.PhongVan", b =>
-                        {
-                            b.HasOne("InternSystem.Domain.Entities.CauHoiCongNghe", "CauHoiCongNghe")
-                                .WithMany()
-                                .HasForeignKey("IdCauHoiCongNghe")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.HasOne("InternSystem.Domain.Entities.LichPhongVan", "LichPhongVan")
-                                .WithMany()
-                                .HasForeignKey("IdLichPhongVan")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("CauHoiCongNghe");
-
-                            b.Navigation("LichPhongVan");
-                        });
-
-                    modelBuilder.Entity("InternSystem.Domain.Entities.ReportTask", b =>
-                        {
-                            b.HasOne("InternSystem.Domain.Entities.Tasks", "Task")
-                                .WithMany("ReportTasks")
-                                .HasForeignKey("TaskId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", "User")
-                                .WithMany("reportTasks")
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("Task");
-
-                            b.Navigation("User");
-                        });
-
-                    modelBuilder.Entity("InternSystem.Domain.Entities.Tasks", b =>
-                        {
-                            b.HasOne("InternSystem.Domain.Entities.DuAn", "DuAn")
-                                .WithMany("Tasks")
-                                .HasForeignKey("DuAnId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("DuAn");
-                        });
-
-                    modelBuilder.Entity("InternSystem.Domain.Entities.ThongBao", b =>
-                        {
-                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", "NguoiGui")
-                                .WithMany()
-                                .HasForeignKey("IdNguoiGui")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", "NguoiNhan")
-                                .WithMany()
-                                .HasForeignKey("IdNguoiNhan")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("NguoiGui");
-
-                            b.Navigation("NguoiNhan");
-                        });
-
-                    modelBuilder.Entity("InternSystem.Domain.Entities.UserDuAn", b =>
-                        {
-                            b.HasOne("InternSystem.Domain.Entities.DuAn", "DuAn")
-                                .WithMany("UserDuAns")
-                                .HasForeignKey("DuAnId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("InternSystem.Domain.Entities.ViTri", "ViTri")
-                                .WithMany()
-                                .HasForeignKey("IdViTri")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", "User")
-                                .WithMany("UserDuAns")
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("DuAn");
-
-                            b.Navigation("User");
-
-                            b.Navigation("ViTri");
-                        });
-
-                    modelBuilder.Entity("InternSystem.Domain.Entities.UserNhomZalo", b =>
-                        {
-                            b.HasOne("InternSystem.Domain.Entities.NhomZalo", "NhomZaloChung")
-                                .WithMany("UserNhomZaloChungs")
-                                .HasForeignKey("IdNhomZaloChung")
-                                .OnDelete(DeleteBehavior.NoAction);
-
-                            b.HasOne("InternSystem.Domain.Entities.NhomZalo", "NhomZaloRieng")
-                                .WithMany("UserNhomZaloRiengs")
-                                .HasForeignKey("IdNhomZaloRieng")
-                                .OnDelete(DeleteBehavior.NoAction);
-
-                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", "User")
-                                .WithMany("UserNhomZalos")
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("NhomZaloChung");
-
-                            b.Navigation("NhomZaloRieng");
-
-                            b.Navigation("User");
-                        });
-
-                    modelBuilder.Entity("InternSystem.Domain.Entities.UserTask", b =>
-                        {
-                            b.HasOne("InternSystem.Domain.Entities.Tasks", "Task")
-                                .WithMany("UserTasks")
-                                .HasForeignKey("TaskId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", "User")
-                                .WithMany("UserTasks")
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("Task");
-
-                            b.Navigation("User");
-                        });
-
-                    modelBuilder.Entity("InternSystem.Domain.Entities.UserViTri", b =>
-                        {
-                            b.HasOne("InternSystem.Domain.Entities.ViTri", "ViTri")
-                                .WithMany("UserViTris")
-                                .HasForeignKey("IdViTri")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", "AspNetUser")
-                                .WithMany("UserViTris")
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("AspNetUser");
-
-                            b.Navigation("ViTri");
-                        });
-
-                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                        {
-                            b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                                .WithMany()
-                                .HasForeignKey("RoleId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-                        });
-
-                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                        {
-                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", null)
-                                .WithMany()
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-                        });
-
-                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                        {
-                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", null)
-                                .WithMany()
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-                        });
-
-                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                        {
-                            b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                                .WithMany()
-                                .HasForeignKey("RoleId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", null)
-                                .WithMany()
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-                        });
-
-                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                        {
-                            b.HasOne("InternSystem.Domain.Entities.AspNetUser", null)
-                                .WithMany()
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-                        });
-
-                    modelBuilder.Entity("InternSystem.Domain.Entities.AspNetUser", b =>
-                        {
-                            b.Navigation("EmailUserStatuses");
-
-                            b.Navigation("UserDuAns");
-
-                            b.Navigation("UserNhomZalos");
-
-                            b.Navigation("UserTasks");
-
-                            b.Navigation("UserViTris");
-
-                            b.Navigation("reportTasks");
-                        });
-
-                    modelBuilder.Entity("InternSystem.Domain.Entities.CauHoi", b =>
-                        {
-                            b.Navigation("CauHoiCongNghes");
-                        });
-
-                    modelBuilder.Entity("InternSystem.Domain.Entities.CongNghe", b =>
-                        {
-                            b.Navigation("CauHoiCongNghes");
-
-                            b.Navigation("CongNgheDuAns");
-                        });
-
-                    modelBuilder.Entity("InternSystem.Domain.Entities.DuAn", b =>
-                        {
-                            b.Navigation("CongNgheDuAns");
-
-                            b.Navigation("Tasks");
-
-                            b.Navigation("UserDuAns");
-                        });
-
-                    modelBuilder.Entity("InternSystem.Domain.Entities.InternInfo", b =>
-                        {
-                            b.Navigation("AspNetUsers");
-
-                            b.Navigation("EmailUserStatuses");
-                        });
-
-                    modelBuilder.Entity("InternSystem.Domain.Entities.NhomZalo", b =>
-                        {
-                            b.Navigation("NhomZaloTasks");
-
-                            b.Navigation("UserNhomZaloChungs");
-
-                            b.Navigation("UserNhomZaloRiengs");
-                        });
-
-                    modelBuilder.Entity("InternSystem.Domain.Entities.Tasks", b =>
-                        {
-                            b.Navigation("NhomZaloTasks");
-
-                            b.Navigation("ReportTasks");
-
-                            b.Navigation("UserTasks");
-                        });
-
-                    modelBuilder.Entity("InternSystem.Domain.Entities.ViTri", b =>
-                        {
-                            b.Navigation("UserViTris");
-                        });
-
                 });
+
+            modelBuilder.Entity("InternSystem.Domain.Entities.NhomZaloTask", b =>
+                {
+                    b.HasOne("InternSystem.Domain.Entities.NhomZalo", "nhomZalos")
+                        .WithMany("NhomZaloTasks")
+                        .HasForeignKey("NhomZaloId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("InternSystem.Domain.Entities.Tasks", "Tasks")
+                        .WithMany("NhomZaloTasks")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Tasks");
+
+                    b.Navigation("nhomZalos");
+                });
+
+            modelBuilder.Entity("InternSystem.Domain.Entities.PhongVan", b =>
+                {
+                    b.HasOne("InternSystem.Domain.Entities.CauHoiCongNghe", "CauHoiCongNghe")
+                        .WithMany()
+                        .HasForeignKey("IdCauHoiCongNghe")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InternSystem.Domain.Entities.LichPhongVan", "LichPhongVan")
+                        .WithMany()
+                        .HasForeignKey("IdLichPhongVan")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CauHoiCongNghe");
+
+                    b.Navigation("LichPhongVan");
+                });
+
+            modelBuilder.Entity("InternSystem.Domain.Entities.ReportTask", b =>
+                {
+                    b.HasOne("InternSystem.Domain.Entities.Tasks", "Task")
+                        .WithMany("ReportTasks")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", "User")
+                        .WithMany("reportTasks")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Task");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("InternSystem.Domain.Entities.Tasks", b =>
+                {
+                    b.HasOne("InternSystem.Domain.Entities.DuAn", "DuAn")
+                        .WithMany("Tasks")
+                        .HasForeignKey("DuAnId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("DuAn");
+                });
+
+            modelBuilder.Entity("InternSystem.Domain.Entities.ThongBao", b =>
+                {
+                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", "NguoiGui")
+                        .WithMany()
+                        .HasForeignKey("IdNguoiGui")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", "NguoiNhan")
+                        .WithMany()
+                        .HasForeignKey("IdNguoiNhan")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("NguoiGui");
+
+                    b.Navigation("NguoiNhan");
+                });
+
+            modelBuilder.Entity("InternSystem.Domain.Entities.UserDuAn", b =>
+                {
+                    b.HasOne("InternSystem.Domain.Entities.DuAn", "DuAn")
+                        .WithMany("UserDuAns")
+                        .HasForeignKey("DuAnId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("InternSystem.Domain.Entities.ViTri", "ViTri")
+                        .WithMany()
+                        .HasForeignKey("IdViTri")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", "User")
+                        .WithMany("UserDuAns")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("DuAn");
+
+                    b.Navigation("User");
+
+                    b.Navigation("ViTri");
+                });
+
+            modelBuilder.Entity("InternSystem.Domain.Entities.UserNhomZalo", b =>
+                {
+                    b.HasOne("InternSystem.Domain.Entities.NhomZalo", "NhomZaloChung")
+                        .WithMany("UserNhomZaloChungs")
+                        .HasForeignKey("IdNhomZaloChung")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("InternSystem.Domain.Entities.NhomZalo", "NhomZaloRieng")
+                        .WithMany("UserNhomZaloRiengs")
+                        .HasForeignKey("IdNhomZaloRieng")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", "User")
+                        .WithMany("UserNhomZalos")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("NhomZaloChung");
+
+                    b.Navigation("NhomZaloRieng");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("InternSystem.Domain.Entities.UserTask", b =>
+                {
+                    b.HasOne("InternSystem.Domain.Entities.Tasks", "Task")
+                        .WithMany("UserTasks")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", "User")
+                        .WithMany("UserTasks")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Task");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("InternSystem.Domain.Entities.UserViTri", b =>
+                {
+                    b.HasOne("InternSystem.Domain.Entities.ViTri", "ViTri")
+                        .WithMany("UserViTris")
+                        .HasForeignKey("IdViTri")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", "AspNetUser")
+                        .WithMany("UserViTris")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("AspNetUser");
+
+                    b.Navigation("ViTri");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.HasOne("InternSystem.Domain.Entities.ApplicationClaim", null)
+                        .WithMany("RoleClaims")
+                        .HasForeignKey("ApplicationClaimId");
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("InternSystem.Domain.Entities.AspNetUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("InternSystem.Domain.Entities.ApplicationClaim", b =>
+                {
+                    b.Navigation("RoleClaims");
+                });
+
+            modelBuilder.Entity("InternSystem.Domain.Entities.AspNetUser", b =>
+                {
+                    b.Navigation("EmailUserStatuses");
+
+                    b.Navigation("UserDuAns");
+
+                    b.Navigation("UserNhomZalos");
+
+                    b.Navigation("UserTasks");
+
+                    b.Navigation("UserViTris");
+
+                    b.Navigation("reportTasks");
+                });
+
+            modelBuilder.Entity("InternSystem.Domain.Entities.CauHoi", b =>
+                {
+                    b.Navigation("CauHoiCongNghes");
+                });
+
+            modelBuilder.Entity("InternSystem.Domain.Entities.CongNghe", b =>
+                {
+                    b.Navigation("CauHoiCongNghes");
+
+                    b.Navigation("CongNgheDuAns");
+                });
+
+            modelBuilder.Entity("InternSystem.Domain.Entities.DuAn", b =>
+                {
+                    b.Navigation("CongNgheDuAns");
+
+                    b.Navigation("Tasks");
+
+                    b.Navigation("UserDuAns");
+                });
+
+            modelBuilder.Entity("InternSystem.Domain.Entities.InternInfo", b =>
+                {
+                    b.Navigation("AspNetUsers");
+
+                    b.Navigation("EmailUserStatuses");
+                });
+
+            modelBuilder.Entity("InternSystem.Domain.Entities.NhomZalo", b =>
+                {
+                    b.Navigation("NhomZaloTasks");
+
+                    b.Navigation("UserNhomZaloChungs");
+
+                    b.Navigation("UserNhomZaloRiengs");
+                });
+
+            modelBuilder.Entity("InternSystem.Domain.Entities.Tasks", b =>
+                {
+                    b.Navigation("NhomZaloTasks");
+
+                    b.Navigation("ReportTasks");
+
+                    b.Navigation("UserTasks");
+                });
+
+            modelBuilder.Entity("InternSystem.Domain.Entities.ViTri", b =>
+                {
+                    b.Navigation("UserViTris");
+                });
+#pragma warning restore 612, 618
         }
     }
 }

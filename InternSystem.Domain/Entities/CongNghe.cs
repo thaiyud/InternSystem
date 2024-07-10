@@ -1,6 +1,6 @@
-﻿using InternSystem.Domain.Entities.BaseEntities;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using InternSystem.Domain.Entities.BaseEntities;
 
 namespace InternSystem.Domain.Entities
 {
@@ -17,12 +17,7 @@ namespace InternSystem.Domain.Entities
         public virtual ViTri? ViTri { get; set; }
 
         public string? UrlImage { get; set; }
-
-        [Required]
-        public string CreatedBy { get; set; }
-        public string LastUpdatedBy { get; set; }
-        public string? DeletedBy { get; set; }
-        public virtual ICollection<CongNgheDuAn> CongNgheDuAns { get; set; }
+        public virtual ICollection<CongNgheDuAn> CongNgheDuAns { get; set; } 
         public ICollection<CauHoiCongNghe> CauHoiCongNghes { get; set; }
     }
 }

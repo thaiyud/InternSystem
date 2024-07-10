@@ -1,7 +1,6 @@
-﻿using InternSystem.Domain.Entities.BaseEntities;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
+using InternSystem.Domain.Entities.BaseEntities;
 
 namespace InternSystem.Domain.Entities
 {
@@ -27,9 +26,5 @@ namespace InternSystem.Domain.Entities
         [Required]
         public string NoiDung { get; set; }
         public string TinhTrang { get; set; }
-
-        [Required]
-        public string CreateBy { get; set; }
-        public string? LastUpdatedBy { get; set; }
     }
 }

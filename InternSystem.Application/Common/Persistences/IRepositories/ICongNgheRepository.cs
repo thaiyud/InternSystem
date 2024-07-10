@@ -1,14 +1,12 @@
 ﻿using InternSystem.Application.Common.Persistences.IRepositories.IBaseRepositories;
 using InternSystem.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace InternSystem.Application.Common.Persistences.IRepositories
 {
     public interface ICongNgheRepository : IBaseRepository<CongNghe>
     {
+        Task<IEnumerable<CongNghe>> GetCongNghesByTenAsync(string name);
+        Task<CongNghe?> GetByIdWithDetailsAsync(int id);
+        Task<bool> HasRelatedRecordsAsync(int congNgheId);
     }
 }

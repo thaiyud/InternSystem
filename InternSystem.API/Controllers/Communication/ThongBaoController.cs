@@ -1,11 +1,10 @@
-﻿using InternSystem.Application.Features.ThongBaoManagement.Commands;
-using InternSystem.Application.Features.ThongBaoManagement.Models;
-using InternSystem.Application.Features.ThongBaoManagement.Queries;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using InternSystem.Application.Common.Bases;
+using InternSystem.Application.Common.Constants;
+using InternSystem.Application.Common.Services.Interfaces;
+using InternSystem.Application.Features.ComunicationManagement.ThongBaoManagement.Commands;
+using InternSystem.Application.Features.ComunicationManagement.ThongBaoManagement.Models;
+using InternSystem.Application.Features.ComunicationManagement.ThongBaoManagement.Queries;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace InternSystem.API.Controllers.Communication
 {
@@ -13,86 +12,105 @@ namespace InternSystem.API.Controllers.Communication
     [ApiController]
     public class ThongBaoController : ApiControllerBase
     {
+        private readonly IMediatorService _mediatorService;
 
+        public ThongBaoController(IMediatorService mediatorService)
+        {
+            _mediatorService = mediatorService;
+        }
+
+        /// <summary>
+        /// Tạo thông báo mới.
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         [HttpPost("create")]
-        //[Authorize]
         public async Task<IActionResult> CreateThongBao([FromBody] CreateThongBaoCommand command)
         {
-            command.CreateBy = User.Claims.FirstOrDefault(x => x.Type == "Id")?.Value;
-            //if (command.CreateBy.IsNullOrEmpty()) return StatusCode(500, "Cannot get Id from JWT token");
-
-            // HARD-CODE, for testing purposes
-            if (command.CreateBy.IsNullOrEmpty())
-            {
-                command.CreateBy = "49c087c3-5913-4938-82fd-7c5e8fdfb83f";
-            }
-            // HARD-CODE
-
-            CreateThongBaoResponse response = await Mediator.Send(command);
-            if (!response.Errors.IsNullOrEmpty()) return StatusCode(500, response.Errors);
-
-            return Created(nameof(GetThongBaoById), response);
+            CreateThongBaoResponse response = await _mediatorService.Send(command);
+            return Ok(new BaseResponseModel<CreateThongBaoResponse>(
+                statusCode: StatusCodes.Status200OK,
+                code: ResponseCodeConstants.SUCCESS,
+                data: response));
         }
 
+        /// <summary>
+        /// Cập nhật thông báo.
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         [HttpPut("update")]
-        //[Authorize]
         public async Task<IActionResult> UpdateThongBao([FromBody] UpdateThongBaoCommand command)
         {
-            command.LastUpdatedBy = User.Claims.FirstOrDefault(x => x.Type == "Id")?.Value;
-            //if (command.LastUpdatedBy.IsNullOrEmpty()) return StatusCode(500, "Cannot get Id from JWT token");
-
-            // HARD-CODE, for testing purposes
-            if (command.LastUpdatedBy.IsNullOrEmpty())
-            {
-                command.LastUpdatedBy = "49c087c3-5913-4938-82fd-7c5e8fdfb83f";
-            }
-            // HARD-CODE
-
-            UpdateThongBaoResponse response = await Mediator.Send(command);
-            if (!response.Errors.IsNullOrEmpty()) return StatusCode(500, response.Errors);
-
-            return Ok(response);
-
+            UpdateThongBaoResponse response = await _mediatorService.Send(command);
+            return Ok(new BaseResponseModel<UpdateThongBaoResponse>(
+                statusCode: StatusCodes.Status200OK,
+                code: ResponseCodeConstants.SUCCESS,
+                data: response));
         }
 
+        /// <summary>
+        /// Xóa thông báo.
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         [HttpDelete("delete")]
-        //[Authorize]
         public async Task<IActionResult> DeleteThongBao([FromBody] DeleteThongBaoCommand command)
         {
-            DeleteThongBaoResponse response = await Mediator.Send(command);
-            if (!response.Errors.IsNullOrEmpty()) return StatusCode(500, response.Errors);
-
-            return NoContent();
-
+            DeleteThongBaoResponse response = await _mediatorService.Send(command);
+            return Ok(new BaseResponseModel<DeleteThongBaoResponse>(
+                statusCode: StatusCodes.Status200OK,
+                code: ResponseCodeConstants.SUCCESS,
+                data: response));
         }
 
+        /// <summary>
+        /// Lấy thông báo theo Id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("by-id")]
-        //[Authorize]
         public async Task<IActionResult> GetThongBaoById([FromQuery] int id)
         {
-            GetThongBaoByIdResponse response = await Mediator.Send(new GetThongBaoByIdQuery()
+            GetThongBaoByIdResponse response = await _mediatorService.Send(new GetThongBaoByIdQuery()
             {
                 Id = id
             });
-            if (!response.Errors.IsNullOrEmpty()) return StatusCode(500, response.Errors);
-
-            return Ok(response);
+            return Ok(new BaseResponseModel<GetThongBaoByIdResponse>(
+                statusCode: StatusCodes.Status200OK,
+                code: ResponseCodeConstants.SUCCESS,
+                data: response));
         }
 
+        /// <summary>
+        /// Lấy danh sách tất cả thông báo.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
-        //[Authorize]
-        public async Task<IActionResult> GetAllThongBao([FromQuery] int pageNum, int pageSize)
+        public async Task<IActionResult> GetAllThongBao()
         {
-            GetAllThongBaoResponse response = await Mediator.Send(new GetAllThongBaoQuery()
-            {
-                PageNumber = pageNum,
-                PageSize = pageSize
-            });
-
-            if (!response.Errors.IsNullOrEmpty()) return StatusCode(500, response.Errors);
-
-            return Ok(response.ThongBaos);
+            var response = await _mediatorService.Send(new GetAllThongBaoQuery());
+            return Ok(new BaseResponseModel<IEnumerable<GetAllThongBaoResponse>>(
+                statusCode: StatusCodes.Status200OK,
+                code: ResponseCodeConstants.SUCCESS,
+                data: response));
         }
 
+        /// <summary>
+        /// Lấy danh sách thông báo phân trang.
+        /// </summary>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        [HttpGet("get-paged")]
+        public async Task<IActionResult> GetPagedThongBao([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            var query = new GetPagedThongBaosQuery(pageNumber, pageSize);
+            var response = await _mediatorService.Send(query);
+            return Ok(new BaseResponseModel(
+                 statusCode: StatusCodes.Status200OK,
+                 code: ResponseCodeConstants.SUCCESS,
+                 data: response));
+        }
     }
 }

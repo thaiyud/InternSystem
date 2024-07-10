@@ -1,11 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using InternSystem.Domain.Entities.BaseEntities;
 using Microsoft.AspNetCore.Identity;
 
 namespace InternSystem.Domain.Entities
 {
-    public class AspNetUser : IdentityUser
+    public class AspNetUser : IdentityUser, IBaseEntity
     {
         public string HoVaTen { get; set; }
         public DateTimeOffset CreatedTime { get; set; } = DateTimeOffset.Now;
@@ -13,6 +12,9 @@ namespace InternSystem.Domain.Entities
         public DateTimeOffset LastUpdatedTime { get; set; }
         public bool IsActive { get; set; } = true;
         public bool IsDelete { get; set; } = false;
+        public string CreatedBy { get; set; } = string.Empty;
+        public string LastUpdatedBy { get; set; } = string.Empty;
+        public string? DeletedBy { get; set; }
         public string? ResetToken { get; set; }
         public DateTimeOffset? ResetTokenExpires { get; set; }
         public string? VerificationToken { get; set; }

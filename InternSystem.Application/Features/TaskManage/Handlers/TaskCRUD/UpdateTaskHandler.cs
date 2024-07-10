@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using InternSystem.Application.Common.Persistences.IRepositories;
-using InternSystem.Application.Features.DuAnManagement.Commands;
-using InternSystem.Application.Features.DuAnManagement.Models;
-using InternSystem.Application.Features.TaskManage.Commands.Update;
-using InternSystem.Application.Features.TaskManage.Models;
+using InternSystem.Application.Common.Services.Interfaces;
+using InternSystem.Application.Features.TasksAndReports.TaskManagement.Commands;
+using InternSystem.Application.Features.TasksAndReports.TaskManagement.Models;
 using InternSystem.Domain.Entities;
 using MediatR;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,30 +18,36 @@ namespace InternSystem.Application.Features.TaskManage.Handlers.TaskCRUD
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IUserContextService _userContextService;
 
-        public UpdateTaskHandler(IUnitOfWork unitOfWork, IMapper mapper)
+
+        public UpdateTaskHandler(IUnitOfWork unitOfWork, IMapper mapper, IUserContextService userContextService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userContextService = userContextService;
         }
 
         public async Task<TaskResponse> Handle(UpdateTaskCommand request, CancellationToken cancellationToken)
         {
             Tasks? exist = await _unitOfWork.TaskRepository.GetByIdAsync(request.Id);
-            if (exist == null || exist.IsDelete == true || exist.HoanThanh==true)
+            if (exist == null || exist.IsDelete == true || exist.HoanThanh == true)
                 throw new ArgumentNullException(
                    nameof(request.Id),
                    $"Task {request.Id} is not exist");
 
-            if (request.DuAnId>0)
+            if (request.DuAnId > 0)
             {
                 DuAn? duAn = await _unitOfWork.DuAnRepository.GetByIdAsync(request.DuAnId);
-                if (duAn == null || duAn.IsDelete == true)
-                {
+                if (duAn == null || duAn.IsDelete == true)                
                     throw new ArgumentNullException(
                   nameof(request.DuAnId),
                   $"Du an id {request.DuAnId} is not exist");
-                }                 
+                if (request.HanHoanThanh > duAn.ThoiGianKetThuc
+              || request.NgayGiao < duAn.ThoiGianBatDau)
+                    throw new ArgumentNullException(
+                      nameof(request),
+                      $"set time incorrect in the range time Du An: {duAn.Id}");
                 exist.DuAnId = (int)request.DuAnId;
 
             }
@@ -54,12 +60,15 @@ namespace InternSystem.Application.Features.TaskManage.Handlers.TaskCRUD
                      nameof(request), $"{request.MoTa} is already exist by {request.DuAnId}");
 
             }
+
+            // Kiểm tra thời gian hoàn thành và ngày giao task 
             if (request.HanHoanThanh < request.NgayGiao
                 || exist.NgayGiao > request.HanHoanThanh
                 || request.NgayGiao > exist.HanHoanThanh)
                 throw new ArgumentNullException(
                   nameof(request),
-                  $"Ngay Giao must lower than {request.HanHoanThanh}");
+                  $"Han hoan thanh must greater than Ngay Giao");
+
             if (!string.IsNullOrWhiteSpace(request.MoTa))
                 exist.MoTa = request.MoTa;
             if (!string.IsNullOrWhiteSpace(request.NoiDung))
@@ -70,6 +79,11 @@ namespace InternSystem.Application.Features.TaskManage.Handlers.TaskCRUD
                 exist.HanHoanThanh = request.HanHoanThanh.Value;
             if (request.HoanThanh.HasValue)
                 exist.HoanThanh = request.HoanThanh.Value;
+
+            var lastUpdatedBy = _userContextService.GetCurrentUserId();
+            if (lastUpdatedBy.IsNullOrEmpty()) throw new ArgumentNullException("CurrentUserId not found");
+
+            exist.LastUpdatedBy = lastUpdatedBy;
             exist.LastUpdatedTime = DateTimeOffset.Now;
             await _unitOfWork.SaveChangeAsync();
 

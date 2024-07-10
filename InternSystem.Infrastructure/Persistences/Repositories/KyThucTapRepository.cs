@@ -21,8 +21,22 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
 
             return await _applicationDbContext.KyThucTaps
                 .Include(k => k.TruongHoc)
-                .Where(k => k.Ten.Trim().ToLower().Contains(searchTerm.ToLower().Trim()))
+                .Where(k => k.Ten.Trim().ToLower() == searchTerm)
                 .ToListAsync();
         }
+
+        //GetKyThucTap by IdTruong
+        public async Task<IEnumerable<KyThucTap>> GetKyThucTapByTruongHocId(int IdTruong)
+        {
+            return await _applicationDbContext.KyThucTaps
+            .Where(kythuctap => kythuctap.IdTruong == IdTruong)
+            .ToListAsync();
+        }
+
+
+        //public async Task<IEnumerable<KyThucTap>> GetAllKyThucTapAsync()
+        //{
+        //    return await _applicationDbContext.KyThucTaps.ToListAsync();
+        //}
     }
 }

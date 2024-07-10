@@ -3,7 +3,6 @@ using InternSystem.Domain.Entities;
 using InternSystem.Infrastructure.Persistences.DBContext;
 using InternSystem.Infrastructure.Persistences.Repositories.BaseRepositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 
 namespace InternSystem.Infrastructure.Persistences.Repositories
 {

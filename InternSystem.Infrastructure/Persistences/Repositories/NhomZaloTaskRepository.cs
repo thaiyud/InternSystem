@@ -3,11 +3,6 @@ using InternSystem.Domain.Entities;
 using InternSystem.Infrastructure.Persistences.DBContext;
 using InternSystem.Infrastructure.Persistences.Repositories.BaseRepositories;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace InternSystem.Infrastructure.Persistences.Repositories
 {
@@ -27,10 +22,11 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
 
 
         }
-        public async Task<NhomZaloTask> GetByNhomZaloIdAndTaskIdAsync(int nhomZaloid, int taskId)
+
+        public async Task<NhomZaloTask?> GetByNhomZaloIdAndTaskIdAsync(int nhomZaloid, int taskId)
         {
-            return await _applicationDbContext.NhomZaloTasks 
-                .FirstOrDefaultAsync(u => u.NhomZaloId == nhomZaloid && u.TaskId == taskId );
+            return await _applicationDbContext.NhomZaloTasks
+                .FirstOrDefaultAsync(u => u.NhomZaloId == nhomZaloid && u.TaskId == taskId);
         }
     }
 }

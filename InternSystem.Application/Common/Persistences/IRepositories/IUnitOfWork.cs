@@ -1,4 +1,5 @@
 using InternSystem.Application.Common.Persistences.IRepositories.IBaseRepositories;
+using InternSystem.Domain.Entities.BaseEntities;
 
 namespace InternSystem.Application.Common.Persistences.IRepositories
 {
@@ -30,6 +31,8 @@ namespace InternSystem.Application.Common.Persistences.IRepositories
         IReportTaskRepository ReportTaskRepository { get; }
         IUserTaskRepository UserTaskRepository { get; }
         INhomZaloTaskRepository NhomZaloTaskRepository { get; }
+        IClaimRepository ClaimRepository { get; }
+        IBaseRepository<T> GetRepository<T>() where T : class, IBaseEntity;
 
     }
 }

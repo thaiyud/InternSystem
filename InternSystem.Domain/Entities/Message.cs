@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using InternSystem.Domain.Entities.BaseEntities;
 
 namespace InternSystem.Domain.Entities
 {
     [Table("Message")]
-    public class Message
+    public class Message : IBaseEntity
     {
         [Key]
-        [StringLength(36)] 
+        [StringLength(36)]
         public string Id { get; set; }
         [Required]
         public string IdSender { get; set; }
@@ -25,6 +21,13 @@ namespace InternSystem.Domain.Entities
         public DateTime Timestamp { get; set; }
         [Required]
         public string MessageText { get; set; }
-        
+        public DateTimeOffset CreatedTime { get; set; } = DateTimeOffset.Now;
+        public DateTimeOffset? DeletedTime { get; set; }
+        public DateTimeOffset LastUpdatedTime { get; set; }
+        public bool IsActive { get; set; } = true;
+        public bool IsDelete { get; set; } = false;
+        public string CreatedBy { get; set; }
+        public string LastUpdatedBy { get; set; }
+        public string? DeletedBy { get; set; }
     }
 }

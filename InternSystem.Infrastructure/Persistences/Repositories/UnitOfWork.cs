@@ -1,5 +1,6 @@
 ﻿using InternSystem.Application.Common.Persistences.IRepositories;
-using InternSystem.Domain.Entities;
+using InternSystem.Application.Common.Persistences.IRepositories.IBaseRepositories;
+using InternSystem.Domain.Entities.BaseEntities;
 using InternSystem.Infrastructure.Persistences.DBContext;
 using InternSystem.Infrastructure.Persistences.Repositories.BaseRepositories;
 
@@ -33,6 +34,7 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
         private IReportTaskRepository _reportTaskRepository;
         private IUserTaskRepository _userTaskRepository;
         private INhomZaloTaskRepository _nhomZaloTaskRepository;
+        private IClaimRepository _claimRepository;
 
 
 
@@ -68,12 +70,23 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
         {
             await _dbContext.SaveChangesAsync();
         }
+        public async Task SaveChangeAsync()
+        {
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public IBaseRepository<T> GetRepository<T>() where T : class, IBaseEntity
+        {
+            return new BaseRepository<T>(_dbContext);
+        }
+
         public ITaskRepository TaskRepository => _taskRepository ??= new TaskRepository(_dbContext);
 
         public IReportTaskRepository ReportTaskRepository => _reportTaskRepository ??= new ReportTaskRepository(_dbContext);
 
         public IUserTaskRepository UserTaskRepository => _userTaskRepository ??= new UserTaskRepository(_dbContext);
         public INhomZaloTaskRepository NhomZaloTaskRepository => _nhomZaloTaskRepository ??= new NhomZaloTaskRepository(_dbContext);
+        public IClaimRepository ClaimRepository => _claimRepository ??= new ClaimRepository(_dbContext);
 
     }
 }

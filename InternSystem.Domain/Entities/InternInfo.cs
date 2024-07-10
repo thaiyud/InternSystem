@@ -1,6 +1,6 @@
-﻿using InternSystem.Domain.Entities.BaseEntities;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using InternSystem.Domain.Entities.BaseEntities;
 
 namespace InternSystem.Domain.Entities
 {
@@ -77,11 +77,6 @@ namespace InternSystem.Domain.Entities
         public int? DuAnId { get; set; }
         [ForeignKey("DuAnId")]
         public virtual DuAn? DuAn { get; set; }
-
-        [Required]
-        public string CreatedBy { get; set; }
-        public string LastUpdatedBy { get; set; }
-        public string? DeletedBy { get; set; }
 
         public virtual ICollection<EmailUserStatus> EmailUserStatuses { get; set; }
         public virtual ICollection<AspNetUser> AspNetUsers { get; set; }

@@ -32,6 +32,4 @@ namespace InternSystem.Application.Common.Behaviors
             return await next();
         }
     }
-
-
 }

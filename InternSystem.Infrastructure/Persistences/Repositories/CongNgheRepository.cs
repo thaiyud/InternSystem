@@ -2,11 +2,7 @@
 using InternSystem.Domain.Entities;
 using InternSystem.Infrastructure.Persistences.DBContext;
 using InternSystem.Infrastructure.Persistences.Repositories.BaseRepositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Infrastructure.Persistences.Repositories
 {
@@ -16,6 +12,29 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
         public CongNgheRepository(ApplicationDbContext context) : base(context)
         {
             _context = context;
+        }
+
+        public async Task<IEnumerable<CongNghe>> GetCongNghesByTenAsync(string name)
+        {
+            string searchTerm = name.Trim().ToLower();
+
+            return await _context.CongNghes
+                .Where(t => t.Ten.ToLower().Trim().Contains(searchTerm))
+                .ToListAsync();
+        }
+        public async Task<CongNghe?> GetByIdWithDetailsAsync(int id)
+        {
+            return await _context.CongNghes
+                .Include(c => c.CongNgheDuAns)
+                .Include(c => c.CauHoiCongNghes)
+                .FirstOrDefaultAsync(c => c.Id == id && !c.IsDelete);
+        }
+
+        public async Task<bool> HasRelatedRecordsAsync(int congNgheId)
+        {
+            return await _context.CongNghes
+                .AnyAsync(c => c.Id == congNgheId &&
+                               (c.CongNgheDuAns.Any(cnda => !cnda.IsDelete) || c.CauHoiCongNghes.Any(chcn => !chcn.IsDelete)));
         }
     }
 }

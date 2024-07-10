@@ -2,11 +2,7 @@
 using InternSystem.Domain.Entities;
 using InternSystem.Infrastructure.Persistences.DBContext;
 using InternSystem.Infrastructure.Persistences.Repositories.BaseRepositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Infrastructure.Persistences.Repositories
 {
@@ -19,9 +15,11 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
             _applicationDbContext = applicationDbContext;
         }
 
-        public Task<IEnumerable<UserTask>> GetUserTasksAsync()
+        public async Task<IEnumerable<UserTask>> GetUserTasksAsync()
         {
-            throw new NotImplementedException();
+            return await _applicationDbContext.UserTasks
+                .Where(ut => ut.IsActive && !ut.IsDelete)
+                .ToListAsync();
         }
 
         public Task<UserTask> GetUserTasksByIdAsync(int id)

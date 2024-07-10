@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using InternSystem.Domain.Entities.BaseEntities;
 
 namespace InternSystem.Domain.Entities
@@ -31,9 +26,5 @@ namespace InternSystem.Domain.Entities
 
         public DateTime NgayBaoCao { get; set; }
         public string TrangThai { get; set; }
-
-        public string CreatedBy { get; set; }
-        public string LastUpdatedBy { get; set; }
-        public string? DeletedBy { get; set; }
     }
 }

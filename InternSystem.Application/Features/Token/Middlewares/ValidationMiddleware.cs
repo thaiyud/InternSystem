@@ -1,10 +1,7 @@
-﻿using InternSystem.Application.Features.Token.Models;
+﻿using System.IdentityModel.Tokens.Jwt;
+using InternSystem.Application.Features.Token.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace InternSystem.Application.Features.Token.Middlewares
 {

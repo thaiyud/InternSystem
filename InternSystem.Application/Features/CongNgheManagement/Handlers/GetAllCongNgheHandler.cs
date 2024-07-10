@@ -2,7 +2,10 @@
 using InternSystem.Application.Common.Persistences.IRepositories;
 using InternSystem.Application.Features.CongNgheManagement.Models;
 using InternSystem.Application.Features.CongNgheManagement.Queries;
+using InternSystem.Domain.BaseException;
+using InternSystem.Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace InternSystem.Application.Features.CongNgheManagement.Handlers
 {
@@ -17,9 +20,13 @@ namespace InternSystem.Application.Features.CongNgheManagement.Handlers
         }
         public async Task<IEnumerable<GetAllCongNgheResponse>> Handle(GetAllCongNgheQuery request, CancellationToken cancellationToken)
         {
-            var CongNghe = await _unitOfWork.CongNgheRepository.GetAllAsync();
-            Console.WriteLine(CongNghe);
-            return _mapper.Map<IEnumerable<GetAllCongNgheResponse>>(CongNghe);
+            var congNghes = await _unitOfWork.CongNgheRepository.GetAllAsync();
+            if (congNghes == null || !congNghes.Any())
+            {
+                throw new ErrorException(StatusCodes.Status404NotFound, ErrorCode.NotFound, "Không tìm thấy công nghệ.");
+            }
+
+            return _mapper.Map<IEnumerable<GetAllCongNgheResponse>>(congNghes);
         }
     }
 }

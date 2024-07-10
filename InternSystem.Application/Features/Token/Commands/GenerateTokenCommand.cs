@@ -1,9 +1,10 @@
-﻿using MediatR;
+﻿using InternSystem.Application.Features.Token.Models;
+using MediatR;
 
 
-namespace InternSystem.Application.Features.Token.Models
+namespace InternSystem.Application.Features.Token.Commands
 {
-    public class GenerateTokenCommand  : IRequest<TokenResponse>
+    public class GenerateTokenCommand : IRequest<TokenResponse>
     {
         public string UserId { get; set; }
         public string Role { get; set; }

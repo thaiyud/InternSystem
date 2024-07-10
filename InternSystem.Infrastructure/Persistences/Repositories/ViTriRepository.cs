@@ -2,11 +2,7 @@
 using InternSystem.Domain.Entities;
 using InternSystem.Infrastructure.Persistences.DBContext;
 using InternSystem.Infrastructure.Persistences.Repositories.BaseRepositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Infrastructure.Persistences.Repositories
 {
@@ -17,6 +13,14 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
         public ViTriRepository(ApplicationDbContext context) : base(context)
         {
             _context = context;
+        }
+        public async Task<IEnumerable<ViTri>> GetVitrisByNameAsync(string name)
+        {
+            string searchTerm = name.Trim().ToLower();
+
+            return await _context.ViTris
+                .Where(t => t.Ten.ToLower().Trim().Contains(searchTerm))
+                .ToListAsync();
         }
     }
 }

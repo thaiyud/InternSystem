@@ -2,11 +2,7 @@
 using InternSystem.Domain.Entities;
 using InternSystem.Infrastructure.Persistences.DBContext;
 using InternSystem.Infrastructure.Persistences.Repositories.BaseRepositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Infrastructure.Persistences.Repositories
 {
@@ -17,6 +13,31 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
         public CongNgheDuAnRepository(ApplicationDbContext context) : base(context)
         {
             _context = context;
+        }
+        public async Task<IEnumerable<CongNgheDuAn>> GetAllActiveAsync()
+        {
+            return await _context.CongNgheDuAns
+                .Where(cnda => cnda.IsActive && !cnda.IsDelete)
+                .ToListAsync();
+        }
+        public async Task<CongNgheDuAn?> GetByIdWithDetailsAsync(int id)
+        {
+            return await _context.CongNgheDuAns
+                .Include(cnda => cnda.CongNghe)
+                .Include(cnda => cnda.DuAn)
+                .FirstOrDefaultAsync(cnda => cnda.Id == id && !cnda.IsDelete);
+        }
+        public async Task<bool> HasRelatedRecordsAsync(int congNgheDuAnId)
+        {
+            var congNgheDuAn = await _context.CongNgheDuAns
+                .Include(cnda => cnda.CongNghe)
+                .Include(cnda => cnda.DuAn)
+                .FirstOrDefaultAsync(cnda => cnda.Id == congNgheDuAnId && !cnda.IsDelete);
+
+            if (congNgheDuAn == null) return false;
+
+            return (congNgheDuAn.CongNghe != null && !congNgheDuAn.CongNghe.IsDelete) ||
+                   (congNgheDuAn.DuAn != null && !congNgheDuAn.DuAn.IsDelete);
         }
     }
 }

@@ -1,11 +1,8 @@
-﻿using FluentValidation;
-using InternSystem.Application.Features.Comunication.Commands.ChatCommands;
-using InternSystem.Application.Features.Message.Models;
-using InternSystem.Application.Features.Message.Queries;
-using MediatR;
-using Microsoft.AspNetCore.Http;
+﻿using InternSystem.Application.Common.Services.Interfaces;
+using InternSystem.Application.Features.ComunicationManagement.ChatSystemManagement.Commands;
+using InternSystem.Application.Features.ComunicationManagement.ChatSystemManagement.Models;
+using InternSystem.Application.Features.ComunicationManagement.ChatSystemManagement.Queries;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace InternSystem.API.Controllers.Communication
 {
@@ -13,16 +10,20 @@ namespace InternSystem.API.Controllers.Communication
     [ApiController]
     public class ChatInSystemController : ControllerBase
     {
+        private readonly IMediatorService _mediatorService;
 
-
-        private readonly IMediator _mediator;
-
-        public ChatInSystemController(IMediator mediator)
+        public ChatInSystemController(IMediatorService mediatorService)
         {
-            _mediator = mediator;
+            _mediatorService = mediatorService;
         }
 
-        [HttpGet("Get_Message_History")]
+        /// <summary>
+        /// Lấy lịch sử tin nhắn giữa người gửi và người nhận.
+        /// </summary>
+        /// <param name="idSender"></param>
+        /// <param name="idReceiver"></param>
+        /// <returns></returns>
+        [HttpGet("get-message-history")]
         public async Task<ActionResult<List<GetMessageHistoryResponse>>> GetMessageHistory([FromQuery] string idSender, [FromQuery] string idReceiver)
         {
             var query = new GetMessageHistoryQuery
@@ -30,11 +31,16 @@ namespace InternSystem.API.Controllers.Communication
                 IdSender = idSender,
                 IdReceiver = idReceiver
             };
-            var messages = await _mediator.Send(query);
+            var messages = await _mediatorService.Send(query);
             return Ok(messages);
         }
 
-        [HttpPost("Send_Message")]
+        /// <summary>
+        /// Gửi tin nhắn.
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [HttpPost("send-message")]
         public async Task<IActionResult> SendMessage([FromBody] SendMessageCommand command)
         {
             var validator = new SendMessageCommandValidator();
@@ -47,7 +53,7 @@ namespace InternSystem.API.Controllers.Communication
 
             try
             {
-                var result = await _mediator.Send(command);
+                var result = await _mediatorService.Send(command);
                 if (result)
                 {
                     return Ok("Message sent successfully");
@@ -66,7 +72,13 @@ namespace InternSystem.API.Controllers.Communication
                 return StatusCode(500, "An error occurred while processing your request");
             }
         }
-        [HttpDelete("Delete_Message/{messageId}")]
+
+        /// <summary>
+        /// Xóa tin nhắn theo Id.
+        /// </summary>
+        /// <param name="messageId"></param>
+        /// <returns></returns>
+        [HttpDelete("delete-message/{messageId}")]
         public async Task<IActionResult> DeleteMessage(string messageId)
         {
             var command = new DeleteMessageCommand(messageId);
@@ -80,7 +92,7 @@ namespace InternSystem.API.Controllers.Communication
 
             try
             {
-                var result = await _mediator.Send(command);
+                var result = await _mediatorService.Send(command);
                 if (result)
                 {
                     return Ok("Message deleted successfully");
@@ -100,7 +112,12 @@ namespace InternSystem.API.Controllers.Communication
             }
         }
 
-        [HttpPut("Update_Message")]
+        /// <summary>
+        /// Cập nhật tin nhắn.
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [HttpPut("update-message")]
         public async Task<IActionResult> UpdateMessage([FromBody] UpdateMessageCommand command)
         {
             var validator = new UpdateMessageCommandValidator();
@@ -113,7 +130,7 @@ namespace InternSystem.API.Controllers.Communication
 
             try
             {
-                var result = await _mediator.Send(command);
+                var result = await _mediatorService.Send(command);
                 if (result)
                 {
                     return Ok("Message updated successfully");
@@ -133,5 +150,4 @@ namespace InternSystem.API.Controllers.Communication
             }
         }
     }
-    
 }

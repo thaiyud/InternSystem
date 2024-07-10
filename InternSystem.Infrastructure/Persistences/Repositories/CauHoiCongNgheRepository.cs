@@ -2,11 +2,7 @@
 using InternSystem.Domain.Entities;
 using InternSystem.Infrastructure.Persistences.DBContext;
 using InternSystem.Infrastructure.Persistences.Repositories.BaseRepositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Infrastructure.Persistences.Repositories
 {
@@ -17,5 +13,17 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
         {
             _context = context;
         }
+        public async Task<bool> HasRelatedRecordsAsync(int cauHoiId)
+        {
+            return await _context.CauHoiCongNghes
+                .AnyAsync(chcn => chcn.IdCauHoi == cauHoiId && chcn.IsActive && !chcn.IsDelete);
+        }
+
+        public async Task<IEnumerable<CauHoiCongNghe>> GetByCauHoiIdAsync(int cauHoiId)
+        {
+            return await _context.CauHoiCongNghes
+                .Where(chcn => chcn.IdCauHoi == cauHoiId && chcn.IsActive && !chcn.IsDelete)
+                .ToListAsync();
+        } 
     }
 }

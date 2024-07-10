@@ -1,7 +1,7 @@
-﻿
+﻿using System.Linq.Expressions;
 using InternSystem.Application.Common.Persistences.IRepositories;
-using InternSystem.Application.Features.InternManagement.Models;
-using InternSystem.Application.Features.InternManagement.Queries;
+using InternSystem.Application.Features.InternManagement.InternManagement.Models;
+using InternSystem.Application.Features.InternManagement.InternManagement.Queries;
 using InternSystem.Domain.Entities;
 using InternSystem.Infrastructure.Persistences.DBContext;
 using InternSystem.Infrastructure.Persistences.Repositories.BaseRepositories;
@@ -23,10 +23,17 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
             var searchTerm = truongHocName.Trim().ToLower();
             return await _dbContext.InternInfos
                 .Include(ii => ii.TruongHoc)
-                .Where(ii => ii.TruongHoc.Ten.ToLower().Contains(searchTerm))
+                .Where(ii => ii.TruongHoc.Ten.ToLower().Contains(searchTerm) || ii.IsActive == true || ii.IsDelete == false)
                 .ToListAsync();
         }
 
+        //GetInternInfo by KyThucTap Id
+        public async Task<IEnumerable<InternInfo>> GetInternInfoByKyThucTapId(int KyThucTapId)
+        {
+            return await _dbContext.InternInfos
+            .Where(internInfo => internInfo.KyThucTapId == KyThucTapId)
+            .ToListAsync();
+        }
         public async Task<int> GetTotalInternStudentsByDateRangeAsync(DateTime startDate, DateTime endDate)
         {
             var totalInternStudents = await _dbContext.InternInfos
@@ -64,7 +71,7 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
             return result;
         }
 
-        public async Task<GetInternInfoResponse<InternInfo>> GetInternInfosAsync(GetInternInfoQuery query)
+        public async Task<IEnumerable<InternInfo>> GetInternInfosAsync(GetInternInfoQuery query)
         {
             var queryable = _dbContext.InternInfos.AsQueryable();
             if (!string.IsNullOrEmpty(query.HoTen))
@@ -91,11 +98,13 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
                 queryable = queryable.Where(ii => ii.StartDate >= query.StartDate);
             if (query.EndDate.HasValue)
                 queryable = queryable.Where(ii => ii.EndDate <= query.EndDate);
+            if (!string.IsNullOrEmpty(query.TrangThai))
+                queryable = queryable.Where(ii => ii.TrangThai.Contains(query.TrangThai));
 
-            var totalCount = await queryable.CountAsync();
             var results = await queryable.ToListAsync();
-            return new GetInternInfoResponse<InternInfo>(results, totalCount);
+            return results;
         }
+
         public async Task<List<GetInternStatsBySchoolIdResponse>> GetInternStatsBySchoolIdAsync(int schoolId)
         {
             var responseList = new List<GetInternStatsBySchoolIdResponse>();
@@ -125,18 +134,15 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
             {
                 return new List<InternInfo>();
             }
-            var dateOnly = day.Value.Date;
+            var dateOfSelectedDay = day.Value.Date;
 
             var internsForInterviews = await (from lich in _dbContext.LichPhongVans
                                               join intern in _dbContext.InternInfos
                                               on lich.IdNguoiDuocPhongVan equals intern.Id
-                                              where lich.ThoiGianPhongVan.Date == dateOnly
+                                              where lich.ThoiGianPhongVan.Date == dateOfSelectedDay
                                               select intern).ToListAsync();
             return internsForInterviews;
         }
-
-        
-
 
         public async Task<int> GetAllInterning()
         {
@@ -155,6 +161,21 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
         {
             var receivedCVList = await _dbContext.InternInfos.Where(x => x.LinkCv != null).ToListAsync();
             return receivedCVList.Count;
+        }
+        public async Task<IEnumerable<InternInfo>> GetFilteredInternInfosByStatus(string trangThai)
+        {
+            var query = _dbContext.InternInfos.AsQueryable();
+            if (!string.IsNullOrEmpty(trangThai))
+            {
+                query = query.Where(i => i.TrangThai == trangThai && i.IsDelete == false && i.IsActive == true);
+            }
+            var result = await query.ToListAsync();
+            return result;
+        }
+
+        public async Task<bool> ExistsAsync(Expression<Func<InternInfo, bool>> predicate)
+        {
+            return await _dbContext.Set<InternInfo>().AnyAsync(predicate);
         }
     }
 }

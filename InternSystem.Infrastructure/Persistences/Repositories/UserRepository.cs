@@ -35,8 +35,6 @@ public class UserRepository : BaseRepository<AspNetUser>, IUserRepository
         await _dbContext.SaveChangesAsync();
     }
 
-
-
     public async Task<AspNetUser> GetUserByRefreshTokenAsync(string resetToken)
     {
         return await _dbContext.Users.FirstOrDefaultAsync(u => u.ResetToken == resetToken);

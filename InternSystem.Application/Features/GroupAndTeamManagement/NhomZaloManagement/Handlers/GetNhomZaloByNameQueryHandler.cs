@@ -28,7 +28,7 @@ namespace InternSystem.Application.Features.GroupAndTeamManagement.NhomZaloManag
                 var nhomZalo = await _unitOfWork.NhomZaloRepository.GetNhomZalosByNameAsync(request.TenNhom);
                 if (nhomZalo == null)
                 {
-                    throw new NotFoundException(nameof(NhomZalo), request.TenNhom);
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "không tìm thấy nhóm zalo");
                 }
 
                 return _mapper.Map<GetNhomZaloResponse>(nhomZalo);

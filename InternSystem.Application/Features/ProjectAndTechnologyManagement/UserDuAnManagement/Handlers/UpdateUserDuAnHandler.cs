@@ -39,11 +39,18 @@ namespace InternSystem.Application.Features.ProjectAndTechnologyManagement.UserD
                     if (leader == null)
                         throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy leader");
                 }
-                if (!(request.DuAnId < 0))
+
+                DuAn existingDA = await _unitOfWork.DuAnRepository.GetByIdAsync(request.DuAnId!);
+                if (existingDA == null)
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy dự án");
+
+                var duans = await _unitOfWork.UserDuAnRepository.GetAllAsync();
+                var checkUserDuAn = duans.FirstOrDefault(lp => lp.UserId == request.UserId 
+                                                        && lp.DuAnId == request.DuAnId 
+                                                        && lp.IdViTri == request.IdViTri);
+                if (checkUserDuAn != null)
                 {
-                    DuAn existingDA = await _unitOfWork.DuAnRepository.GetByIdAsync(request.DuAnId!);
-                    if (existingDA == null)
-                        throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy dự án");
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Người dùng đã có vị trí và dự án này.");
                 }
 
                 existingUserDA = _mapper.Map(request, existingUserDA);

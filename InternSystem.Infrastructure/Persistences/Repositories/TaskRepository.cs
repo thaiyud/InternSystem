@@ -39,14 +39,14 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
         public async Task<IEnumerable<Tasks>> GetTasksByMoTaAsync(string mota)
         {
             return await _applicationDbContext.Tasks
-                .Where(t => t.MoTa.ToLower().Trim().Contains(mota.Trim().ToLower()))
+                .Where(t => t.MoTa.ToLower().Trim().Contains(mota.Trim().ToLower()) && t.IsActive == true && t.IsDelete == false)
                 .ToListAsync();
         }
 
         public async Task<IEnumerable<Tasks>> GetTasksByNoiDungAsync(string noidung)
         {
             return await _applicationDbContext.Tasks
-              .Where(t => t.NoiDung.ToLower().Trim().Contains(noidung.Trim().ToLower()))
+              .Where(t => t.NoiDung.ToLower().Trim().Contains(noidung.Trim().ToLower()) && t.IsActive == true && t.IsDelete == false)
               .ToListAsync();
         }
 

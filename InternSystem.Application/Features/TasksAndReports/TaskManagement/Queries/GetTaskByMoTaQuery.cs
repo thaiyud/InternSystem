@@ -9,12 +9,12 @@ namespace InternSystem.Application.Features.TasksAndReports.TaskManagement.Queri
     {
         public GetTaskByMotaQueryValidator()
         {
-            RuleFor(model => model.mota).NotEmpty().WithMessage("Mota is required");
+            RuleFor(model => model.MoTa).NotEmpty().WithMessage("Mota is required");
         }
     }
 
     public class GetTaskByMoTaQuery : IRequest<IEnumerable<TaskResponse>>
     {
-        public string mota { get; set; } = string.Empty;
+        public string MoTa { get; set; } = string.Empty;
     }
 }

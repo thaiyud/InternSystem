@@ -32,7 +32,10 @@ namespace InternSystem.Application.Features.ComunicationManagement.ThongBaoManag
             {
                 ThongBao? existingThongBao = await _unitOfWork.ThongBaoRepository.GetByIdAsync(request.Id) ??
                     throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy thông báo");
-
+                if(request.IdNguoiNhan == request.IdNguoiGui)
+                {
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Người nhận và người gửi không được giống nhau.");
+                }
                 existingThongBao = _mapper.Map(request, existingThongBao);
                 existingThongBao.LastUpdatedBy = _userContextService.GetCurrentUserId();
                 existingThongBao.LastUpdatedTime = _timeService.SystemTimeNow;

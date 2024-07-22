@@ -31,14 +31,6 @@ namespace InternSystem.Application.Features.TasksAndReports.NhomZaloTaskManageme
                 if (existNhomZaloTask == null || existNhomZaloTask.IsDelete == true)
                     throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstants.BADREQUEST, "Không tìm thấy task này trong nhóm Zalo");
 
-                Tasks task = await _unitOfWork.TaskRepository.GetByIdAsync(existNhomZaloTask.TaskId);
-                if (task != null)
-                    throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstants.BADREQUEST, "Không thể xóa vì có task liên quan vẫn còn tồn tại.");
-
-                NhomZalo nhomZalo = await _unitOfWork.NhomZaloRepository.GetByIdAsync(existNhomZaloTask.NhomZaloId);
-                if (nhomZalo != null)
-                    throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstants.BADREQUEST, "Không thể xóa nhóm vì có nhóm zalo liên quan vẫn còn tồn tại.");
-
                 existNhomZaloTask.DeletedBy = currentUserId;
                 existNhomZaloTask.DeletedTime = _timeService.SystemTimeNow;
                 existNhomZaloTask.IsActive = false;

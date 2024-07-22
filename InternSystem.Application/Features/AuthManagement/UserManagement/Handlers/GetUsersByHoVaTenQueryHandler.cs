@@ -25,7 +25,7 @@ namespace InternSystem.Application.Features.AuthManagement.UserManagement.Handle
             try
             {
                 var user = await _unitOfWork.UserRepository.GetUsersByHoVaTenAsync(request.HoVaTen);
-                if (user == null || user.Any())
+                if (user == null || !user.Any())
                 {
                     throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy người dùng");
                 }

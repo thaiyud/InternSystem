@@ -46,7 +46,7 @@ namespace InternSystem.Application.Features.InternManagement.InternManagement.Ha
             {
                 var response = new UploadFileResponse();
                 response.IsSuccess = true;
-                response.Message = "successful";
+                response.Message = "thành công";
 
                 // Read Excel file using injected fileService
                 var dtos = _fileService.ReadFromExcel(request.File.OpenReadStream());
@@ -85,7 +85,7 @@ namespace InternSystem.Application.Features.InternManagement.InternManagement.Ha
                         // Rollback InternInfo creation
                         _unitOfWork.InternInfoRepository.Remove(internInfo);
                         await _unitOfWork.SaveChangeAsync();
-                        throw new Exception($"Failed to create user: {errorMessage}");
+                        throw new ErrorException(StatusCodes.Status500InternalServerError, ResponseCodeConstants.INTERNAL_SERVER_ERROR, $"Failed to create user: {errorMessage}");
                         response.IsSuccess = false;
                         response.Message = "fail";
                         return response;
@@ -98,7 +98,7 @@ namespace InternSystem.Application.Features.InternManagement.InternManagement.Ha
                         var roleExists = await _roleManager.RoleExistsAsync(internRole);
                         if (!roleExists)
                         {
-                            throw new Exception($"Role '{internRole}' does not exist in the database");
+                            throw new ErrorException(StatusCodes.Status500InternalServerError, ResponseCodeConstants.INTERNAL_SERVER_ERROR, $"Role '{internRole}' does not exist in the database");
                         }
                         await _userManager.AddToRoleAsync(user, internRole);
 
@@ -111,7 +111,7 @@ namespace InternSystem.Application.Features.InternManagement.InternManagement.Ha
 
                         if (!emailSent)
                         {
-                            throw new Exception($"Failed to send email notification to {user.Email}");
+                            throw new ErrorException(StatusCodes.Status500InternalServerError, ResponseCodeConstants.INTERNAL_SERVER_ERROR, $"Failed to send email notification to {user.Email}");
                         }
                     }
                 }

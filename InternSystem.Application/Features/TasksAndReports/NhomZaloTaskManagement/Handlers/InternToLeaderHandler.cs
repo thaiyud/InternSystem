@@ -30,60 +30,63 @@ namespace InternSystem.Application.Features.TasksAndReports.NhomZaloTaskManageme
             {
                 var currentUserId = _userContextService.GetCurrentUserId();
 
+                // Tìm nhóm Zalo cần cập nhật leader
                 var existingNhomZalo = await _unitOfWork.NhomZaloRepository.GetByIdAsync(request.NhomZaloId);
                 if (existingNhomZalo == null)
                 {
                     throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy nhóm Zalo");
                 }
 
-                var mentor = await _unitOfWork.UserNhomZaloRepository.GetByUserIdAndNhomZaloIdAsync(_userContextService.GetCurrentUserId(), existingNhomZalo.Id);
-                if (mentor == null || !mentor.IsMentor || mentor.IsDelete == true)
-                {
-                    throw new ErrorException(StatusCodes.Status409Conflict, ResponseCodeConstants.BADREQUEST, "Người dùng chưa phải là mentor");
-                }
+                // Kiểm tra 'người dùng' là 'mentor' của 'nhóm Zalo' mới được phép cập nhật
+                //var mentor = await _unitOfWork.UserNhomZaloRepository.GetByUserIdAndNhomZaloIdAsync(_userContextService.GetCurrentUserId(), existingNhomZalo.Id);
+                //if (mentor == null || !mentor.IsMentor || mentor.IsDelete == true)
+                //{
+                //    throw new ErrorException(StatusCodes.Status409Conflict, ResponseCodeConstants.BADREQUEST, "Người dùng chưa phải là mentor");
+                //}
 
+                // Kiểm tra người dùng có tồn tại hay không
                 var member = await _unitOfWork.UserNhomZaloRepository.GetByUserIdAndNhomZaloIdAsync(request.MemberId, existingNhomZalo.Id);
                 if (member == null || member.IsDelete == true)
                 {
                     throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy người dùng");
                 }
 
-                var nhomZaloTask = await _unitOfWork.NhomZaloTaskRepository.GetTaskByNhomZaloIdAsync(existingNhomZalo.Id);
-                foreach (var item in nhomZaloTask)
-                {
-                    var tasks = await _unitOfWork.TaskRepository.GetByIdAsync(item.TaskId);
-                    if (tasks == null || tasks.DuAnId != request.DuanId)
-                    {
-                        throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Dự án không phù hợp với nhóm Zalo");
-                    }
-                }
+                // Tìm task của nhóm zalo cần cập nhật
+                //var taskOfNhomZalo = await _unitOfWork.NhomZaloTaskRepository.GetTaskByNhomZaloIdAsync(existingNhomZalo.Id);
+                //foreach (var item in taskOfNhomZalo)
+                //{
+                //    // lấy task từ NhomZaloTask
+                //    var tasks = await _unitOfWork.TaskRepository.GetByIdAsync(item.TaskId);
+
+                //    // so sánh với dự án muốn cập nhật
+                //    if (tasks == null || tasks.DuAnId != request.DuanId)
+                //    {
+                //        throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Dự án không phù hợp với nhóm Zalo");
+                //    }
+                //}
 
                 member.IsLeader = true;
                 member.LastUpdatedBy = currentUserId;
                 member.LastUpdatedTime = _timeService.SystemTimeNow;
                 await _unitOfWork.UserNhomZaloRepository.UpdateUserNhomZaloAsync(member);
 
-                var projectToUpdate = await _unitOfWork.DuAnRepository.GetByIdAsync(request.DuanId);
-                if (projectToUpdate == null || projectToUpdate.IsDelete == true || projectToUpdate.ThoiGianKetThuc < _timeService.SystemTimeNow)
-                {
-                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy dự án");
-                }
-                projectToUpdate.LeaderId = request.MemberId;
-                projectToUpdate.LastUpdatedBy = currentUserId;
-                projectToUpdate.LastUpdatedTime = _timeService.SystemTimeNow;
-                await _unitOfWork.DuAnRepository.UpdateDuAnAsync(projectToUpdate);
+                // cập nhật leader cho dự án
+                //var projectToUpdate = await _unitOfWork.DuAnRepository.GetByIdAsync(request.DuanId);
+                //if (projectToUpdate == null || projectToUpdate.IsDelete == true || projectToUpdate.ThoiGianKetThuc < _timeService.SystemTimeNow)
+                //{
+                //    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy dự án");
+                //}
+                //projectToUpdate.LeaderId = request.MemberId;
+                //projectToUpdate.LastUpdatedBy = currentUserId;
+                //projectToUpdate.LastUpdatedTime = _timeService.SystemTimeNow;
+                //await _unitOfWork.DuAnRepository.UpdateDuAnAsync(projectToUpdate);
 
                 await _unitOfWork.SaveChangeAsync();
                 var response = new ExampleResponse
                 {
                     NhomZaloId = existingNhomZalo.Id,
                     Leader = member.UserId,
-                    Mentor = mentor.UserId,
-                    Task = new TaskDetails
-                    {
-                        DuanId = projectToUpdate.Id,
-                        Leader = request.MemberId
-                    }
+                    //Mentor = mentor.UserId
                 };
                 return response;
             }

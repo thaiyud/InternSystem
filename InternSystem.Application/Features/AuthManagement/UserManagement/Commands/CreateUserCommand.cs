@@ -9,8 +9,8 @@ namespace InternSystem.Application.Features.AuthManagement.UserManagement.Comman
         public CreateUserCommandValidator()
         {
             RuleFor(model => model.HoVaTen)
-            .NotEmpty().WithMessage("Họ và Tên không được bỏ trống!")
-            .MinimumLength(2).WithMessage("Họ và Tên phải có ít nhất 2 ký tự.");
+                .NotEmpty().WithMessage("Họ và Tên không được bỏ trống!")
+                .MinimumLength(2).WithMessage("Họ và Tên phải có ít nhất 2 ký tự.");
 
             RuleFor(model => model.Email)
                 .NotEmpty().WithMessage("Email không được bỏ trống!")

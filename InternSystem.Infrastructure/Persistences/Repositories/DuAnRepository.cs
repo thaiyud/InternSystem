@@ -24,7 +24,7 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
             string searchTerm = name.Trim().ToLower();
 
             return await _context.DuAns
-                .Where(t => t.Ten.ToLower().Trim().Contains(searchTerm))
+                .Where(t => t.Ten.ToLower().Trim().Contains(searchTerm) && t.IsActive && !t.IsDelete )
                 .ToListAsync();
         }
     }

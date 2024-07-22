@@ -31,6 +31,18 @@ namespace InternSystem.Application.Features.InternManagement.CuocPhongVanManagem
         {
             try
             {
+                AspNetUser nguoiphongvan = await _unitOfWork.UserRepository.GetByIdAsync(request.NguoiCham);
+                if (nguoiphongvan == null)
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy người chấm.");
+
+                CauHoiCongNghe cauHoiCongNghe = await _unitOfWork.CauHoiCongNgheRepository.GetByIdAsync(request.IdCauHoiCongNghe);
+                if (cauHoiCongNghe == null)
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy câu hỏi công nghệ.");
+
+                LichPhongVan lichPhongVan = await _unitOfWork.LichPhongVanRepository.GetByIdAsync(request.IdLichPhongVan);
+                if (lichPhongVan == null)
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy lịch phỏng vấn.");
+
                 var passingRank = _configuration.GetValue<decimal>("PhongVanManagement:PassingRank");
                 var notPass = _configuration.GetValue<string>("PhongVanManagement:NotPass");
 

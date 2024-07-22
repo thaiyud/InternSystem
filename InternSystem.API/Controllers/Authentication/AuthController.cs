@@ -43,7 +43,7 @@ namespace InternSystem.API.Controllers.Authentication
         }
 
         /// <summary>
-        /// Đăng nhập người dùng.
+        /// Đăng nhập.
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
@@ -58,7 +58,22 @@ namespace InternSystem.API.Controllers.Authentication
         }
 
         /// <summary>
-        /// Tạo mới người dùng bởi quản trị viên.
+        /// Đăng ký
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [HttpPost("register")]
+        public async Task<ActionResult<CreateUserResponse>> CreateUser([FromBody] CreateUserCommand command)
+        {
+            var response = await _mediatorService.Send(command);
+            return Ok(new BaseResponseModel<CreateUserResponse>(
+                statusCode: StatusCodes.Status200OK,
+                code: ResponseCodeConstants.SUCCESS,
+                data: response));
+        }
+
+        /// <summary>
+        /// Cập nhật người dùng bởi quản trị viên.
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
@@ -73,7 +88,7 @@ namespace InternSystem.API.Controllers.Authentication
         }
 
         /// <summary>
-        /// Làm mới token.
+        /// Làm mới token. (Use for test)
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>

@@ -44,9 +44,13 @@ namespace InternSystem.Application.Features.TasksAndReports.TaskManagement.Handl
                 //        throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy dự án");
                 //}
 
-                // Kiểm tra thời gian của task và dự án có phù hợp 
-                if (request.HanHoanThanh <= existingDuAn.ThoiGianKetThuc
-                    || request.NgayGiao >= existingDuAn.ThoiGianBatDau)
+                //// Kiểm tra thời gian của task và dự án có phù hợp 
+                //if (request.HanHoanThanh <= existingDuAn.ThoiGianKetThuc
+                //    || request.NgayGiao >= existingDuAn.ThoiGianBatDau)
+                //    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Thời gian của task phải nằm trong khoảng thời gian của dự án");
+
+                if (request.NgayGiao < existingDuAn.ThoiGianBatDau
+                    || request.HanHoanThanh > existingDuAn.ThoiGianKetThuc)
                     throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Thời gian của task phải nằm trong khoảng thời gian của dự án");
 
                 Tasks newTask = _mapper.Map<Tasks>(request);

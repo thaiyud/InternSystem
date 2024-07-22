@@ -37,13 +37,14 @@ namespace InternSystem.Application.Features.TasksAndReports.NhomZaloTaskManageme
                 {
                     throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Nhóm Zalo này không thực hiện task này");
                 }
-                await ValidateAndAssignTaskIdAsync(request, existingNhomZaloTask);
-                await ValidateAndAssignNhomZaloIdAsync(request, existingNhomZaloTask);
 
                 if (existingNhomZaloTask.TaskId == request.TaskId && existingNhomZaloTask.NhomZaloId == request.NhomZaloId)
                 {
                     throw new ErrorException(StatusCodes.Status409Conflict, ResponseCodeConstants.BADREQUEST, "Nhóm đã nhận task này");
                 }
+
+                await ValidateAndAssignTaskIdAsync(request, existingNhomZaloTask);
+                await ValidateAndAssignNhomZaloIdAsync(request, existingNhomZaloTask);
 
                 UpdateTrangThai(existingNhomZaloTask, request.TrangThai);
                 if (IsDoneStatus(request.TrangThai))

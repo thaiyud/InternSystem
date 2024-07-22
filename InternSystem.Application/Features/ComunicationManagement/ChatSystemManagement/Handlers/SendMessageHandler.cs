@@ -53,8 +53,17 @@ namespace InternSystem.Application.Features.ComunicationManagement.ChatSystemMan
                     IdSender = request.IdSender,
                     IdReceiver = request.IdReceiver,
                     MessageText = request.MessageText,
-                    Timestamp = _timeService.SystemTimeNow.DateTime
+                    Timestamp = _timeService.SystemTimeNow.DateTime,
+
+                    CreatedBy = request.IdSender,
+                    LastUpdatedBy = request.IdSender,
+                    CreatedTime = _timeService.SystemTimeNow,
+                    LastUpdatedTime = _timeService.SystemTimeNow,
+                    IsActive = true,
+                    IsDelete = false
                 };
+
+
 
                 await _unitOfWork.MessageRepository.AddAsync(message);
                 await _unitOfWork.SaveChangeAsync();

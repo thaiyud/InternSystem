@@ -35,7 +35,10 @@ namespace InternSystem.Application.Features.ComunicationManagement.ThongBaoManag
 
                 AspNetUser? existingNguoiGui = await _unitOfWork.UserRepository.GetByIdAsync(request.IdNguoiGui)
                     ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy người gửi");
-
+                if (request.IdNguoiNhan == request.IdNguoiGui)
+                {
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Người nhận và người gửi không được giống nhau.");
+                }
                 var currentUser = _userContextService.GetCurrentUserId();
 
                 ThongBao newThongBao = _mapper.Map<ThongBao>(request);

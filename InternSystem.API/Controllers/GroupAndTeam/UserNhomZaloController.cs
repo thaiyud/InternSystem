@@ -90,16 +90,10 @@ namespace InternSystem.API.Controllers.GroupAndTeam
         /// <param name="id"></param>
         /// <param name="command"></param>
         /// <returns></returns>
-        [HttpPut("{id}", Name = nameof(UpdateUserNhomZalo))]
-        public async Task<IActionResult> UpdateUserNhomZalo(int id, [FromBody] UpdateUserNhomZaloCommand command)
+        [HttpPut("update-user-nhom-zalo")]
+        public async Task<IActionResult> UpdateUserNhomZalo([FromBody] UpdateUserNhomZaloCommand command)
         {
-            var wrapper = new UpdateUserNhomZaloCommandWrapper
-            {
-                Id = id,
-                Command = command
-            };
-
-            var response = await _mediatorService.Send(wrapper);
+            var response = await _mediatorService.Send(command);
             return Ok(new BaseResponseModel<UpdateUserNhomZaloResponse>
                 (statusCode: StatusCodes.Status200OK,
                 code: ResponseCodeConstants.SUCCESS,
@@ -111,7 +105,7 @@ namespace InternSystem.API.Controllers.GroupAndTeam
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpDelete("{id}", Name = nameof(DeleteUserNhomZalo))]
+        [HttpDelete("delete-user-nhom-zalo")]
         public async Task<IActionResult> DeleteUserNhomZalo(int id)
         {
             var command = new DeleteUserNhomZaloCommand { Id = id };

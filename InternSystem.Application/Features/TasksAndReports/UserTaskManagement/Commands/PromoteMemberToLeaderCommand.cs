@@ -12,8 +12,8 @@ namespace InternSystem.Application.Features.TasksAndReports.UserTaskManagement.C
                 .NotEmpty().WithMessage("MemberId không được để trống!");
             RuleFor(m => m.NhomZaloId)
                 .NotEmpty().WithMessage("Id nhóm Zalo không được để trống!");
-            RuleFor(m => m.DuanId)
-                .NotEmpty().WithMessage("Id Dự án không được để trống!");
+            //RuleFor(m => m.DuanId)
+            //    .NotEmpty().WithMessage("Id Dự án không được để trống!");
         }
     }
 
@@ -21,6 +21,6 @@ namespace InternSystem.Application.Features.TasksAndReports.UserTaskManagement.C
     {
         public string MemberId { get; set; }
         public int NhomZaloId { get; set; }
-        public int DuanId { get; set; }
+        public int? DuanId { get; set; }
     }
 }

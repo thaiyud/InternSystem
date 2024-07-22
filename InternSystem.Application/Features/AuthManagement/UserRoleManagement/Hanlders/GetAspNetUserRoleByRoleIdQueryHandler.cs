@@ -21,15 +21,16 @@ namespace InternSystem.Application.Features.AuthManagement.UserRoleManagement.Ha
 
         public async Task<List<string>> Handle(GetAspNetUserRoleByRoleIdQuery request, CancellationToken cancellationToken)
         {
-            var role = await _roleManager.FindByIdAsync(request.RoleId);
-            if (role == null)
-            {
-                throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy vai trò");
-            }
-
             try
             {
+                var role = await _roleManager.FindByIdAsync(request.RoleId);
+                if (role == null)
+                {
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy vai trò");
+                }
+
                 var users = await _userManager.GetUsersInRoleAsync(role.Name);
+
                 return users.Select(user => user.UserName).ToList();
             }
             catch (ErrorException ex)

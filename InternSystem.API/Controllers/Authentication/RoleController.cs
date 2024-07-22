@@ -1,5 +1,4 @@
-﻿using InternSystem.API.Utilities;
-using InternSystem.Application.Common.Bases;
+﻿using InternSystem.Application.Common.Bases;
 using InternSystem.Application.Common.Constants;
 using InternSystem.Application.Common.Services.Interfaces;
 using InternSystem.Application.Features.AuthManagement.RoleManagement.Commands;
@@ -7,8 +6,6 @@ using InternSystem.Application.Features.AuthManagement.RoleManagement.Models;
 using InternSystem.Application.Features.AuthManagement.RoleManagement.Queries;
 using InternSystem.Application.Features.AuthManagement.UserRoleManagement.Commands;
 using InternSystem.Application.Features.AuthManagement.UserRoleManagement.Queries;
-using InternSystem.Application.Features.InternManagement.ViTriManagement.Queries;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -125,7 +122,7 @@ namespace InternSystem.API.Controllers.Authentication
         {
             var query = new GetAspNetUserRoleByUserIdQuery { UserId = userId };
             var result = await _mediatorService.Send(query);
-            return Ok(new BaseResponseModel<IEnumerable<string>>(
+            return Ok(new BaseResponseModel(
                 statusCode: StatusCodes.Status200OK,
                 code: ResponseCodeConstants.SUCCESS,
                 data: result));
@@ -137,11 +134,11 @@ namespace InternSystem.API.Controllers.Authentication
         /// <param name="roleId"></param>
         /// <returns></returns>
         [HttpGet("get-user-role-by-roleId/{roleId}")]
-        public async Task<ActionResult<IEnumerable<IdentityUserRole<string>>>> GetByRoleId(string roleId)
+        public async Task<ActionResult<IEnumerable<string>>> GetByRoleId(string roleId)
         {
             var query = new GetAspNetUserRoleByRoleIdQuery { RoleId = roleId };
             var result = await _mediatorService.Send(query);
-            return Ok(new BaseResponseModel<IEnumerable<string>>(
+            return Ok(new BaseResponseModel(
                 statusCode: StatusCodes.Status200OK,
                 code: ResponseCodeConstants.SUCCESS,
                 data: result));

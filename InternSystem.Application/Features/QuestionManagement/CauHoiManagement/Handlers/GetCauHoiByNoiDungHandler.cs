@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace InternSystem.Application.Features.QuestionManagement.CauHoiManagement.Handlers
 {
-    public class GetCauHoiByNoiDungHandler : IRequestHandler<GetCauHoiByNoiDungQuery, GetCauHoiByNoiDungResponse>
+    public class GetCauHoiByNoiDungHandler : IRequestHandler<GetCauHoiByNoiDungQuery, IEnumerable<GetCauHoiByNoiDungResponse>>
     {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
@@ -20,15 +20,43 @@ namespace InternSystem.Application.Features.QuestionManagement.CauHoiManagement.
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
-        public async Task<GetCauHoiByNoiDungResponse> Handle(GetCauHoiByNoiDungQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<GetCauHoiByNoiDungResponse>> Handle(GetCauHoiByNoiDungQuery request, CancellationToken cancellationToken)
         {
             try
             {
-                CauHoi? existingCauHoi = (CauHoi?)(await _unitOfWork.CauHoiRepository.GetCauHoiByNoiDungAsync(request.noidung)
-                    ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Câu hỏi không tồn tại."));
-                var result = existingCauHoi.IsDelete == true
-                    ? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy câu hỏi.")
-                    : _mapper.Map<GetCauHoiByNoiDungResponse>(existingCauHoi);
+                //var cauHoiByNoiDung = (await _unitOfWork.CauHoiRepository.GetCauHoiByNoiDungAsync(request.noidung)
+                //    ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Câu hỏi không tồn tại."));
+                //var result = _mapper.Map<IEnumerable<GetCauHoiByNoiDungResponse>>(cauHoiByNoiDung);
+                //return result;
+
+                //var cauHoiQuery = _unitOfWork.GetRepository<CauHoi>().GetAllQueryable();
+
+                //var cauHoiByNoiDung = cauHoiQuery
+                //    .Where(c => c.NoiDung.Contains(request.noidung) && !c.IsDelete)
+                //    .ToList();
+
+                //if (!cauHoiByNoiDung.Any())
+                //{
+                //    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy câu hỏi hợp lệ.");
+                //}
+
+                //var result = _mapper.Map<IEnumerable<GetCauHoiByNoiDungResponse>>(cauHoiByNoiDung);
+                //return result;
+
+                var repository = _unitOfWork.GetRepository<CauHoi>();
+                var cauHoiQuery = repository.GetAllQueryable();
+
+                var cauHoiByNoiDung = await repository.ToListAsync(
+                    cauHoiQuery.Where(c => c.NoiDung.Contains(request.noidung) && !c.IsDelete),
+                    cancellationToken
+                );
+
+                if (!cauHoiByNoiDung.Any())
+                {
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy câu hỏi hợp lệ.");
+                }
+
+                var result = _mapper.Map<IEnumerable<GetCauHoiByNoiDungResponse>>(cauHoiByNoiDung);
                 return result;
             }
             catch (ErrorException ex)

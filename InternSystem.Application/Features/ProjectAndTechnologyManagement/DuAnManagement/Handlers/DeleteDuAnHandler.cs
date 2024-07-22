@@ -39,7 +39,7 @@ namespace InternSystem.Application.Features.ProjectAndTechnologyManagement.DuAnM
                 var checkDeleteList = tempUserDuan.Where(ch => ch.IsActive && !ch.IsDelete).ToList();
                 if (checkDeleteList.Any(m => m.DuAnId == request.Id))
                 {
-                    throw new ErrorException(StatusCodes.Status409Conflict, ResponseCodeConstants.BADREQUEST, "Không thể xóa dự án vì vẫn còn intern trong kỳ thực tập này.");
+                    throw new ErrorException(StatusCodes.Status409Conflict, ResponseCodeConstants.BADREQUEST, "Không thể xóa dự án vì vẫn còn intern trong dự án này.");
                 }
 
                 // Kiểm tra trước khi xóa id có ở bảng khác không
@@ -47,7 +47,23 @@ namespace InternSystem.Application.Features.ProjectAndTechnologyManagement.DuAnM
                 var checkDeleteTask = tempTask.Where(ch => ch.IsActive && !ch.IsDelete).ToList();
                 if (checkDeleteTask.Any(m => m.DuAnId == request.Id))
                 {
-                    throw new ErrorException(StatusCodes.Status409Conflict, ResponseCodeConstants.BADREQUEST, "Không thể xóa task vì vẫn còn intern trong kỳ thực tập này.");
+                    throw new ErrorException(StatusCodes.Status409Conflict, ResponseCodeConstants.BADREQUEST, "Không thể xóa dự án vì vẫn còn task trong dự án này.");
+                }
+
+                // Kiểm tra trước khi xóa id có ở bảng khác không
+                var tempCongNgheDuAn = await _unitOfWork.CongNgheDuAnRepository.GetAllAsync();
+                var checkDeleteCongNgheDuAn = tempCongNgheDuAn.Where(ch => ch.IsActive && !ch.IsDelete).ToList();
+                if (checkDeleteCongNgheDuAn.Any(m => m.IdDuAn == request.Id))
+                {
+                    throw new ErrorException(StatusCodes.Status409Conflict, ResponseCodeConstants.BADREQUEST, "Không thể xóa dự án vì vẫn còn công nghệ dự án trong dự án này.");
+                }
+
+                // Kiểm tra trước khi xóa id có ở bảng khác không
+                var tempIntern = await _unitOfWork.InternInfoRepository.GetAllAsync();
+                var checkDeleteIntern = tempIntern.Where(ch => ch.IsActive && !ch.IsDelete).ToList();
+                if (checkDeleteIntern.Any(m => m.DuAnId == request.Id))
+                {
+                    throw new ErrorException(StatusCodes.Status409Conflict, ResponseCodeConstants.BADREQUEST, "Không thể xóa dự án vì vẫn còn công nghệ dự án trong dự án này.");
                 }
 
                 var deleteBy = _userContextService.GetCurrentUserId();

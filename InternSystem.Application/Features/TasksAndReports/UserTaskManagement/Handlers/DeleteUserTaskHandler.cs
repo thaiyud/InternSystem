@@ -26,20 +26,23 @@ namespace InternSystem.Application.Features.TasksAndReports.UserTaskManagement.H
         {
             try
             {
+                var currentUserId = _userContextService.GetCurrentUserId();
+                var systemTimeNow = _timeService.SystemTimeNow;
+
                 UserTask? existingUserTask = await _unitOfWork.UserTaskRepository.GetByIdAsync(request.Id);
                 if (existingUserTask == null || existingUserTask.IsDelete == true)
                     return false;
 
-                AspNetUser user = await _unitOfWork.UserRepository.GetByIdAsync(existingUserTask.UserId);
-                if (user != null)
-                    throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstants.BADREQUEST, "Không thể xóa ReportTask vì có User liên quan vẫn còn tồn tại.");
+                //AspNetUser user = await _unitOfWork.UserRepository.GetByIdAsync(existingUserTask.UserId);
+                //if (user != null)
+                //    throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstants.BADREQUEST, "Không thể xóa ReportTask vì có User liên quan vẫn còn tồn tại.");
 
-                Tasks task = await _unitOfWork.TaskRepository.GetByIdAsync(existingUserTask.TaskId);
-                if (task != null)
-                    throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstants.BADREQUEST, "Không thể xóa ReportTask vì có Tasks liên quan vẫn còn tồn tại.");
+                //Tasks task = await _unitOfWork.TaskRepository.GetByIdAsync(existingUserTask.TaskId);
+                //if (task != null)
+                //    throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstants.BADREQUEST, "Không thể xóa ReportTask vì có Tasks liên quan vẫn còn tồn tại.");
 
-                existingUserTask.DeletedBy = _userContextService.GetCurrentUserId();
-                existingUserTask.DeletedTime = _timeService.SystemTimeNow;
+                existingUserTask.DeletedBy = currentUserId;
+                existingUserTask.DeletedTime = systemTimeNow;
                 existingUserTask.IsActive = false;
                 existingUserTask.IsDelete = true;
                 await _unitOfWork.SaveChangeAsync();

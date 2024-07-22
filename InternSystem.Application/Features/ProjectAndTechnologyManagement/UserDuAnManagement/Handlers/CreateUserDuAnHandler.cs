@@ -38,6 +38,10 @@ namespace InternSystem.Application.Features.ProjectAndTechnologyManagement.UserD
                 if (user == null || user.IsDelete)
                     throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy người dùng");
 
+                var vitri = await _unitOfWork.ViTriRepository.GetByIdAsync(request.IdViTri);
+                if (vitri == null || vitri.IsDelete)
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy vị trí");
+
 
                 UserDuAn newUserDuAn = _mapper.Map<UserDuAn>(request);
                 newUserDuAn.CreatedBy = _userContextService.GetCurrentUserId();

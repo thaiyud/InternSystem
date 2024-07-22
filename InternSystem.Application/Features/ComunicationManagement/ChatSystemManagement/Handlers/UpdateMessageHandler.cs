@@ -12,17 +12,22 @@ namespace InternSystem.Application.Features.ComunicationManagement.ChatSystemMan
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IChatService _chatService;
+        private readonly ITimeService _timeService;
+        private readonly IUserContextService _userContextService;
 
-        public UpdateMessageHandler(IUnitOfWork unitOfWork, IChatService chatService)
+        public UpdateMessageHandler(IUnitOfWork unitOfWork, IChatService chatService, ITimeService timeService, IUserContextService userContextService)
         {
             _unitOfWork = unitOfWork;
             _chatService = chatService;
+            _timeService = timeService;
+            _userContextService = userContextService;
         }
 
         public async Task<bool> Handle(UpdateMessageCommand request, CancellationToken cancellationToken)
         {
             try
-            {
+            { 
+                string currentUserId = _userContextService.GetCurrentUserId();
                 var message = await _unitOfWork.MessageRepository.GetByIdAsync(request.MessageId);
                 if (message == null)
                 {
@@ -30,6 +35,9 @@ namespace InternSystem.Application.Features.ComunicationManagement.ChatSystemMan
                 }
 
                 message.MessageText = request.NewMessageText;
+
+                message.LastUpdatedBy = currentUserId;
+                message.LastUpdatedTime = _timeService.SystemTimeNow;
                 _unitOfWork.MessageRepository.UpdateMessageAsync(message);
                 await _unitOfWork.SaveChangeAsync();
 

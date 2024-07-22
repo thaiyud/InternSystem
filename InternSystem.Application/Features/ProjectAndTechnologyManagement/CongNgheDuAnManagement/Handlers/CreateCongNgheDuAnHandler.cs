@@ -30,6 +30,9 @@ namespace InternSystem.Application.Features.ProjectAndTechnologyManagement.CongN
         {
             try
             {
+                var currentUserId = _userContextService.GetCurrentUserId();
+                var systemTimeNow = _timeService.SystemTimeNow;
+
                 CongNghe? existingCN = await _unitOfWork.CongNgheRepository.GetByIdAsync(request.IdCongNghe);
                 if (existingCN == null || existingCN.IsDelete)
                     throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy công nghệ");
@@ -39,9 +42,10 @@ namespace InternSystem.Application.Features.ProjectAndTechnologyManagement.CongN
                     throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy dự án");
 
                 CongNgheDuAn newCNDA = _mapper.Map<CongNgheDuAn>(request);
-                newCNDA.LastUpdatedBy = _userContextService.GetCurrentUserId();
-                newCNDA.CreatedTime = _timeService.SystemTimeNow;
-                newCNDA.LastUpdatedTime = _timeService.SystemTimeNow;
+                newCNDA.LastUpdatedBy = currentUserId;
+                newCNDA.CreatedBy = currentUserId;
+                newCNDA.CreatedTime = systemTimeNow;
+                newCNDA.LastUpdatedTime = systemTimeNow;
                 newCNDA = await _unitOfWork.CongNgheDuAnRepository.AddAsync(newCNDA);
 
                 await _unitOfWork.SaveChangeAsync();

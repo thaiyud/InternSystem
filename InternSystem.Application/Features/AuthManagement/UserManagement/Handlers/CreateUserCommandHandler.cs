@@ -3,6 +3,7 @@ using InternSystem.Application.Common.Constants;
 using InternSystem.Application.Common.Persistences.IRepositories;
 using InternSystem.Application.Features.AuthManagement.UserManagement.Commands;
 using InternSystem.Application.Features.AuthManagement.UserManagement.Models;
+using InternSystem.Application.Features.ProjectAndTechnologyManagement.DuAnManagement.Models;
 using InternSystem.Domain.BaseException;
 using InternSystem.Domain.Entities;
 using MediatR;
@@ -43,6 +44,19 @@ namespace InternSystem.Application.Features.AuthManagement.UserManagement.Handle
                 {
                     if (await _unitOfWork.InternInfoRepository.GetByIdAsync(request.InternInfoId) == null)
                         throw new ArgumentNullException(nameof(request.InternInfoId), "Không tìm thấy thông tin thực tập sinh");
+
+                    var repository = _unitOfWork.GetRepository<AspNetUser>();
+                    var userQuery = repository.GetAllQueryable();
+
+                    var existingUserWithInternId = await repository.ToListAsync(
+                        userQuery.Where(c => c.InternInfoId == request.InternInfoId && !c.IsDelete),
+                        cancellationToken
+                    );
+
+                    if (existingUserWithInternId.Any())
+                    {
+                        throw new ErrorException(StatusCodes.Status409Conflict, ResponseCodeConstants.BADREQUEST, "Intern đã có tài khoản");
+                    }
                 }
 
                 AspNetUser newUser = _mapper.Map<AspNetUser>(request);

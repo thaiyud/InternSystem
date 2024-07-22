@@ -7,6 +7,7 @@ using InternSystem.Domain.BaseException;
 using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.ProjectAndTechnologyManagement.DuAnManagement.Handlers
 {
@@ -25,11 +26,23 @@ namespace InternSystem.Application.Features.ProjectAndTechnologyManagement.DuAnM
         {
             try
             {
-                DuAn? existingDA = await _unitOfWork.DuAnRepository.GetByIdAsync(request.Id);
-                if (existingDA == null || existingDA.IsDelete == true)
+                var repository = _unitOfWork.GetRepository<DuAn>();
+
+                var duAnById = await repository
+                    .GetAllQueryable()
+                    .Include(da => da.Leader)
+                    .Include(d => d.CongNgheDuAns)
+                        .ThenInclude(cnda => cnda.CongNghe)
+                    .FirstOrDefaultAsync(da => da.Id == request.Id && !da.IsDelete);
+
+                if (duAnById == null || duAnById.IsDelete)
                     throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy Dự Án");
 
-                return _mapper.Map<GetDuAnByIdResponse>(existingDA);
+                var response = _mapper.Map<GetDuAnByIdResponse>(duAnById);
+
+                response.TenCongNghe = duAnById.CongNgheDuAns.Select(cnda => cnda.CongNghe.Ten).ToList();
+
+                return response;
             }
             catch (ErrorException ex)
             {

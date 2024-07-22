@@ -24,11 +24,6 @@ public class UserRepository : BaseRepository<AspNetUser>, IUserRepository
         return users;
     }
 
-    public async Task<AspNetUser> GetByIdAsync(string id)
-    {
-        return await _dbContext.Users.FindAsync(id);
-    }
-
     public async Task UpdateAsync(AspNetUser user)
     {
         _dbContext.Users.Update(user);
@@ -38,12 +33,35 @@ public class UserRepository : BaseRepository<AspNetUser>, IUserRepository
     public async Task<AspNetUser> GetUserByRefreshTokenAsync(string resetToken)
     {
         return await _dbContext.Users.FirstOrDefaultAsync(u => u.ResetToken == resetToken);
-
     }
 
     public async Task UpdateUserAsync(AspNetUser user)
     {
         _dbContext.Users.Update(user);
         await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<string> GetUserNameByIdAsync(object id)
+    {
+        var user = await _dbContext.Set<AspNetUser>().FindAsync(id);
+        return user.HoVaTen;
+    }
+
+    public async Task<Dictionary<string, string>> GetFullNamesByIdsAsync(IEnumerable<string> userIds)
+    {
+        // Ensure that the list of userIds is not empty
+        if (!userIds.Any())
+        {
+            return new Dictionary<string, string>();
+        }
+
+        // Query the database for user names
+        var users = await _dbContext.Users
+            .Where(user => userIds.Contains(user.Id))
+            .Select(user => new { user.Id, user.HoVaTen })
+            .ToListAsync();
+
+        // Convert the list of users to a dictionary
+        return users.ToDictionary(u => u.Id, u => u.HoVaTen);
     }
 }

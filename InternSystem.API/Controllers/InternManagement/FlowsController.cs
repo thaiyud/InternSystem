@@ -23,15 +23,15 @@ namespace InternSystem.API.Controllers.InternManagement
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        [HttpPost("userNhomZalo/create-by-id-phongvan")]
-        public async Task<IActionResult> CreateUserNhomZaloByIdPhongvan([FromBody] CreateUserToNhomZaloByIdCommand command)
-        {
-            var response = await _mediatorService.Send(command);
-            return Ok(new BaseResponseModel(
-                statusCode: StatusCodes.Status200OK,
-                code: ResponseCodeConstants.SUCCESS,
-                data: response));
-        }
+        //[HttpPost("userNhomZalo/create-by-id-phongvan")]
+        //public async Task<IActionResult> CreateUserNhomZaloByIdPhongvan([FromBody] CreateUserToNhomZaloByIdCommand command)
+        //{
+        //    var response = await _mediatorService.Send(command);
+        //    return Ok(new BaseResponseModel(
+        //        statusCode: StatusCodes.Status200OK,
+        //        code: ResponseCodeConstants.SUCCESS,
+        //        data: response));
+        //}
 
         /// <summary>
         /// Tạo task của nhóm Zalo.
@@ -79,7 +79,7 @@ namespace InternSystem.API.Controllers.InternManagement
         }
 
         /// <summary>
-        /// Lấy danh sách nhóm Zalo. 
+        /// Lấy danh sách tất cả task nhóm Zalo. 
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>

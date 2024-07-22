@@ -126,13 +126,17 @@ namespace InternSystem.Application.Common.Mapping
             CreateMap<KyThucTap, GetPagedKyThucTapsResponse>().ReverseMap();
 
             // DuAn mapping
-            CreateMap<DuAn, GetDuAnByIdResponse>();
+            CreateMap<DuAn, GetDuAnByIdResponse>()
+                .ForMember(dest => dest.LeaderName, opt => opt.MapFrom(src => src.Leader.HoVaTen));
             CreateMap<DuAn, CreateDuAnCommand>().ReverseMap();
             CreateMap<DuAn, CreateDuAnResponse>();
             CreateMap<DuAn, UpdateDuAnCommand>().ReverseMap()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<DuAn, UpdateDuAnResponse>();
-            CreateMap<DuAn, GetAllDuAnResponse>();
+            CreateMap<DuAn, GetAllDuAnResponse>()
+                .ForMember(dest => dest.LeaderName, opt => opt.MapFrom(src => src.Leader.HoVaTen))
+                .ForMember(dest => dest.TenCongNghe, opt => opt.MapFrom(src => src.CongNgheDuAns.Select(cnda => cnda.CongNghe.Ten).ToList()))
+                .ReverseMap();
             CreateMap<DuAn, GetDuAnByTenResponse>();
             CreateMap<DuAn, GetPagedDuAnsResponse>().ReverseMap();
 
@@ -185,22 +189,28 @@ namespace InternSystem.Application.Common.Mapping
 
             // CongNghe mapping
             CreateMap<CongNghe, CreateCongNgheCommand>().ReverseMap();
-            CreateMap<CongNghe, CreateCongNgheResponse>().ForMember(dest => dest.CreatedTime, opt => opt.MapFrom(src => src.CreatedTime.DateTime));
-            CreateMap<CongNghe, UpdateCongNgheCommand>().ReverseMap().ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<CongNghe, CreateCongNgheResponse>()
+                .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom(src => src.CreatedTime.DateTime));
+            CreateMap<CongNghe, UpdateCongNgheCommand>()
+                .ReverseMap()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<CongNghe, UpdateCongNgheResponse>();
             CreateMap<CongNghe, GetAllCongNgheResponse>().ReverseMap();
-            CreateMap<CongNghe, GetCongNgheByIdResponse>().ForMember(dest => dest.CreatedTime, opt => opt.MapFrom(src => src.CreatedTime.DateTime));
+            CreateMap<CongNghe, GetCongNgheByIdResponse>()
+                .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom(src => src.CreatedTime.DateTime));
             CreateMap<CongNghe, GetCongNgheByTenResponse>();
             CreateMap<CongNghe, GetPagedCongNghesResponse>().ReverseMap();
 
             // CongNgheDuAn mapping
             CreateMap<CongNgheDuAn, CreateCongNgheDuAnCommand>().ReverseMap();
-            CreateMap<CongNgheDuAn, CreateCongNgheDuAnResponse>().ForMember(dest => dest.CreatedTime, opt => opt.MapFrom(src => src.CreatedTime.DateTime));
+            CreateMap<CongNgheDuAn, CreateCongNgheDuAnResponse>()
+                .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom(src => src.CreatedTime.DateTime));
             CreateMap<CongNgheDuAn, UpdateCongNgheDuAnCommand>().ReverseMap()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<CongNgheDuAn, UpdateCongNgheDuAnResponse>();
             CreateMap<CongNgheDuAn, GetAllCongNgheDuAnResponse>().ReverseMap();
-            CreateMap<CongNgheDuAn, GetCongNgheDuAnByIdResponse>().ForMember(dest => dest.CreatedTime, opt => opt.MapFrom(src => src.CreatedTime.DateTime));
+            CreateMap<CongNgheDuAn, GetCongNgheDuAnByIdResponse>()
+                .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom(src => src.CreatedTime.DateTime));
             CreateMap<CongNgheDuAn, GetPagedCongNgheDuAnsResponse>().ReverseMap();
 
             // ThongBao mapping 

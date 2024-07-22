@@ -21,7 +21,7 @@ namespace InternSystem.Application.Features.AuthManagement.RoleManagement.Handle
                 var role = await _roleManager.FindByNameAsync(request.Name.ToLower());
                 if (role == null)
                 {
-                    return false; // Role not found
+                    throw new ErrorException(StatusCodes.Status409Conflict, ResponseCodeConstants.BADREQUEST, "Vai trò không tồn tại.");
                 }
 
                 var result = await _roleManager.DeleteAsync(role);

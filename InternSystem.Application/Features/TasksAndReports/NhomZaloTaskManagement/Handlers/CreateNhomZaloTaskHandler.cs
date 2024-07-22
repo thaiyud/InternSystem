@@ -32,22 +32,22 @@ namespace InternSystem.Application.Features.TasksAndReports.NhomZaloTaskManageme
         {
             try
             {
+                var currentUserId = _userContextService.GetCurrentUserId();
+                var systemTimeNow = _timeService.SystemTimeNow;
+
                 NhomZalo? existingNhomZalo = await _unitOfWork.NhomZaloRepository.GetByIdAsync(request.NhomZaloId);
-                if (existingNhomZalo == null
-                   || existingNhomZalo.IsDelete == true)
-                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND
-                        , "Không tìm thấy nhóm zalo");
+                if (existingNhomZalo == null || existingNhomZalo.IsDelete)
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy nhóm zalo");
+
                 Tasks? existingTask = await _unitOfWork.TaskRepository.GetByIdAsync(request.TaskId);
-                if (existingTask == null
-                    || existingTask.IsDelete == true
-                    || existingTask.HoanThanh == true)
-                    throw new ErrorException(
-                        StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy task");
-                IEnumerable<NhomZaloTask>? exist2 = await _unitOfWork.NhomZaloTaskRepository.GetAllAsync();
-                List<NhomZaloTask>? list = exist2.ToList();
-                foreach (var item in list)
+                if (existingTask == null || existingTask.IsDelete || existingTask.HoanThanh)
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy task");
+
+                IEnumerable<NhomZaloTask>? allNhomZalo = await _unitOfWork.NhomZaloTaskRepository.GetAllAsync();
+                List<NhomZaloTask>? listNhomZalo = allNhomZalo.ToList();
+                foreach (var nhomZalo in listNhomZalo)
                 {
-                    if (item.TaskId == request.TaskId && item.NhomZaloId == request.NhomZaloId)
+                    if (nhomZalo.TaskId == request.TaskId && nhomZalo.NhomZaloId == request.NhomZaloId)
                         throw new ErrorException(
                             StatusCodes.Status400BadRequest, 
                             ResponseCodeConstants.BADREQUEST, 
@@ -59,9 +59,10 @@ namespace InternSystem.Application.Features.TasksAndReports.NhomZaloTaskManageme
                 // gan nhom zalo vao task
                 NhomZaloTask newNhomZaloTask = _mapper.Map<NhomZaloTask>(request);
                 newNhomZaloTask.TrangThai = _config["Trangthai:Pending"];
-                newNhomZaloTask.CreatedTime = _timeService.SystemTimeNow;
-                newNhomZaloTask.LastUpdatedTime = _timeService.SystemTimeNow;
-                newNhomZaloTask.LastUpdatedBy = _userContextService.GetCurrentUserId();
+                newNhomZaloTask.CreatedBy = currentUserId;
+                newNhomZaloTask.CreatedTime = systemTimeNow;
+                newNhomZaloTask.LastUpdatedTime = systemTimeNow;
+                newNhomZaloTask.LastUpdatedBy = currentUserId;
                 newNhomZaloTask = await _unitOfWork.NhomZaloTaskRepository.AddAsync(newNhomZaloTask);
                 
                 // them user tu nhom zalo *CHUNG* vao usertask
@@ -75,10 +76,10 @@ namespace InternSystem.Application.Features.TasksAndReports.NhomZaloTaskManageme
                     };
 
                     //var newUserTask = _mapper.Map<UserTask>(userTaskRequest);
-                    newUserTask.CreatedTime = _timeService.SystemTimeNow;
-                    newUserTask.CreatedBy = _userContextService.GetCurrentUserId();
-                    newUserTask.LastUpdatedTime = _timeService.SystemTimeNow;
-                    newUserTask.LastUpdatedBy = _userContextService.GetCurrentUserId();
+                    newUserTask.CreatedTime = systemTimeNow;
+                    newUserTask.CreatedBy = currentUserId;
+                    newUserTask.LastUpdatedTime = systemTimeNow;
+                    newUserTask.LastUpdatedBy = currentUserId;
                     await _unitOfWork.UserTaskRepository.AddAsync(newUserTask);
                 }
                 await _unitOfWork.SaveChangeAsync();

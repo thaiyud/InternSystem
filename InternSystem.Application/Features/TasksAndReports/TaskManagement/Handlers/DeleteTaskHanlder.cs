@@ -30,10 +30,29 @@ namespace InternSystem.Application.Features.TasksAndReports.TaskManagement.Handl
                 if (existTask == null || existTask.IsDelete == true)
                     throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstants.BADREQUEST, "Không tìm thấy task");
 
-                // Kiểm tra trước khi xóa id có ở bảng khác không
-                DuAn duAn = await _unitOfWork.DuAnRepository.GetByIdAsync(existTask.DuAnId);
-                if (duAn != null)
-                    throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstants.BADREQUEST, "Không thể xóa task vì có dự án liên quan vẫn còn tồn tại.");
+                // Kiểm tra trước khi xóa id có ở bảng UserTask không
+                var tempUserTask = await _unitOfWork.UserTaskRepository.GetAllAsync();
+                var checkDeleteUserTask = tempUserTask.Where(ch => ch.IsActive && !ch.IsDelete).ToList();
+                if (checkDeleteUserTask.Any(m => m.TaskId == request.Id))
+                {
+                    throw new ErrorException(StatusCodes.Status409Conflict, ResponseCodeConstants.BADREQUEST, "Không thể xóa task vì có user task liên quan vẫn còn tồn tại.");
+                }
+
+                // Kiểm tra trước khi xóa id có ở bảng ReportTask không
+                var tempReportTask = await _unitOfWork.ReportTaskRepository.GetAllAsync();
+                var checkDeleteReportTask = tempReportTask.Where(ch => ch.IsActive && !ch.IsDelete).ToList();
+                if (checkDeleteReportTask.Any(m => m.TaskId == request.Id))
+                {
+                    throw new ErrorException(StatusCodes.Status409Conflict, ResponseCodeConstants.BADREQUEST, "Không thể xóa task vì có report task liên quan vẫn còn tồn tại.");
+                }
+
+                // Kiểm tra trước khi xóa id có ở bảng GroupZaloTask không
+                var tempNhomZaloTask = await _unitOfWork.NhomZaloTaskRepository.GetAllAsync();
+                var checkDeleteNhomZaloTask = tempNhomZaloTask.Where(ch => ch.IsActive && !ch.IsDelete).ToList();
+                if (checkDeleteNhomZaloTask.Any(m => m.TaskId == request.Id))
+                {
+                    throw new ErrorException(StatusCodes.Status409Conflict, ResponseCodeConstants.BADREQUEST, "Không thể xóa task vì có group zalo task liên quan vẫn còn tồn tại.");
+                }
 
                 existTask.DeletedBy = _userContextService.GetCurrentUserId();
                 existTask.DeletedTime = _timeService.SystemTimeNow;

@@ -1,32 +1,39 @@
-﻿using InternSystem.Application.Common.Persistences.IRepositories.IBaseRepositories;
+﻿using System.Linq.Expressions;
+using InternSystem.Application.Common.Persistences.IRepositories.IBaseRepositories;
+using InternSystem.Domain.Entities;
 using InternSystem.Domain.Entities.BaseEntities;
 using Microsoft.EntityFrameworkCore;
-namespace InternSystem.Infrastructure.Persistences.Repositories.BaseRepositories;
 
+namespace InternSystem.Infrastructure.Persistences.Repositories.BaseRepositories;
 public class BaseRepository<T> : IBaseRepository<T> where T : class, IBaseEntity
 {
     private readonly DbContext _dbContext;
-
-    public IQueryable<T> Entities => _dbContext.Set<T>().Where(e => e.IsActive && !e.IsDelete);
 
     public BaseRepository(DbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    public async Task<IEnumerable<T>> GetAllAsync()
-    {
-        return await Entities.ToListAsync();
-    }
+    public IQueryable<T> Entities => _dbContext.Set<T>().Where(e => e.IsActive && !e.IsDelete);
 
     public IQueryable<T> GetAllQueryable()
     {
         return Entities;
     }
 
+    public async Task<List<T>> ToListAsync(IQueryable<T> query, CancellationToken cancellationToken = default)
+    {
+        return await query.ToListAsync(cancellationToken);
+    }
+
     public Task<IQueryable<T>> GetAllIQueryableAsync()
     {
         return Task.FromResult(Entities);
+    }
+
+    public async Task<IEnumerable<T>> GetAllAsync()
+    {
+        return await Entities.ToListAsync();
     }
 
     public async Task<T> GetByIdAsync(object id)
@@ -39,9 +46,14 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class, IBaseEntity
         return null;
     }
 
-    public async Task<T> GetTruongHocsByTenAsync(object name)
+    public async Task<T> GetByIdAsync(object id, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Set<T>().FirstOrDefaultAsync(e => EF.Property<string>(e, "Name") == name);
+        var entity = await _dbContext.Set<T>().FindAsync(id, cancellationToken);
+        if (entity != null && entity.IsActive && !entity.IsDelete)
+        {
+            return entity;
+        }
+        return null;
     }
 
     public async Task<T> AddAsync(T entity)
@@ -62,5 +74,41 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class, IBaseEntity
     public void Remove(T entity)
     {
         _dbContext.Set<T>().Remove(entity);
+    }
+
+    //public async Task<T?> GetWithIncludesAsync(
+    //    Expression<Func<T, bool>> predicate,
+    //    CancellationToken cancellationToken = default,
+    //    params Expression<Func<T, object>>[] includeProperties)
+    //{
+    //    IQueryable<T> query = _dbContext.Set<T>();
+
+    //    query = includeProperties.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
+
+    //    return await query.FirstOrDefaultAsync(predicate, cancellationToken);
+    //}    
+
+    public async Task<T?> GetWithIncludesAsync(
+        Expression<Func<T, bool>> predicate,
+        CancellationToken cancellationToken = default,
+        params Expression<Func<T, object>>[] includeProperties)
+    {
+        IQueryable<T> query = _dbContext.Set<T>();
+
+        query = includeProperties.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
+
+        return await query.FirstOrDefaultAsync(predicate, cancellationToken);
+    }
+
+    public async Task<T?> GetWithIncludesAsync(
+    Expression<Func<T, bool>> predicate,
+    CancellationToken cancellationToken = default,
+    params Func<IQueryable<T>, IQueryable<T>>[] includeProperties)
+    {
+        IQueryable<T> query = _dbContext.Set<T>();
+
+        query = includeProperties.Aggregate(query, (current, includeProperty) => includeProperty(current));
+
+        return await query.FirstOrDefaultAsync(predicate, cancellationToken);
     }
 }

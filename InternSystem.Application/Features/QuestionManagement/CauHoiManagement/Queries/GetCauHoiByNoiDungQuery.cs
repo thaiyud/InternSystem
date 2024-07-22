@@ -13,7 +13,7 @@ namespace InternSystem.Application.Features.QuestionManagement.CauHoiManagement.
         }
     }
 
-    public class GetCauHoiByNoiDungQuery : IRequest<GetCauHoiByNoiDungResponse>
+    public class GetCauHoiByNoiDungQuery : IRequest<IEnumerable<GetCauHoiByNoiDungResponse>>
     {
         public string noidung { get; set; } = string.Empty;
     }

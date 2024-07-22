@@ -17,6 +17,7 @@ namespace InternSystem.Application.Features.AuthManagement.UserManagement.Handle
         private readonly IMapper _mapper;
         private readonly UserManager<AspNetUser> _userManager;
         private readonly ITimeService _timeService;
+        private readonly IUserContextService _userContextService;
         public ActiveUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, UserManager<AspNetUser> userManager, ITimeService timeService)
         {
             _unitOfWork = unitOfWork;
@@ -28,6 +29,8 @@ namespace InternSystem.Application.Features.AuthManagement.UserManagement.Handle
         {
             try
             {
+                var currentUserId = _userContextService.GetCurrentUserId();
+
                 var user = await _unitOfWork.UserRepository.GetByIdAsync(request.UserId);
                 if (user == null)
                 {
@@ -46,6 +49,7 @@ namespace InternSystem.Application.Features.AuthManagement.UserManagement.Handle
                     throw new ErrorException(StatusCodes.Status409Conflict, ResponseCodeConstants.BADREQUEST, "Không thể xóa vì vẫn còn intern trong kỳ thực tập này.");
                 }
                 user.IsActive = request.IsActive;
+                user.LastUpdatedBy = currentUserId;
                 user.LastUpdatedTime = _timeService.SystemTimeNow;
 
                 if (!request.IsActive)

@@ -3,7 +3,9 @@ using InternSystem.Application.Common.Constants;
 using InternSystem.Application.Common.Persistences.IRepositories;
 using InternSystem.Application.Features.ProjectAndTechnologyManagement.DuAnManagement.Models;
 using InternSystem.Application.Features.ProjectAndTechnologyManagement.DuAnManagement.Queries;
+using InternSystem.Application.Features.QuestionManagement.CauHoiManagement.Models;
 using InternSystem.Domain.BaseException;
+using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 
@@ -22,12 +24,28 @@ public class GetDuAnsByTenQueryHandler : IRequestHandler<GetDuAnByTenQuery, IEnu
     {
         try
         {
-            var DuAns = await _unitOfWork.DuAnRepository.GetDuAnsByTenAsync(request.Ten);
-            if (DuAns == null)
+            //var DuAns = await _unitOfWork.DuAnRepository.GetDuAnsByTenAsync(request.Ten);
+            //if (DuAns == null)
+            //{
+            //    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy dự án");
+            //}
+            //return _mapper.Map<IEnumerable<GetDuAnByTenResponse>>(DuAns);
+
+            var repository = _unitOfWork.GetRepository<DuAn>();
+            var duAnQuery = repository.GetAllQueryable();
+
+            var duAnByTen = await repository.ToListAsync(
+                duAnQuery.Where(c => c.Ten.Contains(request.Ten) && !c.IsDelete),
+                cancellationToken
+            );
+
+            if (!duAnByTen.Any())
             {
-                throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy dự án");
+                throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy câu hỏi hợp lệ.");
             }
-            return _mapper.Map<IEnumerable<GetDuAnByTenResponse>>(DuAns);
+
+            var result = _mapper.Map<IEnumerable<GetDuAnByTenResponse>>(duAnByTen);
+            return result;
         }
         catch (ErrorException ex)
         {

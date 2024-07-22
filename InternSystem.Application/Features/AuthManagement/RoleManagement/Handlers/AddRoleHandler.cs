@@ -19,6 +19,11 @@ namespace InternSystem.Application.Features.AuthManagement.RoleManagement.Handle
             try
             {
                 var result = await _roleManager.CreateAsync(new IdentityRole(request.Name.ToLower()));
+                if (!result.Succeeded)
+                {
+                    throw new ErrorException(StatusCodes.Status409Conflict, ResponseCodeConstants.BADREQUEST, "Vai trò đã tồn tại.");
+                }
+
                 return result.Succeeded;
             }
             catch (ErrorException ex)

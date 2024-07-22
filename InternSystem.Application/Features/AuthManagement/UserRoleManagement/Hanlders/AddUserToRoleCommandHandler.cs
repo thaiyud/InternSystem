@@ -21,20 +21,20 @@ namespace InternSystem.Application.Features.AuthManagement.UserRoleManagement.Ha
 
         public async Task<bool> Handle(AddUserToRoleCommand request, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByIdAsync(request.UserId);
-            if (user == null)
-            {
-                throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy người dùng");
-            }
-
-            var roleExists = await _roleManager.RoleExistsAsync(request.RoleName);
-            if (!roleExists)
-            {
-                throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy vai trò");
-            }
-
             try
             {
+                var user = await _userManager.FindByIdAsync(request.UserId);
+                if (user == null)
+                {
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy người dùng");
+                }
+
+                var roleExists = await _roleManager.RoleExistsAsync(request.RoleName);
+                if (!roleExists)
+                {
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy vai trò");
+                }
+
                 var result = await _userManager.AddToRoleAsync(user, request.RoleName);
                 return result.Succeeded;
             }

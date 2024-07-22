@@ -1,11 +1,14 @@
-﻿using AutoMapper;
+﻿using System.Diagnostics;
+using AutoMapper;
 using InternSystem.Application.Common.Constants;
 using InternSystem.Application.Common.Persistences.IRepositories;
 using InternSystem.Application.Features.ProjectAndTechnologyManagement.DuAnManagement.Models;
 using InternSystem.Application.Features.ProjectAndTechnologyManagement.DuAnManagement.Queries;
 using InternSystem.Domain.BaseException;
+using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.ProjectAndTechnologyManagement.DuAnManagement.Handlers
 {
@@ -23,12 +26,35 @@ namespace InternSystem.Application.Features.ProjectAndTechnologyManagement.DuAnM
         {
             try
             {
-                var listDuAn = await _unitOfWork.DuAnRepository.GetAllAsync();
+                var duAnRepository = _unitOfWork.GetRepository<DuAn>();
+                var userRepository = _unitOfWork.UserRepository;
+
+                var listDuAn = await duAnRepository
+                    .GetAllQueryable()
+                    .Include(da => da.Leader)
+                    .Include(da => da.CongNgheDuAns)
+                        .ThenInclude(cnda => cnda.CongNghe)
+                    .Where(da => da.IsActive && !da.IsDelete)
+                    .ToListAsync(cancellationToken);
 
                 if (listDuAn == null || !listDuAn.Any())
-                    throw new ErrorException(StatusCodes.Status204NoContent, ResponseCodeConstants.NOT_FOUND, "Không có Dự Án");
+                {
+                    throw new ErrorException(
+                        StatusCodes.Status204NoContent,
+                        ResponseCodeConstants.NOT_FOUND,
+                        "Không có dự án."
+                    );
+                }
 
-                return _mapper.Map<IEnumerable<GetAllDuAnResponse>>(listDuAn);
+                var response = _mapper.Map<IEnumerable<GetAllDuAnResponse>>(listDuAn);
+
+                foreach (var duAnResponse in response)
+                {
+                    duAnResponse.CreatedByName = await userRepository.GetUserNameByIdAsync(duAnResponse.CreatedBy) ?? "Người dùng không xác định";
+                    duAnResponse.LastUpdatedByName = await userRepository.GetUserNameByIdAsync(duAnResponse.LastUpdatedBy) ?? "Người dùng không xác định";
+                }
+                
+                return response;
             }
             catch (ErrorException ex)
             {

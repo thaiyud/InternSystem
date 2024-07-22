@@ -32,14 +32,16 @@ namespace InternSystem.Application.Features.InternManagement.LichPhongVanManagem
             {
                 InternInfo nguoiDuocPhongVan = await _unitOfWork.InternInfoRepository.GetByIdAsync(request.IdNguoiDuocPhongVan) ??
                      throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy Người được phỏng vấn");
+                
+                AspNetUser nguoiphongvan = await _unitOfWork.UserRepository.GetByIdAsync(request.IdNguoiPhongVan);
+                if (nguoiphongvan == null) 
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Người phỏng vấn không tồn tại.");
+
                 if (await _unitOfWork.LichPhongVanRepository.IsNguoiPhongVanConflict(request.IdNguoiPhongVan, request.ThoiGianPhongVan) ||
                     await _unitOfWork.LichPhongVanRepository.IsNguoiDuocPhongVanConflict(request.IdNguoiDuocPhongVan, request.ThoiGianPhongVan))
                 {
                     throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Thời gian phỏng vấn bị trùng với lịch trình khác.");
                 }
-                AspNetUser nguoiphongvan = await _unitOfWork.UserRepository.GetByIdAsync(request.IdNguoiPhongVan);
-                if (nguoiphongvan == null) throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Người phỏng vấn không tồn tại.");
-
                 var newLichPhongVan = _mapper.Map<LichPhongVan>(request);
                 newLichPhongVan.CreatedBy = _userContextService.GetCurrentUserId();
                 newLichPhongVan.LastUpdatedBy = newLichPhongVan.CreatedBy;

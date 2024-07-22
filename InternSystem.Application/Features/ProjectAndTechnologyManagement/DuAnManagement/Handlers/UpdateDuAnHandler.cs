@@ -38,6 +38,12 @@ namespace InternSystem.Application.Features.ProjectAndTechnologyManagement.DuAnM
                     throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy dự án");
                 }
 
+                var listDuAn = await _unitOfWork.DuAnRepository.GetAllAsync();
+                if (listDuAn.Any(da => da.Ten.Equals(request.Ten, StringComparison.OrdinalIgnoreCase) && da.Id != request.Id))
+                {
+                    throw new ErrorException(StatusCodes.Status409Conflict, ErrorCode.NotUnique, "Dự án đã tồn tại.");
+                }
+
                 if (!request.LeaderId.IsNullOrEmpty())
                 {
                     AspNetUser? leader = await _unitOfWork.UserRepository.GetByIdAsync(request.LeaderId!);

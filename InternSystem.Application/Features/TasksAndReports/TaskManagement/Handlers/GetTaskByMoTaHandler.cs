@@ -24,8 +24,9 @@ namespace InternSystem.Application.Features.TasksAndReports.TaskManagement.Handl
         {
             try
             {
-                IEnumerable<Tasks> tasks = await _unitOfWork.TaskRepository.GetTasksByMoTaAsync(request.mota);
-                if (tasks.Any())
+                IEnumerable<Tasks> tasks = await _unitOfWork.TaskRepository.GetTasksByMoTaAsync(request.MoTa);
+
+                if (!tasks.Any())
                 {
                     throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy task");
                 }

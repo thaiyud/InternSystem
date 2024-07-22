@@ -28,7 +28,6 @@ namespace InternSystem.Application.Features.ComunicationManagement.ThongBaoManag
 
         public string? TinhTrang { get; set; }
 
-        public string? LastUpdatedBy { get; set; }
 
     }
 }

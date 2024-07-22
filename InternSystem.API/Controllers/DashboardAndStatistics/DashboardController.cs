@@ -27,16 +27,16 @@ namespace InternSystem.API.Controllers.DashboardAndStatistics
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        [HttpGet]
-        public async Task<IActionResult> GetDashboard()
-        {
-            var query = new GetAllDashboardQuery();
-            var response = await _mediatorService.Send(query);
-            return Ok(new BaseResponseModel<GetAllDashboardResponse>(
-                    statusCode: StatusCodes.Status200OK,
-                    code: ResponseCodeConstants.SUCCESS,
-                    data: response));
-        }
+        //[HttpGet]
+        //public async Task<IActionResult> GetDashboard()
+        //{
+        //    var query = new GetAllDashboardQuery();
+        //    var response = await _mediatorService.Send(query);
+        //    return Ok(new BaseResponseModel<GetAllDashboardResponse>(
+        //            statusCode: StatusCodes.Status200OK,
+        //            code: ResponseCodeConstants.SUCCESS,
+        //            data: response));
+        //}
 
         /// <summary>
         /// Lấy tổng số thực tập sinh trong khoảng thời gian từ ngày đến ngày.

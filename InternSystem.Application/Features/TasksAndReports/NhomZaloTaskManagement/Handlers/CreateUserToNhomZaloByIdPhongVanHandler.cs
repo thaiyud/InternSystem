@@ -34,12 +34,11 @@ namespace InternSystem.Application.Features.TasksAndReports.NhomZaloTaskManageme
         {
             try
             {
-                var ketqua = _config.GetSection("RoleSettings");
                 LichPhongVan? existingLichPhongVan = await _unitOfWork.LichPhongVanRepository.GetByIdAsync(request.Id);
-
                 if (existingLichPhongVan == null || existingLichPhongVan.IsDelete == true)
                     throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy lịch phỏng vấn");
 
+                var ketqua = _config.GetSection("RoleSettings");
                 if (existingLichPhongVan.KetQua != ketqua["Intern"] && existingLichPhongVan.KetQua != ketqua["Leader"] && existingLichPhongVan.KetQua == null)
                 {
                     if (existingLichPhongVan.KetQua == _config["Ketqua:Chuadat"])

@@ -12,10 +12,8 @@ namespace InternSystem.Application.Features.ProjectAndTechnologyManagement.CongN
         }
     }
 
-    public class GetCongNghesByTenQuery : IRequest<GetCongNgheByTenResponse>
+    public class GetCongNghesByTenQuery : IRequest<IEnumerable<GetCongNgheByTenResponse>>
     {
         public string Ten { get; set; }
     }
-
-
 }

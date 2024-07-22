@@ -37,6 +37,14 @@ namespace InternSystem.Application.Features.QuestionManagement.CauHoiCongNgheMan
                 CongNghe? congNghe = await _unitOfWork.CongNgheRepository.GetByIdAsync(request.IdCongNghe)
                     ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Công nghệ không tồn tại.");
 
+                // Kiểm tra xem có CauHoi nào trong danh sách đã có cùng idCongNghe và idCauHoi như request hay không
+                var existingCauHoiList = await _unitOfWork.CauHoiCongNgheRepository.GetAllAsync()
+                    ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy câu hỏi công nghệ.");
+                bool exists = existingCauHoiList.Any(ch => ch.IdCongNghe == request.IdCongNghe && ch.IdCauHoi == request.IdCauHoi);
+                if (exists)
+                {
+                    throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstants.BADREQUEST, "Câu hỏi công nghệ đã tồn tại với công nghệ và câu hỏi này.");
+                }
 
                 CauHoiCongNghe? cauHoiCongNghe = _mapper.Map<CauHoiCongNghe>(request);
                 cauHoiCongNghe.CreatedBy = _userContextService.GetCurrentUserId();

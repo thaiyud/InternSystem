@@ -9,6 +9,8 @@ using InternSystem.Application.Features.InternManagement.EmailUserStatusManageme
 using InternSystem.Application.Features.InternManagement.InternManagement.Commands;
 using InternSystem.Application.Features.InternManagement.InternManagement.Models;
 using InternSystem.Application.Features.InternManagement.InternManagement.Queries;
+using InternSystem.Application.Features.ProjectAndTechnologyManagement.DuAnManagement.Models;
+using InternSystem.Application.Features.ProjectAndTechnologyManagement.DuAnManagement.Queries;
 using InternSystem.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -155,79 +157,79 @@ namespace InternSystem.API.Controllers.InternManagement
                 data: response));
         }
 
-        /// <summary>
-        /// Lấy danh sách trạng thái email của người dùng.
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("get-all-user-email-status")]
-        public async Task<ActionResult<GetDetailEmailUserStatusResponse>> GetAllUserEmailStatus()
-        {
-            var status = (GetDetailEmailUserStatusResponse)await _mediatorService.Send(new GetAllEmailUserStatusQuery());
-            return Ok(new BaseResponseModel(
-                statusCode: StatusCodes.Status200OK,
-                code: ResponseCodeConstants.SUCCESS,
-                data: status));
-        }
+        ///// <summary>
+        ///// Lấy danh sách trạng thái email của người dùng.
+        ///// </summary>
+        ///// <returns></returns>
+        //[HttpGet("get-all-user-email-status")]
+        //public async Task<ActionResult<GetDetailEmailUserStatusResponse>> GetAllUserEmailStatus()
+        //{
+        //    var status = await _mediatorService.Send(new GetAllEmailUserStatusQuery());
+        //    return Ok(new BaseResponseModel(
+        //        statusCode: StatusCodes.Status200OK,
+        //        code: ResponseCodeConstants.SUCCESS,
+        //        data: status));
+        //}
 
-        /// <summary>
-        /// Lấy trạng thái email người dùng theo Id.
-        /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        [HttpGet("get-user-email-status-by-id")]
-        public async Task<IActionResult> GetEmailUserStatusById([FromQuery] GetEmailUserStatusByIdQuery query)
-        {
-            var result = await _mediatorService.Send(query);
-            return Ok(new BaseResponseModel<GetDetailEmailUserStatusResponse>(
-                statusCode: StatusCodes.Status200OK,
-                code: ResponseCodeConstants.SUCCESS,
-                data: result));
-        }
+        ///// <summary>
+        ///// Lấy trạng thái email người dùng theo Id.
+        ///// </summary>
+        ///// <param name="query"></param>
+        ///// <returns></returns>
+        //[HttpGet("get-user-email-status-by-id")]
+        //public async Task<IActionResult> GetEmailUserStatusById([FromQuery] GetEmailUserStatusByIdQuery query)
+        //{
+        //    var result = await _mediatorService.Send(query);
+        //    return Ok(new BaseResponseModel<GetDetailEmailUserStatusResponse>(
+        //        statusCode: StatusCodes.Status200OK,
+        //        code: ResponseCodeConstants.SUCCESS,
+        //        data: result));
+        //}
 
-        /// <summary>
-        /// Tạo trạng thái email cho người dùng.
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [HttpPost("create-email-user-status")]
-        public async Task<ActionResult<GetDetailEmailUserStatusResponse>> CreateEmailUserStatus([FromBody] CreateEmailUserStatusCommand command)
-        {
-            GetDetailEmailUserStatusResponse result = await _mediatorService.Send(command);
-            return Ok(new BaseResponseModel<GetDetailEmailUserStatusResponse>(
-                statusCode: StatusCodes.Status200OK,
-                code: ResponseCodeConstants.SUCCESS,
-                data: result));
-        }
+        ///// <summary>
+        ///// Tạo trạng thái email cho người dùng.
+        ///// </summary>
+        ///// <param name="command"></param>
+        ///// <returns></returns>
+        //[HttpPost("create-email-user-status")]
+        //public async Task<ActionResult<GetDetailEmailUserStatusResponse>> CreateEmailUserStatus([FromBody] CreateEmailUserStatusCommand command)
+        //{
+        //    GetDetailEmailUserStatusResponse result = await _mediatorService.Send(command);
+        //    return Ok(new BaseResponseModel<GetDetailEmailUserStatusResponse>(
+        //        statusCode: StatusCodes.Status200OK,
+        //        code: ResponseCodeConstants.SUCCESS,
+        //        data: result));
+        //}
 
-        /// <summary>
-        /// Cập nhật trạng thái email người dùng.
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [HttpPut("update-email-user-status")]
-        public async Task<ActionResult<GetDetailEmailUserStatusResponse>> UpdateEmailUserStatus([FromBody] UpdateEmailUserStatusCommand command)
-        {
-            GetDetailEmailUserStatusResponse result = await _mediatorService.Send(command);
-            return Ok(new BaseResponseModel<GetDetailEmailUserStatusResponse>(
-                statusCode: StatusCodes.Status200OK,
-                code: ResponseCodeConstants.SUCCESS,
-                data: result));
-        }
+        ///// <summary>
+        ///// Cập nhật trạng thái email người dùng.
+        ///// </summary>
+        ///// <param name="command"></param>
+        ///// <returns></returns>
+        //[HttpPut("update-email-user-status")]
+        //public async Task<ActionResult<GetDetailEmailUserStatusResponse>> UpdateEmailUserStatus([FromBody] UpdateEmailUserStatusCommand command)
+        //{
+        //    GetDetailEmailUserStatusResponse result = await _mediatorService.Send(command);
+        //    return Ok(new BaseResponseModel<GetDetailEmailUserStatusResponse>(
+        //        statusCode: StatusCodes.Status200OK,
+        //        code: ResponseCodeConstants.SUCCESS,
+        //        data: result));
+        //}
 
-        /// <summary>
-        /// Xóa trạng thái email người dùng.
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [HttpDelete("delete-email-user-status")]
-        public async Task<IActionResult> DeleteEmailUserStatus([FromBody] DeleteEmailUserStatusCommand command)
-        {
-            bool result = await _mediatorService.Send(command);
-            return Ok(new BaseResponseModel(
-                statusCode: StatusCodes.Status200OK,
-                code: ResponseCodeConstants.SUCCESS,
-                data: result));
-        }
+        ///// <summary>
+        ///// Xóa trạng thái email người dùng.
+        ///// </summary>
+        ///// <param name="command"></param>
+        ///// <returns></returns>
+        //[HttpDelete("delete-email-user-status")]
+        //public async Task<IActionResult> DeleteEmailUserStatus([FromBody] DeleteEmailUserStatusCommand command)
+        //{
+        //    bool result = await _mediatorService.Send(command);
+        //    return Ok(new BaseResponseModel(
+        //        statusCode: StatusCodes.Status200OK,
+        //        code: ResponseCodeConstants.SUCCESS,
+        //        data: result));
+        //}
 
         /// <summary>
         /// Lấy thông tin thực tập sinh theo tên trường học.

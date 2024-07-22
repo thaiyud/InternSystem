@@ -18,8 +18,8 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
         {
             string searchTerm = noidung.Trim().ToLower();
             return await _context.CauHois
-             .Where(ch => ch.NoiDung.ToLower().Trim().Contains(noidung.Trim().ToLower()))
-             .ToListAsync();
+                .Where(ch => ch.NoiDung.ToLower().Trim().Contains(noidung.Trim().ToLower()))
+                .ToListAsync();
         }
 
         public async Task<bool> HasRelatedRecordsAsync(int cauHoiId)
@@ -27,6 +27,5 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
             return await _context.CauHoiCongNghes
                 .AnyAsync(chcn => chcn.IdCauHoi == cauHoiId && chcn.IsActive && !chcn.IsDelete);
         }
-
     }
 }

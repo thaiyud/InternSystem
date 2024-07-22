@@ -23,7 +23,7 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
             var searchTerm = truongHocName.Trim().ToLower();
             return await _dbContext.InternInfos
                 .Include(ii => ii.TruongHoc)
-                .Where(ii => ii.TruongHoc.Ten.ToLower().Contains(searchTerm) || ii.IsActive == true || ii.IsDelete == false)
+                .Where(ii => ii.TruongHoc.Ten.ToLower().Contains(searchTerm) && ii.IsActive == true && ii.IsDelete == false)
                 .ToListAsync();
         }
 
@@ -45,7 +45,7 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
 
         public async Task<IEnumerable<InternInfo>> GetFilterdInternInfosAsync(int? schoolId, DateTime? startDate, DateTime? endDate)
         {
-            var query = _dbContext.InternInfos.AsQueryable();
+            var query = _dbContext.InternInfos.Where(i => i.IsActive == true && i.IsDelete == false).AsQueryable();
 
             if (schoolId.HasValue)
             {
@@ -100,8 +100,8 @@ namespace InternSystem.Infrastructure.Persistences.Repositories
                 queryable = queryable.Where(ii => ii.EndDate <= query.EndDate);
             if (!string.IsNullOrEmpty(query.TrangThai))
                 queryable = queryable.Where(ii => ii.TrangThai.Contains(query.TrangThai));
-
-            var results = await queryable.ToListAsync();
+            
+            var results = await queryable.Where(ii => ii.IsActive == true && ii.IsDelete == false).ToListAsync();
             return results;
         }
 

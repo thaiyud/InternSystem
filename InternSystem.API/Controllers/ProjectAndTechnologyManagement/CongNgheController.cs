@@ -105,7 +105,7 @@ namespace InternSystem.API.Controllers.ProjectAndTechnologyManagement
         public async Task<IActionResult> GetCongNgheByTen([FromQuery] GetCongNghesByTenQuery query)
         {
             var response = await _mediatorService.Send(query);
-            return Ok(new BaseResponseModel<GetCongNgheByTenResponse>(
+            return Ok(new BaseResponseModel<IEnumerable<GetCongNgheByTenResponse>>(
                 statusCode: StatusCodes.Status200OK,
                 code: ResponseCodeConstants.SUCCESS,
                 data: response));

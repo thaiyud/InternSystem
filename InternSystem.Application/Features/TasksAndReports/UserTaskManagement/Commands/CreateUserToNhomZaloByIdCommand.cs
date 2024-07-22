@@ -4,11 +4,21 @@ using MediatR;
 
 namespace InternSystem.Application.Features.TasksAndReports.UserTaskManagement.Commands
 {
-    public class GetKetQuaPhongVanByIdValidator : AbstractValidator<UserNhomZaloTaskResponse>
+    //public class GetKetQuaPhongVanByIdValidator : AbstractValidator<UserNhomZaloTaskResponse>
+    //{
+    //    public GetKetQuaPhongVanByIdValidator()
+    //    {
+    //        RuleFor(m => m.InterviewId).GreaterThan(0); // ID phải lớn hơn 0
+    //    }
+    //}
+
+    public class CreateUserToNhomZaloByIdCommandValidator : AbstractValidator<CreateUserToNhomZaloByIdCommand>
     {
-        public GetKetQuaPhongVanByIdValidator()
+        public CreateUserToNhomZaloByIdCommandValidator()
         {
-            RuleFor(m => m.InterviewId).GreaterThan(0); // ID phải lớn hơn 0
+            RuleFor(m => m.Id)
+                .NotEmpty().WithMessage("Vui lòng chọn ")
+                .GreaterThan(0).WithMessage(""); 
         }
     }
 

@@ -74,21 +74,6 @@ namespace InternSystem.API.Controllers.Authentication
         }
 
         /// <summary>
-        /// Tạo người dùng bởi quản trị viên.
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [HttpPost("create-user-by-admin")]
-        public async Task<ActionResult<CreateUserResponse>> CreateUser([FromBody] CreateUserCommand command)
-        {
-            var response = await _mediatorService.Send(command);
-            return Ok(new BaseResponseModel<CreateUserResponse>(
-                statusCode: StatusCodes.Status200OK,
-                code: ResponseCodeConstants.SUCCESS,
-                data: response));
-        }
-
-        /// <summary>
         /// Xóa vai trò người dùng.
         /// </summary>
         /// <param name="command"></param>

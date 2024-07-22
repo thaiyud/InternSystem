@@ -15,7 +15,6 @@ namespace InternSystem.Application.Features.GroupAndTeamManagement.NhomZaloManag
                 .NotEmpty().WithMessage("Chưa cập nhật Link nhóm.");
             RuleFor(m => m.IsNhomChung)
                 .NotEmpty().WithMessage("Chưa cập nhật trạng thái nhóm chung.");
-
         }
     }
 

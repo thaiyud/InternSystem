@@ -1,5 +1,6 @@
 ﻿using InternSystem.Application.Common.Persistences.IRepositories.IBaseRepositories;
 using InternSystem.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Common.Persistences.IRepositories
 {
@@ -10,5 +11,7 @@ namespace InternSystem.Application.Common.Persistences.IRepositories
         Task UpdateAsync(AspNetUser user);
         Task<AspNetUser> GetUserByRefreshTokenAsync(string refreshToken);
         Task UpdateUserAsync(AspNetUser user);
+        Task<string> GetUserNameByIdAsync(object id);
+        Task<Dictionary<string, string>> GetFullNamesByIdsAsync(IEnumerable<string> userIds);
     }
 }

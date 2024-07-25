@@ -4,8 +4,10 @@ using InternSystem.Application.Common.Persistences.IRepositories;
 using InternSystem.Application.Features.InternManagement.KyThucTapManagement.Models;
 using InternSystem.Application.Features.InternManagement.KyThucTapManagement.Queries;
 using InternSystem.Domain.BaseException;
+using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.InternManagement.KyThucTapManagement.Handlers
 {
@@ -23,18 +25,20 @@ namespace InternSystem.Application.Features.InternManagement.KyThucTapManagement
         {
             try
             {
-                var kyThucTapList = await _unitOfWork.KyThucTapRepository.GetKyThucTapsByNameAsync(request.Ten);
+                var kyThucTapRepository = _unitOfWork.GetRepository<KyThucTap>();
+
+                var kyThucTapList = await kyThucTapRepository
+                    .GetAllQueryable()
+                    .Include(ktt => ktt.TruongHoc) // Include TruongHoc entity
+                    .Where(ktt => ktt.Ten.Contains(request.Ten) && !ktt.IsDelete)
+                    .ToListAsync(cancellationToken);
 
                 if (kyThucTapList == null || !kyThucTapList.Any())
                 {
                     throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, $"Không tìm thấy kỳ thực tập có tên '{request.Ten}'");
                 }
 
-                var responses = new List<GetKyThucTapByNameResponse>();
-                foreach (var kyThucTap in kyThucTapList)
-                {
-                    responses.Add(_mapper.Map<GetKyThucTapByNameResponse>(kyThucTap));
-                }
+                var responses = _mapper.Map<IEnumerable<GetKyThucTapByNameResponse>>(kyThucTapList);
                 return responses;
             }
             catch (ErrorException ex)
@@ -46,5 +50,7 @@ namespace InternSystem.Application.Features.InternManagement.KyThucTapManagement
                 throw new ErrorException(StatusCodes.Status500InternalServerError, ResponseCodeConstants.INTERNAL_SERVER_ERROR, "Đã có lỗi xảy ra");
             }
         }
+
+
     }
 }

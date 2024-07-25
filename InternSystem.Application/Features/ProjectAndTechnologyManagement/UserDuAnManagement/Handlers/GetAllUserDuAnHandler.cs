@@ -7,6 +7,7 @@ using InternSystem.Domain.BaseException;
 using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.ProjectAndTechnologyManagement.UserDuAnManagement.Handlers
 {
@@ -24,15 +25,37 @@ namespace InternSystem.Application.Features.ProjectAndTechnologyManagement.UserD
         {
             try
             {
-                IQueryable<UserDuAn> allUserDuAn = _unitOfWork.UserDuAnRepository.Entities;
-                IQueryable<UserDuAn> activeUserDuAn = allUserDuAn
-                    .Where(p => !p.IsDelete)
-                    .OrderByDescending(p => p.DuAnId)
-                    .ThenByDescending(p => p.CreatedTime); ;
-                var allUserDuAnList = await _unitOfWork.UserDuAnRepository.GetAllAsync()
-                    ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy người dùng trong dự án");
+                //IQueryable<UserDuAn> allUserDuAn = _unitOfWork.UserDuAnRepository.Entities;
+                //IQueryable<UserDuAn> activeUserDuAn = allUserDuAn
+                //    .Where(p => !p.IsDelete)
+                //    .OrderByDescending(p => p.DuAnId)
+                //    .ThenByDescending(p => p.CreatedTime); ;
+                //var allUserDuAnList = await _unitOfWork.UserDuAnRepository.GetAllAsync()
+                //    ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy người dùng trong dự án");
 
-                return _mapper.Map<IEnumerable<GetAllUserDuAnResponse>>(activeUserDuAn);
+                //return _mapper.Map<IEnumerable<GetAllUserDuAnResponse>>(activeUserDuAn);
+                var userDuAnRepository = _unitOfWork.GetRepository<UserDuAn>();
+                var userRepository = _unitOfWork.UserRepository;
+
+                var listUserDuAn = await userDuAnRepository
+                    .GetAllQueryable()
+                    .Where(uda => uda.IsActive && !uda.IsDelete)
+                    .ToListAsync(cancellationToken);
+
+                if(listUserDuAn == null || !listUserDuAn.Any())
+                {
+                    throw new ErrorException(StatusCodes.Status204NoContent, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy thành viên của Dự Án.");
+                }
+
+                var response = _mapper.Map<IEnumerable<GetAllUserDuAnResponse>>(listUserDuAn);
+
+                foreach ( var userDuAnResponse in response )
+                {
+                    userDuAnResponse.CreatedByName = await userRepository.GetUserNameByIdAsync(userDuAnResponse.CreatedBy) ?? "Người dùng không xác định";
+                    userDuAnResponse.LastUpdatedByName = await userRepository.GetUserNameByIdAsync(userDuAnResponse.LastUpdatedBy) ?? "Người dùng không xác định";
+                }
+
+                return response;
             }
             catch (ErrorException ex)
             {

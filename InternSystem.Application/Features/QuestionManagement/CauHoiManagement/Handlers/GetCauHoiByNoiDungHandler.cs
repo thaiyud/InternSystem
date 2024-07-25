@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure;
 using InternSystem.Application.Common.Constants;
 using InternSystem.Application.Common.Persistences.IRepositories;
 using InternSystem.Application.Features.QuestionManagement.CauHoiManagement.Models;
@@ -7,6 +8,7 @@ using InternSystem.Domain.BaseException;
 using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.QuestionManagement.CauHoiManagement.Handlers
 {
@@ -35,7 +37,7 @@ namespace InternSystem.Application.Features.QuestionManagement.CauHoiManagement.
                 //    .Where(c => c.NoiDung.Contains(request.noidung) && !c.IsDelete)
                 //    .ToList();
 
-                //if (!cauHoiByNoiDung.Any())
+                   //if (!cauHoiByNoiDung.Any())
                 //{
                 //    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy câu hỏi hợp lệ.");
                 //}
@@ -44,19 +46,28 @@ namespace InternSystem.Application.Features.QuestionManagement.CauHoiManagement.
                 //return result;
 
                 var repository = _unitOfWork.GetRepository<CauHoi>();
+                var userRepository = _unitOfWork.UserRepository;
                 var cauHoiQuery = repository.GetAllQueryable();
 
-                var cauHoiByNoiDung = await repository.ToListAsync(
-                    cauHoiQuery.Where(c => c.NoiDung.Contains(request.noidung) && !c.IsDelete),
-                    cancellationToken
-                );
+                var cauHoiByNoiDung = await cauHoiQuery
+                    .Include(ch => ch.CauHoiCongNghes)
+                        .ThenInclude(chcn => chcn.CongNghe)
+                    .Where(c => c.NoiDung.Contains(request.noidung) && !c.IsDelete)
+                    .ToListAsync(cancellationToken);
 
-                if (!cauHoiByNoiDung.Any())
+                if (cauHoiByNoiDung == null || !cauHoiByNoiDung.Any())
                 {
                     throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy câu hỏi hợp lệ.");
                 }
 
                 var result = _mapper.Map<IEnumerable<GetCauHoiByNoiDungResponse>>(cauHoiByNoiDung);
+
+                foreach (var cauHoiResponse in result)
+                {
+                    cauHoiResponse.CreatedByName = await userRepository.GetUserNameByIdAsync(cauHoiResponse.CreatedBy) ?? "Người dùng không xác định";
+                    cauHoiResponse.LastUpdatedByName = await userRepository.GetUserNameByIdAsync(cauHoiResponse.LastUpdatedBy) ?? "Người dùng không xác định";
+                }
+
                 return result;
             }
             catch (ErrorException ex)

@@ -7,6 +7,7 @@ using InternSystem.Domain.BaseException;
 using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.TasksAndReports.UserTaskManagement.Handlers
 {
@@ -25,11 +26,29 @@ namespace InternSystem.Application.Features.TasksAndReports.UserTaskManagement.H
         {
             try
             {
-                UserTask? existingUserTask = await _unitOfWork.UserTaskRepository.GetByIdAsync(request.Id);
-                if (existingUserTask == null || existingUserTask.IsDelete == true)
-                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy người dùng thực hiện task");
+                //UserTask? existingUserTask = await _unitOfWork.UserTaskRepository.GetByIdAsync(request.Id);
+                //if (existingUserTask == null || existingUserTask.IsDelete == true)
+                //    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy người dùng thực hiện task");
 
-                return _mapper.Map<UserTaskReponse>(existingUserTask);
+                //return _mapper.Map<UserTaskReponse>(existingUserTask);
+                var repository = _unitOfWork.GetRepository<UserTask>();
+                var userRepository = _unitOfWork.UserRepository;
+
+                var userTaskById = await repository
+                    .GetAllQueryable()
+                    .FirstOrDefaultAsync(ut => ut.Id == request.Id && !ut.IsDelete);
+
+                if(userTaskById == null || userTaskById.IsDelete)
+                {
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy người dùng của công việc");
+                }
+
+                var response = _mapper.Map<UserTaskReponse>(userTaskById);
+
+                response.CreatedByName = await userRepository.GetUserNameByIdAsync(response.CreatedBy) ?? "Người dùng không xác định";
+                response.LastUpdatedByName = await userRepository.GetUserNameByIdAsync(response.LastUpdatedBy) ?? "Người dùng không xác định";
+
+                return response;
             }
             catch (ErrorException ex)
             {

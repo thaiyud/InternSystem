@@ -7,6 +7,7 @@ using InternSystem.Domain.BaseException;
 using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.InternManagement.KyThucTapManagement.Handlers
 {
@@ -25,14 +26,20 @@ namespace InternSystem.Application.Features.InternManagement.KyThucTapManagement
         {
             try
             {
-                KyThucTap? result = await _unitOfWork.KyThucTapRepository.GetByIdAsync(request.Id);
+                var kyThucTapRepository = _unitOfWork.GetRepository<KyThucTap>();
 
-                if (result == null || result.IsDelete)
+                var result = await kyThucTapRepository
+                    .GetAllQueryable()
+                    .Include(ktt => ktt.TruongHoc) 
+                    .FirstOrDefaultAsync(ktt => ktt.Id == request.Id && !ktt.IsDelete, cancellationToken);
+
+                if (result == null)
                 {
                     throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy kỳ thực tập.");
                 }
 
-                return _mapper.Map<GetKyThucTapByIdResponse>(result);
+                var response = _mapper.Map<GetKyThucTapByIdResponse>(result);
+                return response;
             }
             catch (ErrorException ex)
             {
@@ -43,5 +50,6 @@ namespace InternSystem.Application.Features.InternManagement.KyThucTapManagement
                 throw new ErrorException(StatusCodes.Status500InternalServerError, ResponseCodeConstants.INTERNAL_SERVER_ERROR, "Đã có lỗi xảy ra.");
             }
         }
+
     }
 }

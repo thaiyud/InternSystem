@@ -7,6 +7,7 @@ using InternSystem.Domain.BaseException;
 using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.InternManagement.ViTriManagement.Handlers
 {
@@ -25,11 +26,29 @@ namespace InternSystem.Application.Features.InternManagement.ViTriManagement.Han
         {
             try
             {
-                ViTri? existingViTri = await _unitOfWork.ViTriRepository.GetByIdAsync(request.Id);
-                if (existingViTri == null || existingViTri.IsDelete)
-                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy vị trí");
-            
-                return _mapper.Map<GetViTriByIdResponse>(existingViTri);
+                //ViTri? existingViTri = await _unitOfWork.ViTriRepository.GetByIdAsync(request.Id);
+                //if (existingViTri == null || existingViTri.IsDelete)
+                //    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy vị trí");
+
+                //return _mapper.Map<GetViTriByIdResponse>(existingViTri);
+                var repository = _unitOfWork.GetRepository<ViTri>();
+                var userRepository = _unitOfWork.UserRepository;
+
+                var viTriById = await repository
+                    .GetAllQueryable()
+                    .FirstOrDefaultAsync(vt => vt.Id == request.Id && !vt.IsDelete);
+
+                if(viTriById == null || viTriById.IsDelete)
+                {
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy vị trí.");
+                }
+
+                var response = _mapper.Map<GetViTriByIdResponse>(viTriById);
+
+                response.CreatedByName = await userRepository.GetUserNameByIdAsync(response.CreatedBy) ?? "Người dùng không xác định";
+                response.LastUpdatedByName = await userRepository.GetUserNameByIdAsync(response.LastUpdatedBy) ?? "Người dùng không xác định";
+
+                return response;
             }
             catch (ErrorException ex)
             {

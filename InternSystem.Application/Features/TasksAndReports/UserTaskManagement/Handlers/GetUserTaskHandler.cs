@@ -7,6 +7,7 @@ using InternSystem.Domain.BaseException;
 using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.TasksAndReports.UserTaskManagement.Handlers
 {
@@ -23,8 +24,30 @@ namespace InternSystem.Application.Features.TasksAndReports.UserTaskManagement.H
         {
             try
             {
-                IEnumerable<UserTask> userTasks = await _unitOfWork.UserTaskRepository.GetUserTasksAsync();
-                return _mapper.Map<IEnumerable<UserTaskReponse>>(userTasks);
+                //IEnumerable<UserTask> userTasks = await _unitOfWork.UserTaskRepository.GetUserTasksAsync();
+                //return _mapper.Map<IEnumerable<UserTaskReponse>>(userTasks);
+                var userTaskRepository = _unitOfWork.GetRepository<UserTask>();
+                var userRepository = _unitOfWork.UserRepository;
+
+                var listUserTask = await userTaskRepository
+                    .GetAllQueryable()
+                    .Where(ut => ut.IsActive && !ut.IsDelete)
+                    .ToListAsync(cancellationToken);
+
+                if(listUserTask == null || !listUserTask.Any())
+                {
+                    throw new ErrorException(StatusCodes.Status204NoContent, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy người dùng của công việc.");
+                }
+
+                var response = _mapper.Map<IEnumerable<UserTaskReponse>>(listUserTask);
+
+                foreach (var userTaskReponse in response)
+                {
+                    userTaskReponse.CreatedByName = await userRepository.GetUserNameByIdAsync(userTaskReponse.CreatedBy) ?? "Người dùng không xác định";
+                    userTaskReponse.LastUpdatedByName = await userRepository.GetUserNameByIdAsync(userTaskReponse.LastUpdatedBy) ?? "Người dùng không xác định";
+                }
+
+                return response;
             }
             catch (ErrorException ex)
             {

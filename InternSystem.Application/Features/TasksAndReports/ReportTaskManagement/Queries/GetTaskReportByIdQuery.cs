@@ -13,7 +13,7 @@ namespace InternSystem.Application.Features.TasksAndReports.ReportTaskManagement
         }
     }
 
-    public class GetTaskReportByIdQuery : IRequest<TaskReportResponse>
+    public class GetTaskReportByIdQuery : IRequest<GetReportByIDReponse>
     {
         public int Id { get; set; }
     }

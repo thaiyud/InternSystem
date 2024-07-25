@@ -27,11 +27,12 @@ namespace InternSystem.Application.Features.ProjectAndTechnologyManagement.DuAnM
             try
             {
                 var repository = _unitOfWork.GetRepository<DuAn>();
+                var userRepository = _unitOfWork.UserRepository;
 
                 var duAnById = await repository
                     .GetAllQueryable()
                     .Include(da => da.Leader)
-                    .Include(d => d.CongNgheDuAns)
+                    .Include(d => d.CongNgheDuAns)  
                         .ThenInclude(cnda => cnda.CongNghe)
                     .FirstOrDefaultAsync(da => da.Id == request.Id && !da.IsDelete);
 
@@ -40,7 +41,10 @@ namespace InternSystem.Application.Features.ProjectAndTechnologyManagement.DuAnM
 
                 var response = _mapper.Map<GetDuAnByIdResponse>(duAnById);
 
-                response.TenCongNghe = duAnById.CongNgheDuAns.Select(cnda => cnda.CongNghe.Ten).ToList();
+                response.CreatedByName = await userRepository.GetUserNameByIdAsync(response.CreatedBy) ?? "Người dùng không xác định";
+                response.LastUpdatedName = await userRepository.GetUserNameByIdAsync(response.LastUpdatedBy) ?? "Người dùng không xác định";
+                
+                // response.TenCongNghe = duAnById.CongNgheDuAns.Select(cnda => cnda.CongNghe.Ten).ToList();
 
                 return response;
             }

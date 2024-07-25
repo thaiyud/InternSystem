@@ -17,5 +17,8 @@ namespace InternSystem.Application.Features.ProjectAndTechnologyManagement.UserD
 
         public DateTimeOffset CreatedTime { get; set; }
         public DateTimeOffset LastUpdatedTime { get; set; }
+
+        public bool isActive { get; set; }
+        public bool isDelete { get; set; }
     }
 }

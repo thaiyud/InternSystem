@@ -8,6 +8,7 @@ using InternSystem.Domain.BaseException;
 using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.InternManagement.CuocPhongVanManagement.Handlers
 {
@@ -26,16 +27,41 @@ namespace InternSystem.Application.Features.InternManagement.CuocPhongVanManagem
         {
             try
             {
-                var repository = _unitOfWork.GetRepository<PhongVan>();
-                var items = repository.GetAllQueryable();
+                var phongVanRepository = _unitOfWork.GetRepository<PhongVan>();
+                var userRepository = _unitOfWork.UserRepository;
+
+                var phongVanQuery = phongVanRepository
+                    .GetAllQueryable()
+                    .Include(pv => pv.CauHoiCongNghe)
+                        .ThenInclude(chcn => chcn.CauHoi)
+                    .Include(pv => pv.CauHoiCongNghe)
+                        .ThenInclude(chcn => chcn.CongNghe)
+                    .Include(pv => pv.LichPhongVan)
+                        .ThenInclude(lpv => lpv.NguoiPhongVan)
+                    .Where(pv => pv.IsActive && !pv.IsDelete);
 
                 var paginatedItems = await PaginatedList<PhongVan>.CreateAsync(
-                items,
-                request.PageNumber,
+                    phongVanQuery,
+                    request.PageNumber,
                     request.PageSize
                 );
 
+                if (!paginatedItems.Items.Any())
+                {
+                    throw new ErrorException(
+                        StatusCodes.Status204NoContent,
+                        ResponseCodeConstants.NOT_FOUND,
+                        "Không có phỏng vấn."
+                    );
+                }
+
                 var responseItems = paginatedItems.Items.Select(item => _mapper.Map<GetPagedPhongVansResponse>(item)).ToList();
+
+                foreach (var response in responseItems)
+                {
+                    response.CreatedByName = await userRepository.GetUserNameByIdAsync(response.CreatedBy) ?? "Người dùng không xác định";
+                    response.LastUpdatedByName = await userRepository.GetUserNameByIdAsync(response.LastUpdatedBy) ?? "Người dùng không xác định";
+                }
 
                 var responsePaginatedList = new PaginatedList<GetPagedPhongVansResponse>(
                     responseItems,

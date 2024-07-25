@@ -7,6 +7,7 @@ using InternSystem.Domain.BaseException;
 using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.InternManagement.LichPhongVanManagement.Handlers
 {
@@ -25,11 +26,32 @@ namespace InternSystem.Application.Features.InternManagement.LichPhongVanManagem
         {
             try
             {
-                LichPhongVan? existingDA = await _unitOfWork.LichPhongVanRepository.GetByIdAsync(request.Id);
-                if (existingDA == null || existingDA.IsDelete == true)
-                    throw new ErrorException(StatusCodes.Status500InternalServerError, ResponseCodeConstants.INTERNAL_SERVER_ERROR, "Đã xảy ra lỗi");
+                var lichPhongVanRepository = _unitOfWork.GetRepository<LichPhongVan>();
+                var userRepository = _unitOfWork.UserRepository;
+                var internRepository = _unitOfWork.GetRepository<InternInfo>();
 
-                return _mapper.Map<GetLichPhongVanByIdResponse>(existingDA);
+                var lichPhongVanById = await lichPhongVanRepository
+                    .GetAllQueryable()
+                    .Include(l => l.NguoiPhongVan)
+                    .Include(l => l.NguoiDuocPhongVan)
+                    .Where(l => l.IsActive && !l.IsDelete)
+                    .FirstOrDefaultAsync(l => l.Id == request.Id, cancellationToken);
+
+                if (lichPhongVanById == null)
+                {
+                    throw new ErrorException(
+                        StatusCodes.Status204NoContent,
+                        ResponseCodeConstants.NOT_FOUND,
+                        "Không có lịch phỏng vấn."
+                    );
+                }
+
+                var response = _mapper.Map<GetLichPhongVanByIdResponse>(lichPhongVanById);
+
+                response.CreatedByName = await userRepository.GetUserNameByIdAsync(response.CreatedBy) ?? "Người dùng không xác định";
+                response.LastUpdatedByName = await userRepository.GetUserNameByIdAsync(response.LastUpdatedBy) ?? "Người dùng không xác định";
+
+                return response;
             }
             catch (ErrorException ex)
             {

@@ -1,6 +1,6 @@
 ﻿namespace InternSystem.Application.Features.InternManagement.LichPhongVanManagement.Models
 {
-    public class GetLichPhongVanByIdResponse
+    public class GetLichPhongVanByTodayResponse
     {
         public int Id { get; set; }
         public string IdNguoiPhongVan { get; set; }

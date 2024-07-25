@@ -7,6 +7,7 @@ using InternSystem.Domain.BaseException;
 using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.InternManagement.CuocPhongVanManagement.Handlers
 {
@@ -25,11 +26,35 @@ namespace InternSystem.Application.Features.InternManagement.CuocPhongVanManagem
         {
             try
             {
-                PhongVan? existingPhongVan = await _unitOfWork.PhongVanRepository.GetByIdAsync(request.Id);
+                var phongVanRepository = _unitOfWork.GetRepository<PhongVan>();
+                var userRepository = _unitOfWork.UserRepository;
 
-                if (existingPhongVan == null || existingPhongVan.IsDelete == true)
-                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy cuộc phỏng vấn");
-                return _mapper.Map<GetPhongVanByIdResponse>(existingPhongVan);
+                var phongVanById = await phongVanRepository
+                    .GetAllQueryable()
+                    .Include(pv => pv.CauHoiCongNghe)
+                        .ThenInclude(chcn => chcn.CauHoi)
+                    .Include(pv => pv.CauHoiCongNghe)
+                        .ThenInclude(chcn => chcn.CongNghe)
+                    .Include(pv => pv.LichPhongVan)
+                        .ThenInclude(lpv => lpv.NguoiPhongVan)
+                    .Where(pv => pv.IsActive && !pv.IsDelete)
+                    .FirstOrDefaultAsync(pv => pv.Id == request.Id, cancellationToken);
+
+                if (phongVanById == null)
+                {
+                    throw new ErrorException(
+                        StatusCodes.Status204NoContent,
+                        ResponseCodeConstants.NOT_FOUND,
+                        "Không có phỏng vấn."
+                    );
+                }
+
+                var response = _mapper.Map<GetPhongVanByIdResponse>(phongVanById);
+
+                response.CreatedByName = await userRepository.GetUserNameByIdAsync(response.CreatedBy) ?? "Người dùng không xác định";
+                response.LastUpdatedByName = await userRepository.GetUserNameByIdAsync(response.LastUpdatedBy) ?? "Người dùng không xác định";
+
+                return response;
             }
             catch (ErrorException ex)
             {

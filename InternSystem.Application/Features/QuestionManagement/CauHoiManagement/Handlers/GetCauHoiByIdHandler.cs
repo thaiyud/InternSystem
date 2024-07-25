@@ -7,6 +7,7 @@ using InternSystem.Domain.BaseException;
 using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.QuestionManagement.CauHoiManagement.Handlers
 {
@@ -24,12 +25,32 @@ namespace InternSystem.Application.Features.QuestionManagement.CauHoiManagement.
         {
             try
             {
-                CauHoi? existingCauHoi = await _unitOfWork.CauHoiRepository.GetByIdAsync(request.Id)
-                    ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Câu hỏi không tồn tại.");
-                var result = existingCauHoi.IsDelete == true
-                    ? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy câu hỏi.")
-                    : _mapper.Map<GetCauHoiByIdResponse>(existingCauHoi);
-                return result;
+                var repository = _unitOfWork.GetRepository<CauHoi>();
+                var userRepository = _unitOfWork.UserRepository;
+
+                var cauHoiById = await repository
+                    .GetAllQueryable()
+                    .Include(ch => ch.CauHoiCongNghes)
+                        .ThenInclude(chcn => chcn.CongNghe)
+                    .FirstOrDefaultAsync(ch => ch.Id == request.Id && !ch.IsDelete);
+
+                if( cauHoiById == null || cauHoiById.IsDelete)
+                {
+                    throw new ErrorException(
+                        StatusCodes.Status404NotFound,
+                        ResponseCodeConstants.NOT_FOUND,
+                        "Không tìm thấy câu hỏi."
+                        );
+                }
+
+                var response = _mapper.Map<GetCauHoiByIdResponse>(cauHoiById);
+
+                response.TenCongNghe = cauHoiById.CauHoiCongNghes.Select(chcn => chcn.CongNghe.Ten).ToList();
+
+                response.CreatedByName = await userRepository.GetUserNameByIdAsync(response.CreatedBy) ?? "Người dùng không xác định";
+                response.LastUpdatedByName = await userRepository.GetUserNameByIdAsync(response.LastUpdatedBy) ?? "Người dùng không xác định";
+
+                return response;
             }
             catch (ErrorException ex)
             {

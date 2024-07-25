@@ -3,7 +3,7 @@ using MediatR;
 
 namespace InternSystem.Application.Features.TasksAndReports.ReportTaskManagement.Queries
 {
-    public class GetTaskReportQuery : IRequest<IEnumerable<TaskReportResponse>>
+    public class GetTaskReportQuery : IRequest<IEnumerable<GetReportAllReponse>>
     {
     }
 }

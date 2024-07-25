@@ -72,7 +72,10 @@ namespace InternSystem.Application.Common.Mapping
             CreateMap<IdentityRole, GetPagedRolesResponse>().ReverseMap();
 
             // Interview Mappings
-            CreateMap<Comment, GetDetailCommentResponse>().ReverseMap();
+            CreateMap<Comment, GetDetailCommentResponse>()
+                .ForMember(dest => dest.TenNguoiComment, opt => opt.MapFrom(src => src.NguoiComment.HoVaTen))
+                .ForMember(dest => dest.TenNguoiDuocComment, opt => opt.MapFrom(src => src.NguoiDuocComment.HoTen))
+                .ReverseMap();
             CreateMap<Comment, CreateCommentCommand>().ReverseMap();
             CreateMap<Comment, UpdateCommentCommand>().ReverseMap();
 
@@ -93,6 +96,11 @@ namespace InternSystem.Application.Common.Mapping
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<InternInfo, UpdateInternInfoResponse>();
             CreateMap<InternInfo, GetPagedInternInfosResponse>().ReverseMap();
+            CreateMap<InternInfo, GetFilteredInternInfoByDayResponse>()
+                .ForMember(dest => dest.TenTruong, opt => opt.MapFrom(src => src.TruongHoc.Ten))
+                .ForMember(dest => dest.TenKyThucTap, opt => opt.MapFrom(src => src.KyThucTap.Ten))
+                .ForMember(dest => dest.TenDuAn, opt => opt.MapFrom(src => src.DuAn.Ten))
+                .ReverseMap();
 
             CreateMap<EmailUserStatus, GetDetailEmailUserStatusResponse>().ReverseMap();
             CreateMap<EmailUserStatus, CreateEmailUserStatusCommand>().ReverseMap();
@@ -117,9 +125,12 @@ namespace InternSystem.Application.Common.Mapping
             // KyThucTap Mapping
             CreateMap<KyThucTap, CreateKyThucTapCommand>().ReverseMap();
             CreateMap<KyThucTap, CreateKyThucTapResponse>();
-            CreateMap<KyThucTap, GetKyThucTapByIdResponse>();
-            CreateMap<KyThucTap, GetAllKyThucTapResponse>();
-            CreateMap<KyThucTap, GetKyThucTapByNameResponse>().ReverseMap();
+            CreateMap<KyThucTap, GetKyThucTapByIdResponse>()
+                 .ForMember(dest => dest.TenTruong, opt => opt.MapFrom(src => src.TruongHoc.Ten));
+            CreateMap<KyThucTap, GetAllKyThucTapResponse>()
+                 .ForMember(dest => dest.TenTruong, opt => opt.MapFrom(src => src.TruongHoc.Ten));
+            CreateMap<KyThucTap, GetKyThucTapByNameResponse>()
+                .ForMember(dest => dest.TenTruong, opt => opt.MapFrom(src => src.TruongHoc.Ten));
             CreateMap<KyThucTap, UpdateKyThucTapCommand>().ReverseMap()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<KyThucTap, UpdateKyThucTapResponse>();
@@ -127,7 +138,9 @@ namespace InternSystem.Application.Common.Mapping
 
             // DuAn mapping
             CreateMap<DuAn, GetDuAnByIdResponse>()
-                .ForMember(dest => dest.LeaderName, opt => opt.MapFrom(src => src.Leader.HoVaTen));
+                .ForMember(dest => dest.LeaderName, opt => opt.MapFrom(src => src.Leader.HoVaTen))
+                .ForMember(dest => dest.TenCongNghe, opt => opt.MapFrom(src => src.CongNgheDuAns.Select(cnda => cnda.CongNghe.Ten).ToList()))
+                .ReverseMap();
             CreateMap<DuAn, CreateDuAnCommand>().ReverseMap();
             CreateMap<DuAn, CreateDuAnResponse>();
             CreateMap<DuAn, UpdateDuAnCommand>().ReverseMap()
@@ -137,43 +150,75 @@ namespace InternSystem.Application.Common.Mapping
                 .ForMember(dest => dest.LeaderName, opt => opt.MapFrom(src => src.Leader.HoVaTen))
                 .ForMember(dest => dest.TenCongNghe, opt => opt.MapFrom(src => src.CongNgheDuAns.Select(cnda => cnda.CongNghe.Ten).ToList()))
                 .ReverseMap();
-            CreateMap<DuAn, GetDuAnByTenResponse>();
-            CreateMap<DuAn, GetPagedDuAnsResponse>().ReverseMap();
+            CreateMap<DuAn, GetDuAnByTenResponse>()
+                .ForMember(dest => dest.LeaderName, opt => opt.MapFrom(src => src.Leader.HoVaTen))
+                .ForMember(dest => dest.TenCongNghe, opt => opt.MapFrom(src => src.CongNgheDuAns.Select(cnda => cnda.CongNghe.Ten).ToList()))
+                .ReverseMap();
+            CreateMap<DuAn, GetPagedDuAnsResponse>()
+                .ForMember(dest => dest.LeaderName, opt => opt.MapFrom(src => src.Leader.HoVaTen))
+                .ForMember(dest => dest.TenCongNghe, opt => opt.MapFrom(src => src.CongNgheDuAns.Select(cnda => cnda.CongNghe.Ten).ToList()))
+                .ReverseMap();
 
 
             // CauHoi mapping
             CreateMap<CauHoi, GetCauHoiByIdResponse>();
-            CreateMap<CauHoi, GetAllCauHoiResponse>();
+            CreateMap<CauHoi, GetAllCauHoiResponse>()
+                .ForMember(dest => dest.TenCongNghe, opt => opt.MapFrom(src => src.CauHoiCongNghes.Select(chcn => chcn.CongNghe.Ten).ToList()))
+                .ReverseMap();
             CreateMap<CauHoi, CreateCauHoiCommand>().ReverseMap();
             CreateMap<CauHoi, CreateCauHoiResponse>();
             CreateMap<CauHoi, UpdateCauHoiCommand>().ReverseMap()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<CauHoi, UpdateCauHoiResponse>();
-            CreateMap<CauHoi, GetCauHoiByNoiDungResponse>();
+            CreateMap<CauHoi, GetCauHoiByNoiDungResponse>()
+                .ForMember(dest => dest.TenCongNghe, opt => opt.MapFrom(src => src.CauHoiCongNghes.Select(chcn => chcn.CongNghe.Ten).ToList()))
+                .ReverseMap();
             CreateMap<CauHoi, GetPagedCauHoisResponse>().ReverseMap();
 
             // CauHoiCongNghe mapping
-            CreateMap<CauHoiCongNghe, GetCauHoiCongNgheByIdResponse>();
-            CreateMap<CauHoiCongNghe, GetAllCauHoiCongNgheResponse>();
+            CreateMap<CauHoiCongNghe, GetCauHoiCongNgheByIdResponse>()
+             .ForMember(dest => dest.TenCongNghe, opt => opt.MapFrom(src =>  src.CongNghe.Ten ))
+             .ForMember(dest => dest.NoiDungcauHoi, opt => opt.MapFrom(src => src.CauHoi.NoiDung ))
+             .ReverseMap();
+
+            CreateMap<CauHoiCongNghe, GetAllCauHoiCongNgheResponse>()
+             .ForMember(dest => dest.TenCongNghe, opt => opt.MapFrom(src => src.CongNghe.Ten))
+             .ForMember(dest => dest.NoiDungcauHoi, opt => opt.MapFrom(src => src.CauHoi.NoiDung))
+            .ReverseMap();
+
             CreateMap<CauHoiCongNghe, CreateCauHoiCongNgheCommand>().ReverseMap();
             CreateMap<CauHoiCongNghe, CreateCauHoiCongNgheResponse>();
             CreateMap<CauHoiCongNghe, UpdateCauHoiCongNgheCommand>().ReverseMap()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<CauHoiCongNghe, UpdateCauHoiCongNgheResponse>();
-            CreateMap<CauHoiCongNghe, GetPagedCauHoiCongNghesResponse>().ReverseMap();
+            CreateMap<CauHoiCongNghe, GetPagedCauHoiCongNghesResponse>()
+                 .ForMember(dest => dest.TenCongNghe, opt => opt.MapFrom(src => src.CongNghe.Ten))
+             .ForMember(dest => dest.NoiDungcauHoi, opt => opt.MapFrom(src => src.CauHoi.NoiDung))
+             .ReverseMap();
 
             // PhongVan mapping
             CreateMap<PhongVan, CreatePhongVanCommand>().ReverseMap();
             CreateMap<PhongVan, CreatePhongVanResponse>();
-            CreateMap<PhongVan, GetPhongVanByIdResponse>();
+            CreateMap<PhongVan, GetPhongVanByIdResponse>()
+                .ForMember(dest => dest.NoiDungCauHoi, opt => opt.MapFrom(src => src.CauHoiCongNghe.CauHoi.NoiDung))
+                .ForMember(dest => dest.TenCongNghe, opt => opt.MapFrom(src => src.CauHoiCongNghe.CongNghe.Ten))
+                .ForMember(dest => dest.TenNguoiPhongVan, opt => opt.MapFrom(src => src.LichPhongVan.NguoiPhongVan.HoVaTen))
+                .ForMember(dest => dest.ThoiGianPhongVan, opt => opt.MapFrom(src => src.LichPhongVan.ThoiGianPhongVan))
+                .ReverseMap();
             CreateMap<PhongVan, UpdatePhongVanCommand>().ReverseMap()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<PhongVan, UpdatePhongVanResponse>();
             CreateMap<PhongVan, PhongVan>();
+            CreateMap<PhongVan, GetAllPhongVanResponse>()
+                .ForMember(dest => dest.NoiDungCauHoi, opt => opt.MapFrom(src => src.CauHoiCongNghe.CauHoi.NoiDung))
+                .ForMember(dest => dest.TenCongNghe, opt => opt.MapFrom(src => src.CauHoiCongNghe.CongNghe.Ten))
+                .ForMember(dest => dest.TenNguoiPhongVan, opt => opt.MapFrom(src => src.LichPhongVan.NguoiPhongVan.HoVaTen))
+                .ForMember(dest => dest.ThoiGianPhongVan, opt => opt.MapFrom(src => src.LichPhongVan.ThoiGianPhongVan))
+                .ReverseMap();
 
             // Nhom Zalo mapping
             CreateMap<NhomZalo, CreateNhomZaloResponse>().ReverseMap();
-            CreateMap<NhomZalo, GetNhomZaloResponse>();
+            CreateMap<NhomZalo, GetNhomZaloResponse>().ReverseMap();
             CreateMap<NhomZalo, UpdateNhomZaloResponse>().ReverseMap();
             CreateMap<NhomZalo, DeleteNhomZaloResponse>().ReverseMap();
             CreateMap<NhomZalo, CreateNhomZaloCommand>().ReverseMap();
@@ -219,29 +264,49 @@ namespace InternSystem.Application.Common.Mapping
             CreateMap<ThongBao, UpdateThongBaoCommand>().ReverseMap()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<ThongBao, UpdateThongBaoResponse>();
-            CreateMap<ThongBao, GetThongBaoByIdResponse>();
-            CreateMap<ThongBao, GetAllThongBaoResponse>().ReverseMap();
-            CreateMap<ThongBao, GetPagedThongBaosResponse>().ReverseMap();
+            CreateMap<ThongBao, GetThongBaoByIdResponse>()
+                .ForMember(dest => dest.TenNguoiNhan, opt => opt.MapFrom(src => src.NguoiNhan.HoVaTen))
+                .ForMember(dest => dest.TenNguoiGui, opt => opt.MapFrom(src => src.NguoiGui.HoVaTen));
+            CreateMap<ThongBao, GetAllThongBaoResponse>()
+                .ForMember(dest => dest.TenNguoiNhan, opt => opt.MapFrom(src => src.NguoiNhan.HoVaTen))
+                .ForMember(dest => dest.TenNguoiGui, opt => opt.MapFrom(src => src.NguoiGui.HoVaTen));
+            CreateMap<ThongBao, GetPagedThongBaosResponse>()
+                .ForMember(dest => dest.TenNguoiNhan, opt => opt.MapFrom(src => src.NguoiNhan.HoVaTen))
+                .ForMember(dest => dest.TenNguoiGui, opt => opt.MapFrom(src => src.NguoiGui.HoVaTen))
+                .ReverseMap();
 
             // LichPhongVan mapping
-            CreateMap<LichPhongVan, GetLichPhongVanByIdResponse>();
+            CreateMap<LichPhongVan, GetLichPhongVanByIdResponse>()
+                .ForMember(dest => dest.TenNguoiPhongVan, opt => opt.MapFrom(src => src.NguoiPhongVan.HoVaTen))
+                .ForMember(dest => dest.TenNguoiDuocPhongVan, opt => opt.MapFrom(src => src.NguoiDuocPhongVan.HoTen))
+                .ReverseMap();
             CreateMap<LichPhongVan, CreateLichPhongVanCommand>().ReverseMap();
             CreateMap<LichPhongVan, CreateLichPhongVanResponse>();
             CreateMap<LichPhongVan, UpdateLichPhongVanCommand>().ReverseMap()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<LichPhongVan, UpdateLichPhongVanResponse>();
             CreateMap<DateTimeOffset, DateTime>().ConvertUsing(dt => dt.UtcDateTime);
-            CreateMap<LichPhongVan, GetAllLichPhongVanResponse>();
-            CreateMap<LichPhongVan, GetLichPhongVanByTodayQuery>();
+            CreateMap<LichPhongVan, GetAllLichPhongVanResponse>()
+                .ForMember(dest => dest.TenNguoiPhongVan, opt => opt.MapFrom(src => src.NguoiPhongVan.HoVaTen))
+                .ForMember(dest => dest.TenNguoiDuocPhongVan, opt => opt.MapFrom(src => src.NguoiDuocPhongVan.HoTen))
+                .ReverseMap();
+            CreateMap<LichPhongVan, GetLichPhongVanByTodayResponse>()
+                .ForMember(dest => dest.TenNguoiPhongVan, opt => opt.MapFrom(src => src.NguoiPhongVan.HoVaTen))
+                .ForMember(dest => dest.TenNguoiDuocPhongVan, opt => opt.MapFrom(src => src.NguoiDuocPhongVan.HoTen))
+                .ReverseMap();
 
             // PhongVan mapping
             CreateMap<PhongVan, CreatePhongVanCommand>().ReverseMap();
             CreateMap<PhongVan, CreatePhongVanResponse>();
-            CreateMap<PhongVan, GetPhongVanByIdResponse>();
             CreateMap<PhongVan, UpdatePhongVanCommand>().ReverseMap()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<PhongVan, UpdatePhongVanResponse>();
-            CreateMap<PhongVan, GetPagedPhongVansResponse>().ReverseMap();
+            CreateMap<PhongVan, GetPagedPhongVansResponse>()
+                .ForMember(dest => dest.NoiDungCauHoi, opt => opt.MapFrom(src => src.CauHoiCongNghe.CauHoi.NoiDung))
+                .ForMember(dest => dest.TenCongNghe, opt => opt.MapFrom(src => src.CauHoiCongNghe.CongNghe.Ten))
+                .ForMember(dest => dest.TenNguoiPhongVan, opt => opt.MapFrom(src => src.LichPhongVan.NguoiPhongVan.HoVaTen))
+                .ForMember(dest => dest.ThoiGianPhongVan, opt => opt.MapFrom(src => src.LichPhongVan.ThoiGianPhongVan))
+                .ReverseMap();
 
             // Task mapping
             CreateMap<Tasks, CreateTaskCommand>().ReverseMap();
@@ -252,11 +317,21 @@ namespace InternSystem.Application.Common.Mapping
 
             // User Task mapping
             CreateMap<ReportTask, TaskReportResponse>().ReverseMap();
+            CreateMap<ReportTask, GetReportByIDReponse>()
+            .ForMember(dest => dest.HoVaTen, opt => opt.MapFrom(src => src.User.HoVaTen))
+            .ReverseMap();
+
+            CreateMap<ReportTask, GetReportAllReponse>()
+                .ForMember(dest => dest.HoVaTen, opt => opt.MapFrom(src => src.User.HoVaTen))
+                .ReverseMap();
             CreateMap<ReportTask, CreateTaskReportCommand>().ReverseMap();
             CreateMap<ReportTask, UpdateTaskReportCommand>().ReverseMap()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<UserTask, GetPagedUserTaskResponse>().ReverseMap();
-            CreateMap<ReportTask, GetPagedReportTasksResponse>().ReverseMap();
+            CreateMap<UserTask, UserTaskReponse>().ReverseMap();
+            CreateMap<ReportTask, GetPagedReportTasksResponse>()
+                .ForMember(dest => dest.HoVaTen, opt => opt.MapFrom(src => src.User.HoVaTen))
+                .ReverseMap();
 
             //Task Report mapping
             CreateMap<UserTask, UserTaskReponse>().ReverseMap();

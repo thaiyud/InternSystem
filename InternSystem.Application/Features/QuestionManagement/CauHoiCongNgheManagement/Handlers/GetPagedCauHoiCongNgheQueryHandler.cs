@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure;
 using InternSystem.Application.Common.Constants;
 using InternSystem.Application.Common.PaggingItems;
 using InternSystem.Application.Common.Persistences.IRepositories;
@@ -8,6 +9,7 @@ using InternSystem.Domain.BaseException;
 using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.QuestionManagement.CauHoiCongNgheManagement.Handlers
 {
@@ -27,15 +29,20 @@ namespace InternSystem.Application.Features.QuestionManagement.CauHoiCongNgheMan
             try
             {
                 var repository = _unitOfWork.GetRepository<CauHoiCongNghe>();
-                var items = repository.GetAllQueryable();
+                var items = repository.GetAllQueryable()
+                    .Include(chcn => chcn.CauHoi)
+                    .Include(chcn => chcn.CongNghe)
+                    .Where(da => da.IsActive && !da.IsDelete);
 
                 var paginatedItems = await PaginatedList<CauHoiCongNghe>.CreateAsync(
-                items,
-                request.PageNumber,
+                    items,
+                    request.PageNumber,
                     request.PageSize
                 );
 
-                var responseItems = paginatedItems.Items.Select(item => _mapper.Map<GetPagedCauHoiCongNghesResponse>(item)).ToList();
+                var responseItems = paginatedItems.Items
+                    .Select(item => _mapper.Map<GetPagedCauHoiCongNghesResponse>(item))
+                    .ToList();
 
                 var responsePaginatedList = new PaginatedList<GetPagedCauHoiCongNghesResponse>(
                     responseItems,
@@ -43,7 +50,12 @@ namespace InternSystem.Application.Features.QuestionManagement.CauHoiCongNgheMan
                     paginatedItems.PageNumber,
                     paginatedItems.PageSize
                 );
+                foreach (var cauHoiCongNgheResponse in responseItems)
+                {
+                    cauHoiCongNgheResponse.CreatedByName = await _unitOfWork.UserRepository.GetUserNameByIdAsync(cauHoiCongNgheResponse.CreatedBy) ?? "Người dùng không xác định";
+                    cauHoiCongNgheResponse.LastUpdatedByName = await _unitOfWork.UserRepository.GetUserNameByIdAsync(cauHoiCongNgheResponse.LastUpdatedBy) ?? "Người dùng không xác định";
 
+                }
                 return responsePaginatedList;
             }
             catch (ErrorException ex)
@@ -55,5 +67,6 @@ namespace InternSystem.Application.Features.QuestionManagement.CauHoiCongNgheMan
                 throw new ErrorException(StatusCodes.Status500InternalServerError, ResponseCodeConstants.INTERNAL_SERVER_ERROR, "Đã có lỗi xảy ra");
             }
         }
+
     }
 }

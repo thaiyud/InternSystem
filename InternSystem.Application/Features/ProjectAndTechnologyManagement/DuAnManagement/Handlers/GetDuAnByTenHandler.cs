@@ -8,6 +8,7 @@ using InternSystem.Domain.BaseException;
 using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 public class GetDuAnsByTenQueryHandler : IRequestHandler<GetDuAnByTenQuery, IEnumerable<GetDuAnByTenResponse>>
 {
@@ -24,27 +25,28 @@ public class GetDuAnsByTenQueryHandler : IRequestHandler<GetDuAnByTenQuery, IEnu
     {
         try
         {
-            //var DuAns = await _unitOfWork.DuAnRepository.GetDuAnsByTenAsync(request.Ten);
-            //if (DuAns == null)
-            //{
-            //    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy dự án");
-            //}
-            //return _mapper.Map<IEnumerable<GetDuAnByTenResponse>>(DuAns);
-
             var repository = _unitOfWork.GetRepository<DuAn>();
             var duAnQuery = repository.GetAllQueryable();
+            var userRepository = _unitOfWork.UserRepository;
 
-            var duAnByTen = await repository.ToListAsync(
-                duAnQuery.Where(c => c.Ten.Contains(request.Ten) && !c.IsDelete),
-                cancellationToken
-            );
+            var duAnByTen = await duAnQuery
+                .Where(c => c.Ten.Contains(request.Ten) && !c.IsDelete)
+                .Include(c => c.Leader)
+                .Include(c => c.CongNgheDuAns)
+                    .ThenInclude(cnda => cnda.CongNghe)
+                .ToListAsync(cancellationToken);
 
             if (!duAnByTen.Any())
             {
-                throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy câu hỏi hợp lệ.");
+                throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy dự án hợp lệ.");
             }
 
             var result = _mapper.Map<IEnumerable<GetDuAnByTenResponse>>(duAnByTen);
+            foreach (var duAnResponse in result)
+            {
+                duAnResponse.CreatedByName = await userRepository.GetUserNameByIdAsync(duAnResponse.CreatedBy) ?? "Người dùng không xác định";
+                duAnResponse.LastUpdatedName = await userRepository.GetUserNameByIdAsync(duAnResponse.LastUpdatedBy) ?? "Người dùng không xác định";
+            }
             return result;
         }
         catch (ErrorException ex)
@@ -56,4 +58,5 @@ public class GetDuAnsByTenQueryHandler : IRequestHandler<GetDuAnByTenQuery, IEnu
             throw new ErrorException(StatusCodes.Status500InternalServerError, ResponseCodeConstants.INTERNAL_SERVER_ERROR, "Đã có lỗi xảy ra");
         }
     }
+
 }

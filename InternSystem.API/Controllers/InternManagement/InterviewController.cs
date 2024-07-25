@@ -127,10 +127,9 @@ namespace InternSystem.API.Controllers.InternManagement
         /// </summary>
         /// <returns></returns>
         [HttpGet("view-lichphongvan-today")]
-        public async Task<ActionResult<IEnumerable<LichPhongVan>>> GetLichPhongVanByToday()
+        public async Task<ActionResult> GetLichPhongVanByToday()
         {
-            var query = new GetLichPhongVanByTodayQuery();
-            var result = await _mediatorService.Send(query);
+            var result = await _mediatorService.Send(new GetLichPhongVanByTodayQuery());
 
             return Ok(new BaseResponseModel(
                statusCode: StatusCodes.Status200OK,
@@ -252,7 +251,7 @@ namespace InternSystem.API.Controllers.InternManagement
         /// </summary>
         /// <returns></returns>
         [HttpGet("view-all-phong-van")]
-        public async Task<ActionResult<PhongVan>> GetPhongVanById()
+        public async Task<ActionResult> GetAllPhongVan()
         {
             var response = await _mediatorService.Send(new GetAllPhongVanQuery());
             return Ok(new BaseResponseModel(
@@ -269,7 +268,7 @@ namespace InternSystem.API.Controllers.InternManagement
         /// <param name="query"></param>
         /// <returns></returns>
         [HttpGet("view-phong-van-by-id")]
-        public async Task<ActionResult<GetPhongVanByIdResponse>> GetPhongVanById([FromQuery] GetPhongVanByIdQuery query)
+        public async Task<ActionResult> GetPhongVanById([FromQuery] GetPhongVanByIdQuery query)
         {
             var response = await _mediatorService.Send(query);
 

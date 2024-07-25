@@ -7,6 +7,7 @@ using InternSystem.Domain.BaseException;
 using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.InternManagement.CommentManagement.Handlers
 {
@@ -25,16 +26,31 @@ namespace InternSystem.Application.Features.InternManagement.CommentManagement.H
         {
             try
             {
-                Comment comment = await _unitOfWork.CommentRepository.GetByIdAsync(request.Id)
-                    ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy comment!");
+                var commentRepository = _unitOfWork.GetRepository<Comment>();
+                var userRepository = _unitOfWork.UserRepository;
 
-                if (comment.IsDelete)
+                var commentById = await commentRepository
+                    .GetAllQueryable()
+                    .Include(c => c.NguoiDuocComment)
+                    .Include(c => c.NguoiComment)
+                    .Where(c => c.IsActive && !c.IsDelete)
+                    .FirstOrDefaultAsync(c => c.IsActive && !c.IsDelete, cancellationToken);
+
+                if (commentById == null)
                 {
-                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Comment đã bị xoá !");
+                    throw new ErrorException(
+                        StatusCodes.Status204NoContent,
+                        ResponseCodeConstants.NOT_FOUND,
+                        "Không có bình luận."
+                    );
                 }
 
-                var result = _mapper.Map<GetDetailCommentResponse>(comment);
-                return result;
+                var response = _mapper.Map<GetDetailCommentResponse>(commentById);
+
+                response.CreatedByName = await userRepository.GetUserNameByIdAsync(response.CreatedBy) ?? "Người dùng không xác định";
+                response.LastUpdatedByName = await userRepository.GetUserNameByIdAsync(response.LastUpdatedBy) ?? "Người dùng không xác định";
+
+                return response;
             }
             catch (ErrorException ex)
             {

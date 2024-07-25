@@ -7,6 +7,7 @@ using InternSystem.Domain.BaseException;
 using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.ComunicationManagement.ThongBaoManagement.Handlers
 {
@@ -25,19 +26,37 @@ namespace InternSystem.Application.Features.ComunicationManagement.ThongBaoManag
         {
             try
             {
-                ThongBao? result = await _unitOfWork.ThongBaoRepository.GetByIdAsync(request.Id) ??
-                               throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy thông báo");
+                var thongBaoRepository = _unitOfWork.GetRepository<ThongBao>();
+                var userRepository = _unitOfWork.UserRepository;
 
-                return _mapper.Map<GetThongBaoByIdResponse>(result);
+                var result = await thongBaoRepository
+                    .GetAllQueryable()
+                    .Include(tb => tb.NguoiNhan) 
+                    .Include(tb => tb.NguoiGui)
+                    .Where(da => da.IsActive && !da.IsDelete)
+                    .FirstOrDefaultAsync(tb => tb.Id == request.Id, cancellationToken);
+
+                if (result == null)
+                {
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy thông báo");
+                }
+
+                var response = _mapper.Map<GetThongBaoByIdResponse>(result);
+
+                response.CreatedByName = await userRepository.GetUserNameByIdAsync(response.CreatedBy) ?? "Người dùng không xác định";
+                response.LastUpdatedName = await userRepository.GetUserNameByIdAsync(response.LastUpdatedBy) ?? "Người dùng không xác định";
+                
+                return response;
             }
-            catch (ErrorException ex)
+            catch (ErrorException)
             {
                 throw;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw new ErrorException(StatusCodes.Status500InternalServerError, ResponseCodeConstants.INTERNAL_SERVER_ERROR, "Đã có lỗi xảy ra");
             }
         }
+
     }
 }

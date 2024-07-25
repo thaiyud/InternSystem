@@ -4,8 +4,10 @@ using InternSystem.Application.Common.Persistences.IRepositories;
 using InternSystem.Application.Features.GroupAndTeamManagement.NhomZaloManagement.Models;
 using InternSystem.Application.Features.GroupAndTeamManagement.NhomZaloManagement.Queries;
 using InternSystem.Domain.BaseException;
+using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.GroupAndTeamManagement.NhomZaloManagement.Handlers
 {
@@ -24,14 +26,31 @@ namespace InternSystem.Application.Features.GroupAndTeamManagement.NhomZaloManag
         {
             try
             {
-                var nhomZalos = await _unitOfWork.NhomZaloRepository.GetAllAsync();
+                var nhomZaloRepository = _unitOfWork.GetRepository<NhomZalo>();
+                var userRepository = _unitOfWork.UserRepository;
 
-                if (nhomZalos == null || !nhomZalos.Any())
+                var listNhomZalo = await nhomZaloRepository
+                    .GetAllQueryable()
+                    .Include(nz => nz.NhomZaloTasks)
+                        .ThenInclude(nzt => nzt.Tasks)
+                    .Where(nz => nz.IsActive && !nz.IsDelete)
+                    .ToListAsync(cancellationToken);
+
+                if(listNhomZalo == null || !listNhomZalo.Any())
                 {
-                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy nhóm Zalo");
+                    throw new ErrorException(StatusCodes.Status204NoContent, ResponseCodeConstants.NOT_FOUND, "Không có nhóm Zalo.");
                 }
 
-                return _mapper.Map<IEnumerable<GetNhomZaloResponse>>(nhomZalos);
+                var response = _mapper.Map<IEnumerable<GetNhomZaloResponse>>(listNhomZalo);
+
+                foreach(var nhomZaloResponse in response)
+                {
+                    nhomZaloResponse.CreatedByName = await userRepository.GetUserNameByIdAsync(nhomZaloResponse.CreatedBy) ?? "Người dùng không xác định";
+                    nhomZaloResponse.LastUpdatedByName = await userRepository.GetUserNameByIdAsync(nhomZaloResponse.LastUpdatedBy) ?? "Người dùng không xác định";
+                }
+
+                return response;
+
             }
             catch (ErrorException ex)
             {

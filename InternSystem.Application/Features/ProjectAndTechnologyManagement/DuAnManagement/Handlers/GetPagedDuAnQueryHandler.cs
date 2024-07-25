@@ -8,6 +8,7 @@ using InternSystem.Domain.BaseException;
 using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.InternManagement.CauHoiManagement.Handlers
 {
@@ -26,16 +27,28 @@ namespace InternSystem.Application.Features.InternManagement.CauHoiManagement.Ha
         {
             try
             {
-                var repository = _unitOfWork.GetRepository<DuAn>();
-                var items = repository.GetAllQueryable();
+                var duAnRepository = _unitOfWork.GetRepository<DuAn>();
+                var userRepository = _unitOfWork.UserRepository;
+
+                var query = duAnRepository.GetAllQueryable()
+                    .Include(da => da.Leader)
+                    .Include(da => da.CongNgheDuAns)
+                        .ThenInclude(cnda => cnda.CongNghe)
+                    .Where(da => da.IsActive && !da.IsDelete);
 
                 var paginatedItems = await PaginatedList<DuAn>.CreateAsync(
-                items,
-                request.PageNumber,
+                    query,
+                    request.PageNumber,
                     request.PageSize
                 );
 
                 var responseItems = paginatedItems.Items.Select(item => _mapper.Map<GetPagedDuAnsResponse>(item)).ToList();
+
+                foreach (var duAnResponse in responseItems)
+                {
+                    duAnResponse.CreatedByName = await userRepository.GetUserNameByIdAsync(duAnResponse.CreatedBy) ?? "Người dùng không xác định";
+                    duAnResponse.LastUpdatedName = await userRepository.GetUserNameByIdAsync(duAnResponse.LastUpdatedBy) ?? "Người dùng không xác định";
+                }
 
                 var responsePaginatedList = new PaginatedList<GetPagedDuAnsResponse>(
                     responseItems,
@@ -55,5 +68,6 @@ namespace InternSystem.Application.Features.InternManagement.CauHoiManagement.Ha
                 throw new ErrorException(StatusCodes.Status500InternalServerError, ResponseCodeConstants.INTERNAL_SERVER_ERROR, "Đã có lỗi xảy ra");
             }
         }
+
     }
 }

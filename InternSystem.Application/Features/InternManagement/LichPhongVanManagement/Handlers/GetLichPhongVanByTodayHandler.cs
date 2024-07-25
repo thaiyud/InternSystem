@@ -1,15 +1,17 @@
 ﻿using AutoMapper;
 using InternSystem.Application.Common.Constants;
 using InternSystem.Application.Common.Persistences.IRepositories;
+using InternSystem.Application.Features.InternManagement.LichPhongVanManagement.Models;
 using InternSystem.Application.Features.InternManagement.LichPhongVanManagement.Queries;
 using InternSystem.Domain.BaseException;
 using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.InternManagement.LichPhongVanManagement.Handlers
 {
-    public class GetLichPhongVanByTodayHandler : IRequestHandler<GetLichPhongVanByTodayQuery, IEnumerable<LichPhongVan>>
+    public class GetLichPhongVanByTodayHandler : IRequestHandler<GetLichPhongVanByTodayQuery, IEnumerable<GetLichPhongVanByTodayResponse>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -20,17 +22,39 @@ namespace InternSystem.Application.Features.InternManagement.LichPhongVanManagem
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<LichPhongVan>> Handle(GetLichPhongVanByTodayQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<GetLichPhongVanByTodayResponse>> Handle(GetLichPhongVanByTodayQuery request, CancellationToken cancellationToken)
         {
             try
             {
-                var lichPhongVanList = await _unitOfWork.LichPhongVanRepository.GetLichPhongVanByToday();
-                if (lichPhongVanList == null || !lichPhongVanList.Any())
+                var lichPhongVanRepository = _unitOfWork.GetRepository<LichPhongVan>();
+                var userRepository = _unitOfWork.UserRepository;
+                var internRepository = _unitOfWork.GetRepository<InternInfo>();
+
+                var listLichPhongVan = await lichPhongVanRepository
+                    .GetAllQueryable()
+                    .Include(l => l.NguoiPhongVan)
+                    .Include(l => l.NguoiDuocPhongVan)
+                    .Where(l => l.IsActive && !l.IsDelete && l.ThoiGianPhongVan.Date == DateTime.UtcNow.Date)
+                    .ToListAsync(cancellationToken);
+
+                if (listLichPhongVan == null || !listLichPhongVan.Any())
                 {
-                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không có lịch phỏng vấn trong hôm nay");
+                    throw new ErrorException(
+                        StatusCodes.Status204NoContent,
+                        ResponseCodeConstants.NOT_FOUND,
+                        "Không có lịch phỏng vấn."
+                    );
                 }
 
-                return lichPhongVanList;
+                var response = _mapper.Map<IEnumerable<GetLichPhongVanByTodayResponse>>(listLichPhongVan);
+
+                foreach (var lichPhongVanResponse in response)
+                {
+                    lichPhongVanResponse.CreatedByName = await userRepository.GetUserNameByIdAsync(lichPhongVanResponse.CreatedBy) ?? "Người dùng không xác định";
+                    lichPhongVanResponse.LastUpdatedByName = await userRepository.GetUserNameByIdAsync(lichPhongVanResponse.LastUpdatedBy) ?? "Người dùng không xác định";
+                }
+
+                return response;
             }
             catch (ErrorException ex)
             {

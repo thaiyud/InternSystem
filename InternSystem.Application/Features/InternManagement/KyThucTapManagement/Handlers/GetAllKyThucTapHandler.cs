@@ -4,8 +4,10 @@ using InternSystem.Application.Common.Persistences.IRepositories;
 using InternSystem.Application.Features.InternManagement.KyThucTapManagement.Models;
 using InternSystem.Application.Features.InternManagement.KyThucTapManagement.Queries;
 using InternSystem.Domain.BaseException;
+using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.InternManagement.KyThucTapManagement.Handlers
 {
@@ -24,14 +26,20 @@ namespace InternSystem.Application.Features.InternManagement.KyThucTapManagement
         {
             try
             {
-                var ListKyThucTap = await _unitOfWork.KyThucTapRepository.GetAllAsync();
+                var kyThucTapRepository = _unitOfWork.GetRepository<KyThucTap>();
 
-                if (ListKyThucTap == null || !ListKyThucTap.Any())
+                var listKyThucTap = await kyThucTapRepository
+                    .GetAllQueryable()
+                    .Include(ktt => ktt.TruongHoc)
+                    .ToListAsync(cancellationToken);
+
+                if (listKyThucTap == null || !listKyThucTap.Any())
                 {
                     throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy kỳ thực tập nào");
                 }
 
-                return _mapper.Map<IEnumerable<GetAllKyThucTapResponse>>(ListKyThucTap);
+                var response = _mapper.Map<IEnumerable<GetAllKyThucTapResponse>>(listKyThucTap);
+                return response;
             }
             catch (ErrorException ex)
             {
@@ -42,6 +50,7 @@ namespace InternSystem.Application.Features.InternManagement.KyThucTapManagement
                 throw new ErrorException(StatusCodes.Status500InternalServerError, ResponseCodeConstants.INTERNAL_SERVER_ERROR, "Đã có lỗi xảy ra.");
             }
         }
+
 
     }
 }

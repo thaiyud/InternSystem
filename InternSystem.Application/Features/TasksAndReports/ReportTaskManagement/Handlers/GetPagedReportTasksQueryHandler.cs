@@ -8,6 +8,7 @@ using InternSystem.Domain.BaseException;
 using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.TasksAndReports.ReportTaskManagement.Handlers
 {
@@ -27,15 +28,26 @@ namespace InternSystem.Application.Features.TasksAndReports.ReportTaskManagement
             try
             {
                 var repository = _unitOfWork.GetRepository<ReportTask>();
-                var items = repository.GetAllQueryable();
+                var userRepository = _unitOfWork.UserRepository;
+
+                var query = repository.GetAllQueryable()
+                    .Include(rt => rt.User)
+                    .Where(rt => rt.IsActive && !rt.IsDelete);
 
                 var paginatedItems = await PaginatedList<ReportTask>.CreateAsync(
-                    items,
+                    query,
                     request.PageNumber,
                     request.PageSize
+             
                 );
 
                 var responseItems = paginatedItems.Items.Select(item => _mapper.Map<GetPagedReportTasksResponse>(item)).ToList();
+
+                foreach (var reportTaskResponse in responseItems)
+                {
+                    reportTaskResponse.CreatedByName = await userRepository.GetUserNameByIdAsync(reportTaskResponse.CreatedBy) ?? "Người dùng không xác định";
+                    reportTaskResponse.LastUpdatedByName = await userRepository.GetUserNameByIdAsync(reportTaskResponse.LastUpdatedBy) ?? "Người dùng không xác định";
+                }
 
                 var responsePaginatedList = new PaginatedList<GetPagedReportTasksResponse>(
                     responseItems,
@@ -55,5 +67,6 @@ namespace InternSystem.Application.Features.TasksAndReports.ReportTaskManagement
                 throw new ErrorException(StatusCodes.Status500InternalServerError, ResponseCodeConstants.INTERNAL_SERVER_ERROR, "Đã có lỗi xảy ra");
             }
         }
+
     }
 }

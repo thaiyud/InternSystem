@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure;
 using InternSystem.Application.Common.Constants;
 using InternSystem.Application.Common.CustomExceptions;
 using InternSystem.Application.Common.Persistences.IRepositories;
@@ -8,6 +9,7 @@ using InternSystem.Domain.BaseException;
 using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.GroupAndTeamManagement.NhomZaloManagement.Handlers
 {
@@ -25,13 +27,39 @@ namespace InternSystem.Application.Features.GroupAndTeamManagement.NhomZaloManag
         {
             try
             {
-                var nhomZalo = await _unitOfWork.NhomZaloRepository.GetNhomZalosByNameAsync(request.TenNhom);
-                if (nhomZalo == null)
+                //var nhomZalo = await _unitOfWork.NhomZaloRepository.GetNhomZalosByNameAsync(request.TenNhom);
+                //if (nhomZalo == null)
+                //{
+                //    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "không tìm thấy nhóm zalo");
+                //}
+
+                //return _mapper.Map<GetNhomZaloResponse>(nhomZalo);
+
+                var repository = _unitOfWork.GetRepository<NhomZalo>();
+                var userRepository = _unitOfWork.UserRepository;
+                var nhomZaloQuery = repository.GetAllQueryable();
+
+                //var nhomZaloByTen = await nhomZaloQuery
+                //    .Include(nz => nz.NhomZaloTasks)
+                //        .ThenInclude(nzt => nzt.Tasks)
+                //    .Where(c => c.TenNhom == request.TenNhom && !c.IsDelete)
+                //    .ToListAsync(cancellationToken);
+                var nhomZaloByTen = await nhomZaloQuery
+                    .Include(nz => nz.NhomZaloTasks)
+                        .ThenInclude(nzt => nzt.Tasks)
+                    .FirstOrDefaultAsync(nz => nz.TenNhom.Contains(request.TenNhom) && !nz.IsDelete);
+
+                if (nhomZaloByTen == null || nhomZaloByTen.IsDelete)
                 {
-                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "không tìm thấy nhóm zalo");
+                    throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy nhóm Zalo.");
                 }
 
-                return _mapper.Map<GetNhomZaloResponse>(nhomZalo);
+                var result = _mapper.Map<GetNhomZaloResponse>(nhomZaloByTen);
+
+                result.CreatedByName = await userRepository.GetUserNameByIdAsync(result.CreatedBy) ?? "Người dùng không xác định";
+                result.LastUpdatedByName = await userRepository.GetUserNameByIdAsync(result.LastUpdatedBy) ?? "Người dùng không xác định";
+
+                return result;
             }
             catch (ErrorException ex)
             {

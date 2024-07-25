@@ -1,15 +1,6 @@
-﻿using InternSystem.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace InternSystem.Application.Features.TasksAndReports.ReportTaskManagement.Models
+﻿namespace InternSystem.Application.Features.TasksAndReports.ReportTaskManagement.Models
 {
-    public class GetPagedReportTasksResponse
+    public class GetReportAllReponse
     {
         public int Id { get; set; }
         public string UserId { get; set; }
@@ -19,11 +10,13 @@ namespace InternSystem.Application.Features.TasksAndReports.ReportTaskManagement
         public string NoiDungBaoCao { get; set; }
         public DateTime NgayBaoCao { get; set; }
         public string TrangThai { get; set; }
+
         public string CreatedBy { get; set; }
         public string CreatedByName { get; set; }
         public string LastUpdatedBy { get; set; }
         public string LastUpdatedByName { get; set; }
         public DateTimeOffset CreatedTime { get; set; }
         public DateTimeOffset LastUpdatedTime { get; set; }
+
     }
 }

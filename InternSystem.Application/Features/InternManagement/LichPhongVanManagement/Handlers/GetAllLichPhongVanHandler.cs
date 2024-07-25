@@ -7,6 +7,7 @@ using InternSystem.Domain.BaseException;
 using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.InternManagement.LichPhongVanManagement.Handlers
 {
@@ -25,12 +26,35 @@ namespace InternSystem.Application.Features.InternManagement.LichPhongVanManagem
         {
             try
             {
-                IQueryable<LichPhongVan> allLichPhongVan = _unitOfWork.LichPhongVanRepository.Entities;
-                IQueryable<LichPhongVan> activeLichPhongVan = allLichPhongVan.Where(p => !p.IsDelete).OrderByDescending(p => p.CreatedTime);
-                var allLichPhongVanList = await _unitOfWork.LichPhongVanRepository.GetAllLichPhongVan()
-                    ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Không tìm thấy lịch phỏng vấn");
+                var lichPhongVanRepository = _unitOfWork.GetRepository<LichPhongVan>();
+                var userRepository = _unitOfWork.UserRepository;
+                var internRepository = _unitOfWork.GetRepository<InternInfo>();
+                
+                var listLichPhongVan = await lichPhongVanRepository
+                    .GetAllQueryable()
+                    .Include(l => l.NguoiPhongVan)
+                    .Include(l => l.NguoiDuocPhongVan)
+                    .Where(l => l.IsActive && !l.IsDelete)
+                    .ToListAsync(cancellationToken);
 
-                return _mapper.Map<IEnumerable<GetAllLichPhongVanResponse>>(activeLichPhongVan);
+                if (listLichPhongVan == null || !listLichPhongVan.Any())
+                {
+                    throw new ErrorException(
+                        StatusCodes.Status204NoContent,
+                        ResponseCodeConstants.NOT_FOUND,
+                        "Không có lịch phỏng vấn."
+                    );
+                }
+
+                var response = _mapper.Map<IEnumerable<GetAllLichPhongVanResponse>>(listLichPhongVan);
+
+                foreach (var lichPhongVanResponse in response)
+                {
+                    lichPhongVanResponse.CreatedByName = await userRepository.GetUserNameByIdAsync(lichPhongVanResponse.CreatedBy) ?? "Người dùng không xác định";
+                    lichPhongVanResponse.LastUpdatedByName = await userRepository.GetUserNameByIdAsync(lichPhongVanResponse.LastUpdatedBy) ?? "Người dùng không xác định";
+                }
+
+                return response;
             }
             catch (ErrorException ex)
             {

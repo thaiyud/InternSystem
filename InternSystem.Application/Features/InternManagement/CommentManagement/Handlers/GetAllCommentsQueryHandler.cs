@@ -3,9 +3,12 @@ using InternSystem.Application.Common.Constants;
 using InternSystem.Application.Common.Persistences.IRepositories;
 using InternSystem.Application.Features.InternManagement.CommentManagement.Models;
 using InternSystem.Application.Features.InternManagement.CommentManagement.Queries;
+using InternSystem.Application.Features.ProjectAndTechnologyManagement.DuAnManagement.Models;
 using InternSystem.Domain.BaseException;
+using InternSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternSystem.Application.Features.InternManagement.CommentManagement.Handlers
 {
@@ -24,10 +27,34 @@ namespace InternSystem.Application.Features.InternManagement.CommentManagement.H
         {
             try
             {
-                var comments = await _unitOfWork.CommentRepository.GetAllAsync() ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "List comment equal to 0 !");
-                var filteredComments = comments.Where(c => c.IsActive && !c.IsDelete);
+                var commentRepository = _unitOfWork.GetRepository<Comment>();
+                var userRepository = _unitOfWork.UserRepository;
 
-                return _mapper.Map<IEnumerable<GetDetailCommentResponse>>(filteredComments);
+                var listComment = await commentRepository
+                    .GetAllQueryable()
+                    .Include(c => c.NguoiDuocComment)
+                    .Include(c => c.NguoiComment)
+                    .Where(c => c.IsActive && !c.IsDelete)
+                    .ToListAsync(cancellationToken);
+
+                if (listComment == null || !listComment.Any())
+                {
+                    throw new ErrorException(
+                        StatusCodes.Status204NoContent,
+                        ResponseCodeConstants.NOT_FOUND,
+                        "Không có bình luận."
+                    );
+                }
+
+                var response = _mapper.Map<IEnumerable<GetDetailCommentResponse>>(listComment);
+
+                foreach (var commentResponse in response)
+                {
+                    commentResponse.CreatedByName = await userRepository.GetUserNameByIdAsync(commentResponse.CreatedBy) ?? "Người dùng không xác định";
+                    commentResponse.LastUpdatedByName = await userRepository.GetUserNameByIdAsync(commentResponse.LastUpdatedBy) ?? "Người dùng không xác định";
+                }
+
+                return response;
             }
             catch (ErrorException ex)
             {
